@@ -1,0 +1,118 @@
+{
+"log_std": {
+"sha256": "1183758859d0c803dee83b72c9ff376a6edd927bc79bb28356b65336b55f35e1",
+"sum": -8.0,
+"shape": [
+2
+]
+},
+"mlp_extractor.policy_net.0.weight": {
+"sha256": "db784eea9b0892e60925837c13d0e1a83c273ea977a4801d5918c2d2d4d402e5",
+"sum": 16.611231103898717,
+"shape": [
+512,
+116
+]
+},
+"mlp_extractor.policy_net.0.bias": {
+"sha256": "441b82c932fde4aa6ccdd9a1336f973d1cf93e6da3ddfe12cff0e6a3e3305506",
+"sum": 0.06179008095932659,
+"shape": [
+512
+]
+},
+"mlp_extractor.policy_net.2.weight": {
+"sha256": "df449bdc5df8da992f3bbe66fd42d53a98145bf23e82b015848040d35d5f8dfd",
+"sum": 16.623430270884455,
+"shape": [
+512,
+512
+]
+},
+"mlp_extractor.policy_net.2.bias": {
+"sha256": "1c71efb0d8e5bd9dd566bc272eba85b574a7ebd8a48e102c1a3e0b7e2e5c792c",
+"sum": 0.049641221899946686,
+"shape": [
+512
+]
+},
+"mlp_extractor.value_net.0.weight": {
+"sha256": "4162d48a4cdc54dd96d13fc5e610235875bb77889c86a688216b9c3ba09d4270",
+"sum": -6.202877231834009,
+"shape": [
+512,
+116
+]
+},
+"mlp_extractor.value_net.0.bias": {
+"sha256": "baa10831a35992f4d60c093216be46944015e4362db35238d61bb5313657d47b",
+"sum": 0.0,
+"shape": [
+512
+]
+},
+"mlp_extractor.value_net.2.weight": {
+"sha256": "fa15127a17e0931056766d230cba6aa896a0761892059d39d6a50d528f08954a",
+"sum": 20.69131664104208,
+"shape": [
+512,
+512
+]
+},
+"mlp_extractor.value_net.2.bias": {
+"sha256": "baa10831a35992f4d60c093216be46944015e4362db35238d61bb5313657d47b",
+"sum": 0.0,
+"shape": [
+512
+]
+},
+"action_net.weight": {
+"sha256": "01de912eb324061a3c8d8459c7bf8f2825cde606dda86489b2c6a2fcda4ec954",
+"sum": 0.02509184687050947,
+"shape": [
+2,
+512
+]
+},
+"action_net.bias": {
+"sha256": "c1715673dd9d1cf6458b6cc75fb1e0c94ecdfd67968b5ce2c5f8aa42c4d6c532",
+"sum": 0.007804653607308865,
+"shape": [
+2
+]
+},
+"value_net.weight": {
+"sha256": "3b835f15685c1f9cdb7965900b16c332d4bb7931dae16657daffb7074778a7a7",
+"sum": -1.1957623303242144,
+"shape": [
+1,
+512
+]
+},
+"value_net.bias": {
+"sha256": "6407f843e5892519d30e29178da55697e4452a1d59385271f5c1343ff7620169",
+"sum": 0.0,
+"shape": [
+1
+]
+},
+"obs_rms_mean": {
+"sha256": "786ddd7f7ca892cd5166125bd8491c1901f4ea6054e8c9bba1a9ffd6c6aec61c",
+"sum": 406.02774768808615,
+"shape": [
+116
+]
+},
+"obs_rms_var": {
+"sha256": "3bab9419845eaab3bb3810e473a1df573609d033ba2848393518810bc9137dfd",
+"sum": 649.5096196996047,
+"shape": [
+116
+]
+},
+"obs_rms_count": {
+"sha256": "c38122755abb79d2486b1c5455029828804bcd5407dbc74d88a8884805e39a1b",
+"sum": 5000.0001,
+"shape": []
+}
+}

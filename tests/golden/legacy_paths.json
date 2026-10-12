@@ -1,0 +1,246 @@
+[
+ {
+  "legacy": "artifacts/tracks/Monza_raw.csv",
+  "new": "data/tracks/monza/tum_centerline.csv"
+ },
+ {
+  "legacy": "artifacts/tracks/monza_reference.npz",
+  "new": "data/tracks/monza/reference.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/monza_raceline_time_optimal.npz",
+  "new": "data/tracks/monza/time_optimal_line.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/monza_raceline_axle_limited_rear65_dr_gate15.npz",
+  "new": "data/tracks/monza/speed_profile_probed.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/monza_raceline_axle_limited_recovery083.npz",
+  "new": "data/tracks/monza/racing_line_R0.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/monza_raceline_axle_limited_recovery083_R1.npz",
+  "new": "data/tracks/monza/racing_line_R1.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/spa_raw.csv",
+  "new": "data/tracks/spa/tum_centerline.csv"
+ },
+ {
+  "legacy": "artifacts/tracks/spa_reference.npz",
+  "new": "data/tracks/spa/reference.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/spa_merged.npz",
+  "new": "data/tracks/spa/minimum_curvature_line.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/spa_raceline_axle_limited_best_complete.npz",
+  "new": "data/tracks/spa/speed_profile_probed.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/spa_raceline_axle_limited.json",
+  "new": "data/tracks/spa/speed_profile_probe_log.json"
+ },
+ {
+  "legacy": "artifacts/tracks/spa_raceline_axle_limited_robust.npz",
+  "new": "data/tracks/spa/racing_line_R0.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/spa_raceline_axle_limited_robust_R1.npz",
+  "new": "data/tracks/spa/racing_line_R1.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/catalunya_raw.csv",
+  "new": "data/tracks/catalunya/tum_centerline.csv"
+ },
+ {
+  "legacy": "artifacts/tracks/catalunya_reference.npz",
+  "new": "data/tracks/catalunya/reference.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/catalunya_merged.npz",
+  "new": "data/tracks/catalunya/minimum_curvature_line.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/catalunya_raceline_axle_limited_best_complete.npz",
+  "new": "data/tracks/catalunya/speed_profile_probed.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/catalunya_raceline_axle_limited.json",
+  "new": "data/tracks/catalunya/speed_profile_probe_log.json"
+ },
+ {
+  "legacy": "artifacts/tracks/catalunya_raceline_axle_limited_robust.npz",
+  "new": "data/tracks/catalunya/racing_line_R0.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/catalunya_raceline_axle_limited_robust_R1.npz",
+  "new": "data/tracks/catalunya/racing_line_R1.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/budapest_raw.csv",
+  "new": "data/tracks/budapest/tum_centerline.csv"
+ },
+ {
+  "legacy": "artifacts/tracks/budapest_reference.npz",
+  "new": "data/tracks/budapest/reference.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/budapest_merged.npz",
+  "new": "data/tracks/budapest/minimum_curvature_line.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/budapest_raceline_axle_limited_best_complete.npz",
+  "new": "data/tracks/budapest/speed_profile_probed.npz"
+ },
+ {
+  "legacy": "artifacts/tracks/budapest_raceline_axle_limited.json",
+  "new": "data/tracks/budapest/speed_profile_probe_log.json"
+ },
+ {
+  "legacy": "artifacts/tracks/budapest_raceline_axle_limited_robust.npz",
+  "new": "data/tracks/budapest/racing_line_R0.npz"
+ },
+ {
+  "legacy": "artifacts/presentation/evidence_hardening/protocol.json",
+  "new": "data/protocols/monza_R0.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/monza_kink_step3c/protocol_monza_R1.json",
+  "new": "data/protocols/monza_R1.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/final_policy_cross_circuit/protocol.json",
+  "new": "data/protocols/spa_R0.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/final_policy_cross_circuit/protocol.json",
+  "new": "data/protocols/catalunya_R0.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/final_policy_cross_circuit/protocol.json",
+  "new": "data/protocols/budapest_R0.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/raceline_repair_step3b/protocol_v2.json",
+  "new": "data/protocols/spa_R1.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/raceline_repair_step3b/protocol_v2.json",
+  "new": "data/protocols/catalunya_R1.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/lateral_decoupled/global_bc_A/pure_bc_policy.zip",
+  "new": "models/treatment_a/policy.zip"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/lateral_decoupled/global_bc_A/vecnormalize.pkl",
+  "new": "models/treatment_a/vecnormalize.pkl"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/lateral_decoupled/global_bc_A/bc_gate.json",
+  "new": "models/treatment_a/gate.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/lateral_decoupled/global_bc_A/bc_training.json",
+  "new": "models/treatment_a/training.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/ALL4/pure_bc_policy.zip",
+  "new": "models/all4/policy.zip"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/ALL4/vecnormalize.pkl",
+  "new": "models/all4/vecnormalize.pkl"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/ALL4/bc_gate.json",
+  "new": "models/all4/gate.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/ALL4/bc_training.json",
+  "new": "models/all4/training.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_spa/pure_bc_policy.zip",
+  "new": "models/loco_spa/policy.zip"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_spa/vecnormalize.pkl",
+  "new": "models/loco_spa/vecnormalize.pkl"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_spa/bc_gate.json",
+  "new": "models/loco_spa/gate.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_spa/bc_training.json",
+  "new": "models/loco_spa/training.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_catalunya/pure_bc_policy.zip",
+  "new": "models/loco_catalunya/policy.zip"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_catalunya/vecnormalize.pkl",
+  "new": "models/loco_catalunya/vecnormalize.pkl"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_catalunya/bc_gate.json",
+  "new": "models/loco_catalunya/gate.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_catalunya/bc_training.json",
+  "new": "models/loco_catalunya/training.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_budapest/pure_bc_policy.zip",
+  "new": "models/loco_budapest/policy.zip"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_budapest/vecnormalize.pkl",
+  "new": "models/loco_budapest/vecnormalize.pkl"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_budapest/bc_gate.json",
+  "new": "models/loco_budapest/gate.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_budapest/bc_training.json",
+  "new": "models/loco_budapest/training.json"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/rl_pace_pilot/train/checkpoints/oracle_ppo_200000_steps.zip",
+  "new": "models/ppo_pilot_all4_monza/policy.zip"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/rl_pace_pilot/train/checkpoints/oracle_ppo_200000_steps_vecnormalize.pkl",
+  "new": "models/ppo_pilot_all4_monza/vecnormalize.pkl"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/lateral_decoupled/data/arm_A.npz",
+  "new": "datasets/treatment_a.npz"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/ALL4/dataset.npz",
+  "new": "datasets/all4.npz"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_spa/dataset.npz",
+  "new": "datasets/loco_spa.npz"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_catalunya/dataset.npz",
+  "new": "datasets/loco_catalunya.npz"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/multicircuit_step2/models/LOCO_budapest/dataset.npz",
+  "new": "datasets/loco_budapest.npz"
+ },
+ {
+  "legacy": "artifacts/limite_dinamico/faster_teacher_policy/data/mat_teacher_20laps.npz",
+  "new": "datasets/clean_laps_monza.npz"
+ }
+]

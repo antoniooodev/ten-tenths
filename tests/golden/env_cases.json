@@ -1,0 +1,65 @@
+{
+ "env_monza_R0_mu1.0_s42": {
+  "line": "monza_R0",
+  "raceline": "artifacts/tracks/monza_raceline_axle_limited_recovery083.npz",
+  "mu": 1.0,
+  "seed": 42,
+  "start_s": 935.3583380093115,
+  "start_vx": 6.249634915864795,
+  "steps": 1500
+ },
+ "env_monza_R1_mu0.8_s43": {
+  "line": "monza_R1",
+  "raceline": "artifacts/tracks/monza_raceline_axle_limited_recovery083_R1.npz",
+  "mu": 0.8,
+  "seed": 43,
+  "start_s": 935.6308095433574,
+  "start_vx": 5.589843402571944,
+  "steps": 1500
+ },
+ "env_spa_R0_mu1.1_s44": {
+  "line": "spa_R0",
+  "raceline": "artifacts/tracks/spa_raceline_axle_limited_robust.npz",
+  "mu": 1.1,
+  "seed": 44,
+  "start_s": 399.95880475939595,
+  "start_vx": 5.409378816286555,
+  "steps": 1500
+ },
+ "env_spa_R1_mu0.9_s45": {
+  "line": "spa_R1",
+  "raceline": "artifacts/tracks/spa_raceline_axle_limited_robust_R1.npz",
+  "mu": 0.9,
+  "seed": 45,
+  "start_s": 400.7659673967595,
+  "start_vx": 4.892967240687091,
+  "steps": 1500
+ },
+ "env_catalunya_R0_mu1.2_s42": {
+  "line": "catalunya_R0",
+  "raceline": "artifacts/tracks/catalunya_raceline_axle_limited_robust.npz",
+  "mu": 1.2,
+  "seed": 42,
+  "start_s": 3452.788599088519,
+  "start_vx": 5.503152343680299,
+  "steps": 1500
+ },
+ "env_catalunya_R1_mu1.0_s42": {
+  "line": "catalunya_R1",
+  "raceline": "artifacts/tracks/catalunya_raceline_axle_limited_robust_R1.npz",
+  "mu": 1.0,
+  "seed": 42,
+  "start_s": 3453.5952926064374,
+  "start_vx": 5.023667793368538,
+  "steps": 1500
+ },
+ "env_budapest_R0_mu0.85_s43": {
+  "line": "budapest_R0",
+  "raceline": "artifacts/tracks/budapest_raceline_axle_limited_robust.npz",
+  "mu": 0.85,
+  "seed": 43,
+  "start_s": 637.1442929834327,
+  "start_vx": 6.777371280977834,
+  "steps": 1500
+ }
+}

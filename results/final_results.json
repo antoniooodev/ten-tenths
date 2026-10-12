@@ -1,0 +1,5810 @@
+{
+ "description": "Robustness and lap time of the final policies and the teacher on the frozen protocols (396 episodes per circuit and racing line); rules in evaluation/analysis.py.",
+ "results": [
+  {
+   "agent": "all4",
+   "circuit": "budapest",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 322,
+     "n": 396,
+     "rate": 0.8131313131313131,
+     "wilson95": [
+      0.7717967976285527,
+      0.8484490386373003
+     ]
+    },
+    "completed": {
+     "k": 322,
+     "n": 396,
+     "rate": 0.8131313131313131,
+     "wilson95": [
+      0.7717967976285527,
+      0.8484490386373003
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 18,
+       "n": 20,
+       "rate": 0.9,
+       "wilson95": [
+        0.6989663547715128,
+        0.9721335187862319
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 32,
+       "n": 40,
+       "rate": 0.8,
+       "wilson95": [
+        0.652426936536005,
+        0.895000102745623
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 48,
+       "n": 64,
+       "rate": 0.75,
+       "wilson95": [
+        0.631837235413303,
+        0.8398507346902941
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 208,
+       "n": 256,
+       "rate": 0.8125,
+       "wilson95": [
+        0.7601980554703877,
+        0.8555620342634428
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 322,
+     "slip_saturation": 74
+    },
+    "lap_time_robust": {
+     "n": 322,
+     "mean": 158.6042857142857,
+     "median": 158.84,
+     "sd": 10.57834631967223
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 313,
+    "student_mean": 158.84124600638978,
+    "teacher_mean": 158.6667412140575,
+    "ratio_mean": 1.0010714013083692,
+    "ratio_of_means": 1.0010998196030059,
+    "diff_s_min_max": [
+     -0.4199999999999875,
+     0.6299999999999955
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 313,
+    "student_only": 9,
+    "teacher_only": 1,
+    "neither": 73,
+    "student_progress_median_m": 4316.350685254385,
+    "teacher_progress_median_m": 4316.340848827886,
+    "student_fails_before_teacher": 61,
+    "student_fails_after_teacher": 20
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 74
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.5424472539536063,
+    "frac_overspeed_median": 0.00920971561481557,
+    "speed_error_mean_mps_median": -1.477302140224714,
+    "ey_rms_m_median": 0.21204923210267212,
+    "rear_slip_ratio_p99_median": 0.5420388517580496,
+    "teacher_tau_mae_median": 0.0075922819403377965,
+    "teacher_delta_mae_median": 0.0013998094787948383
+   }
+  },
+  {
+   "agent": "all4",
+   "circuit": "catalunya",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 161.64886363636367,
+     "median": 160.485,
+     "sd": 11.4249010508566
+    }
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 396,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 4569.7959767264565,
+    "teacher_progress_median_m": 1513.9269130633083,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 396
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.1929197862353824,
+    "frac_overspeed_median": 0.022204697054785817,
+    "speed_error_mean_mps_median": -1.1418756734713837,
+    "ey_rms_m_median": 0.22937790561560534,
+    "rear_slip_ratio_p99_median": 0.5387419785524492,
+    "teacher_tau_mae_median": 0.007334431414677349,
+    "teacher_delta_mae_median": 0.002065726449026759
+   }
+  },
+  {
+   "agent": "all4",
+   "circuit": "catalunya",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 161.2839898989899,
+     "median": 160.27,
+     "sd": 11.334276868934772
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 161.2839898989899,
+    "teacher_mean": 161.30161616161618,
+    "ratio_mean": 0.9999178733432683,
+    "ratio_of_means": 0.999890724823187,
+    "diff_s_min_max": [
+     -0.46000000000000796,
+     0.5
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 4571.536125605045,
+    "teacher_progress_median_m": 4571.512667418512,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.1771305777119194,
+    "frac_overspeed_median": 0.02678263441576136,
+    "speed_error_mean_mps_median": -1.1112079041205036,
+    "ey_rms_m_median": 0.2211087461130577,
+    "rear_slip_ratio_p99_median": 0.5035029116809673,
+    "teacher_tau_mae_median": 0.009969633886345797,
+    "teacher_delta_mae_median": 0.0013708140039409384
+   }
+  },
+  {
+   "agent": "all4",
+   "circuit": "monza",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.64449494949494,
+     "median": 156.28,
+     "sd": 11.172151476105116
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.64449494949494,
+    "teacher_mean": 157.55012626262624,
+    "ratio_mean": 1.0006107710376237,
+    "ratio_of_means": 1.0005989756346587,
+    "diff_s_min_max": [
+     -0.19999999999998863,
+     0.47999999999998977
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.505387341631,
+    "teacher_progress_median_m": 5758.512100978206,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.7010412226651129,
+    "frac_overspeed_median": 0.016631926538281085,
+    "speed_error_mean_mps_median": -0.6608434377582184,
+    "ey_rms_m_median": 0.23933159199384865,
+    "rear_slip_ratio_p99_median": 0.41067032512116386,
+    "teacher_tau_mae_median": 0.00662308163968928,
+    "teacher_delta_mae_median": 0.0010960670398026799
+   }
+  },
+  {
+   "agent": "all4",
+   "circuit": "monza",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.65244949494948,
+     "median": 156.305,
+     "sd": 11.176996123253105
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.65244949494948,
+    "teacher_mean": 157.5573484848485,
+    "ratio_mean": 1.0006119939188114,
+    "ratio_of_means": 1.0006035961573074,
+    "diff_s_min_max": [
+     -0.18999999999999773,
+     0.47999999999998977
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.993276484529,
+    "teacher_progress_median_m": 5758.967812304292,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.700498032850406,
+    "frac_overspeed_median": 0.01706899318023406,
+    "speed_error_mean_mps_median": -0.6581196671657439,
+    "ey_rms_m_median": 0.2377788999324545,
+    "rear_slip_ratio_p99_median": 0.3989097019838592,
+    "teacher_tau_mae_median": 0.007061218924086862,
+    "teacher_delta_mae_median": 0.0011422886419674852
+   }
+  },
+  {
+   "agent": "all4",
+   "circuit": "spa",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 364,
+     "n": 396,
+     "rate": 0.9191919191919192,
+     "wilson95": [
+      0.8881489353404992,
+      0.9421801680476587
+     ]
+    },
+    "completed": {
+     "k": 364,
+     "n": 396,
+     "rate": 0.9191919191919192,
+     "wilson95": [
+      0.8881489353404992,
+      0.9421801680476587
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 48,
+       "n": 64,
+       "rate": 0.75,
+       "wilson95": [
+        0.631837235413303,
+        0.8398507346902941
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 240,
+       "n": 256,
+       "rate": 0.9375,
+       "wilson95": [
+        0.9008977667558741,
+        0.9611663588714884
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 364,
+     "slip_saturation": 32
+    },
+    "lap_time_robust": {
+     "n": 364,
+     "mean": 206.407032967033,
+     "median": 201.79,
+     "sd": 14.280659327982214
+    }
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 364,
+    "teacher_only": 0,
+    "neither": 32,
+    "student_progress_median_m": 6937.579865282982,
+    "teacher_progress_median_m": 3844.576288816155,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 396
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 32
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.3289815863466852,
+    "frac_overspeed_median": 0.023768204506713925,
+    "speed_error_mean_mps_median": -1.278707907336075,
+    "ey_rms_m_median": 0.33010451535775975,
+    "rear_slip_ratio_p99_median": 0.5612278352614267,
+    "teacher_tau_mae_median": 0.007351565803156011,
+    "teacher_delta_mae_median": 0.00204857934035254
+   }
+  },
+  {
+   "agent": "all4",
+   "circuit": "spa",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 207.5999494949495,
+     "median": 206.555,
+     "sd": 14.755793112441959
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 386,
+    "student_mean": 208.0643005181347,
+    "teacher_mean": 208.04215025906737,
+    "ratio_mean": 1.0001202529261912,
+    "ratio_of_means": 1.0001064700544564,
+    "diff_s_min_max": [
+     -0.37000000000000455,
+     0.7599999999999909
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 386,
+    "student_only": 10,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 6940.772982182842,
+    "teacher_progress_median_m": 6940.761821191647,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 10
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.3307665173162633,
+    "frac_overspeed_median": 0.02458875808358161,
+    "speed_error_mean_mps_median": -1.2664338604799656,
+    "ey_rms_m_median": 0.31808988787760745,
+    "rear_slip_ratio_p99_median": 0.4955484636752925,
+    "teacher_tau_mae_median": 0.010169068495013199,
+    "teacher_delta_mae_median": 0.001487113298725425
+   }
+  },
+  {
+   "agent": "loco_budapest",
+   "circuit": "budapest",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 350,
+     "n": 396,
+     "rate": 0.8838383838383839,
+     "wilson95": [
+      0.848528240220605,
+      0.911773107460118
+     ]
+    },
+    "completed": {
+     "k": 369,
+     "n": 396,
+     "rate": 0.9318181818181818,
+     "wilson95": [
+      0.9026175123843074,
+      0.9527215037565058
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 19,
+       "n": 20,
+       "rate": 0.95,
+       "wilson95": [
+        0.763868806553258,
+        0.9911185511992047
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 34,
+       "n": 40,
+       "rate": 0.85,
+       "wilson95": [
+        0.709276756335103,
+        0.9293881228267964
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 56,
+       "n": 64,
+       "rate": 0.875,
+       "wilson95": [
+        0.7722543817887005,
+        0.9352775733666955
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 225,
+       "n": 256,
+       "rate": 0.87890625,
+       "wilson95": [
+        0.8332442794764335,
+        0.9133648293258357
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 369,
+     "slip_saturation": 27
+    },
+    "lap_time_robust": {
+     "n": 350,
+     "mean": 157.78705714285715,
+     "median": 158.485,
+     "sd": 10.737091759518156
+    },
+    "empty_safe_set_episodes": 46,
+    "empty_safe_set_steps": 2089,
+    "projected_steps": 5126,
+    "projected_fraction": 0.000852357993682973,
+    "episodes_with_projection": 46
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 313,
+    "student_mean": 159.01485623003194,
+    "teacher_mean": 158.6668051118211,
+    "ratio_mean": 1.0021815370756553,
+    "ratio_of_means": 1.0021935975704908,
+    "diff_s_min_max": [
+     -0.19999999999998863,
+     0.9699999999999989
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 313,
+    "student_only": 37,
+    "teacher_only": 0,
+    "neither": 46,
+    "student_progress_median_m": 4316.353314499009,
+    "teacher_progress_median_m": 4316.346324372076,
+    "student_fails_before_teacher": 12,
+    "student_fails_after_teacher": 45
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 27,
+    "completed": 19
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.5810844144004843,
+    "frac_overspeed_median": 0.01936567635781873,
+    "speed_error_mean_mps_median": -1.4897159036877714,
+    "ey_rms_m_median": 0.21479870618063696,
+    "rear_slip_ratio_p99_median": 0.5684389927894686,
+    "teacher_tau_mae_median": 0.018861177466608606,
+    "teacher_delta_mae_median": 0.0027295606614283685
+   }
+  },
+  {
+   "agent": "loco_budapest",
+   "circuit": "budapest",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 357,
+     "n": 396,
+     "rate": 0.9015151515151515,
+     "wilson95": [
+      0.8681977400748181,
+      0.9271174854596221
+     ]
+    },
+    "completed": {
+     "k": 357,
+     "n": 396,
+     "rate": 0.9015151515151515,
+     "wilson95": [
+      0.8681977400748181,
+      0.9271174854596221
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 19,
+       "n": 20,
+       "rate": 0.95,
+       "wilson95": [
+        0.763868806553258,
+        0.9911185511992047
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 34,
+       "n": 40,
+       "rate": 0.85,
+       "wilson95": [
+        0.709276756335103,
+        0.9293881228267964
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 56,
+       "n": 64,
+       "rate": 0.875,
+       "wilson95": [
+        0.7722543817887005,
+        0.9352775733666955
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 232,
+       "n": 256,
+       "rate": 0.90625,
+       "wilson95": [
+        0.8642979648370562,
+        0.9361901518169232
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 357,
+     "slip_saturation": 39
+    },
+    "lap_time_robust": {
+     "n": 357,
+     "mean": 157.4969467787115,
+     "median": 158.47,
+     "sd": 10.827693760377038
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 314,
+    "student_mean": 158.9579617834395,
+    "teacher_mean": 158.607770700637,
+    "ratio_mean": 1.0021977062838532,
+    "ratio_of_means": 1.0022079062157898,
+    "diff_s_min_max": [
+     -0.19999999999998863,
+     1.0
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 314,
+    "student_only": 43,
+    "teacher_only": 0,
+    "neither": 39,
+    "student_progress_median_m": 4316.349755026291,
+    "teacher_progress_median_m": 4316.340848827886,
+    "student_fails_before_teacher": 1,
+    "student_fails_after_teacher": 57
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 39
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.578835982321332,
+    "frac_overspeed_median": 0.01936567635781873,
+    "speed_error_mean_mps_median": -1.4961192892949022,
+    "ey_rms_m_median": 0.21269226908160005,
+    "rear_slip_ratio_p99_median": 0.5684389927894686,
+    "teacher_tau_mae_median": 0.01885854442093438,
+    "teacher_delta_mae_median": 0.0026977869327808163
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 12,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 0.00048828125,
+    "p_proj": 0.000852357993682973,
+    "classification": "FILTER-ASSISTED",
+    "robust_twins_differ": 7
+   }
+  },
+  {
+   "agent": "loco_budapest",
+   "circuit": "monza",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.86962121212125,
+     "median": 156.515,
+     "sd": 11.226198184556575
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.86962121212125,
+    "teacher_mean": 157.55012626262626,
+    "ratio_mean": 1.0020223338383845,
+    "ratio_of_means": 1.0020278939603158,
+    "diff_s_min_max": [
+     -0.09000000000000341,
+     0.8300000000000125
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.520707941629,
+    "teacher_progress_median_m": 5758.512100978206,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.7670205740961806,
+    "frac_overspeed_median": 0.015426485865766806,
+    "speed_error_mean_mps_median": -0.7344316111492029,
+    "ey_rms_m_median": 0.22936300032082416,
+    "rear_slip_ratio_p99_median": 0.40105972560938047,
+    "teacher_tau_mae_median": 0.007400830703525519,
+    "teacher_delta_mae_median": 0.0010502822972073217
+   }
+  },
+  {
+   "agent": "loco_catalunya",
+   "circuit": "catalunya",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 305,
+     "n": 396,
+     "rate": 0.7702020202020202,
+     "wilson95": [
+      0.7262881432559425,
+      0.8089239896508822
+     ]
+    },
+    "completed": {
+     "k": 374,
+     "n": 396,
+     "rate": 0.9444444444444444,
+     "wilson95": [
+      0.9173199771407011,
+      0.9630289517527674
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 16,
+       "n": 20,
+       "rate": 0.8,
+       "wilson95": [
+        0.5839825677481064,
+        0.919342337420202
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 39,
+       "n": 40,
+       "rate": 0.975,
+       "wilson95": [
+        0.8711863103652591,
+        0.9955731684973186
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 13,
+       "n": 16,
+       "rate": 0.8125,
+       "wilson95": [
+        0.5699111903802586,
+        0.9340840092857187
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 30,
+       "n": 64,
+       "rate": 0.46875,
+       "wilson95": [
+        0.35175987425176036,
+        0.5892791294852899
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 207,
+       "n": 256,
+       "rate": 0.80859375,
+       "wilson95": [
+        0.7559804291899548,
+        0.8520826594222026
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 374,
+     "slip_saturation": 22
+    },
+    "lap_time_robust": {
+     "n": 305,
+     "mean": 158.93445901639348,
+     "median": 157.65,
+     "sd": 9.579994769759056
+    },
+    "empty_safe_set_episodes": 91,
+    "empty_safe_set_steps": 1720,
+    "projected_steps": 41983,
+    "projected_fraction": 0.006700103079736541,
+    "episodes_with_projection": 396
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 305,
+    "student_mean": 158.93445901639348,
+    "teacher_mean": 157.56219672131147,
+    "ratio_mean": 1.0086977438017066,
+    "ratio_of_means": 1.0087093371610527,
+    "diff_s_min_max": [
+     0.12000000000000455,
+     2.5600000000000023
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 305,
+    "student_only": 0,
+    "teacher_only": 91,
+    "neither": 0,
+    "student_progress_median_m": 4569.78250347888,
+    "teacher_progress_median_m": 4569.793659774588,
+    "student_fails_before_teacher": 22,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "completed": 69,
+    "lateral/yaw: slip without overspeed": 22
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.3547108641977366,
+    "frac_overspeed_median": 0.0329375153401326,
+    "speed_error_mean_mps_median": -1.250604983277606,
+    "ey_rms_m_median": 0.653876158050205,
+    "rear_slip_ratio_p99_median": 0.5289440896389143,
+    "teacher_tau_mae_median": 0.034251352455556563,
+    "teacher_delta_mae_median": 0.013889204830027382
+   }
+  },
+  {
+   "agent": "loco_catalunya",
+   "circuit": "catalunya",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 1,
+     "n": 396,
+     "rate": 0.0025252525252525255,
+     "wilson95": [
+      0.0004459082479276793,
+      0.014163529297451235
+     ]
+    },
+    "completed": {
+     "k": 1,
+     "n": 396,
+     "rate": 0.0025252525252525255,
+     "wilson95": [
+      0.0004459082479276793,
+      0.014163529297451235
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 1,
+       "n": 40,
+       "rate": 0.025,
+       "wilson95": [
+        0.0044268315026814095,
+        0.1288136896347409
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 282,
+     "completed": 1,
+     "track_excursion": 113
+    },
+    "lap_time_robust": {
+     "n": 1,
+     "mean": 146.4,
+     "median": 146.4,
+     "sd": 0.0
+    }
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 1,
+    "teacher_only": 0,
+    "neither": 395,
+    "student_progress_median_m": 1529.099264383214,
+    "teacher_progress_median_m": 1513.9269130633083,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 391
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 260,
+    "lateral: track excursion": 113,
+    "lateral/yaw: slip without overspeed": 22
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.4347945703371474,
+    "frac_overspeed_median": 0.031500212101839994,
+    "speed_error_mean_mps_median": -1.3279578808727432,
+    "ey_rms_m_median": 0.6184257365065413,
+    "rear_slip_ratio_p99_median": 0.5081584212596222,
+    "teacher_tau_mae_median": 0.04248939724882682,
+    "teacher_delta_mae_median": 0.01924956228206405
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 373,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.03954097656449e-112,
+    "p_proj": 0.006700103079736541,
+    "classification": "FILTER-DEPENDENT",
+    "robust_twins_differ": 304
+   }
+  },
+  {
+   "agent": "loco_catalunya",
+   "circuit": "catalunya",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 161.03727272727275,
+     "median": 160.3,
+     "sd": 11.448285621978235
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 161.03727272727275,
+    "teacher_mean": 161.30161616161618,
+    "ratio_mean": 0.9983310639830267,
+    "ratio_of_means": 0.9983611854571961,
+    "diff_s_min_max": [
+     -0.6999999999999886,
+     0.3300000000000125
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 4571.512326998038,
+    "teacher_progress_median_m": 4571.512667418512,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.2203618006731585,
+    "frac_overspeed_median": 0.03715411380658071,
+    "speed_error_mean_mps_median": -1.0881365579486117,
+    "ey_rms_m_median": 0.22512836389538252,
+    "rear_slip_ratio_p99_median": 0.48585531510796914,
+    "teacher_tau_mae_median": 0.03061694006724243,
+    "teacher_delta_mae_median": 0.0033671426571533743
+   }
+  },
+  {
+   "agent": "loco_catalunya",
+   "circuit": "monza",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.55310606060607,
+     "median": 156.255,
+     "sd": 11.21076106897675
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.55310606060607,
+    "teacher_mean": 157.55012626262626,
+    "ratio_mean": 1.0000104784396007,
+    "ratio_of_means": 1.0000189133328579,
+    "diff_s_min_max": [
+     -0.5300000000000011,
+     0.3900000000000148
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.514072556811,
+    "teacher_progress_median_m": 5758.512100978206,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.7055723302667913,
+    "frac_overspeed_median": 0.014297534845714362,
+    "speed_error_mean_mps_median": -0.6610036411452942,
+    "ey_rms_m_median": 0.24621223348729326,
+    "rear_slip_ratio_p99_median": 0.4123375909904858,
+    "teacher_tau_mae_median": 0.010014061935739796,
+    "teacher_delta_mae_median": 0.00170777122775031
+   }
+  },
+  {
+   "agent": "loco_spa",
+   "circuit": "monza",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.84623737373738,
+     "median": 156.41000000000003,
+     "sd": 11.235956894087371
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.84623737373738,
+    "teacher_mean": 157.55012626262626,
+    "ratio_mean": 1.0018694659093303,
+    "ratio_of_means": 1.0018794723821263,
+    "diff_s_min_max": [
+     -0.06999999999999318,
+     0.8199999999999932
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.506056767143,
+    "teacher_progress_median_m": 5758.512100978206,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.7520299857634557,
+    "frac_overspeed_median": 0.01575885800709835,
+    "speed_error_mean_mps_median": -0.7152509899265995,
+    "ey_rms_m_median": 0.23651108694349918,
+    "rear_slip_ratio_p99_median": 0.40100580936174424,
+    "teacher_tau_mae_median": 0.008816017316618689,
+    "teacher_delta_mae_median": 0.001294997054494006
+   }
+  },
+  {
+   "agent": "loco_spa",
+   "circuit": "monza",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.81873737373738,
+     "median": 156.4,
+     "sd": 11.234585948743888
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.81873737373738,
+    "teacher_mean": 157.5573484848485,
+    "ratio_mean": 1.001647266943887,
+    "ratio_of_means": 1.0016590079193546,
+    "diff_s_min_max": [
+     -0.09000000000000341,
+     0.7599999999999909
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.970668151425,
+    "teacher_progress_median_m": 5758.967812304292,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.7521002171521654,
+    "frac_overspeed_median": 0.017000483083605914,
+    "speed_error_mean_mps_median": -0.7107031581902026,
+    "ey_rms_m_median": 0.23507180545508755,
+    "rear_slip_ratio_p99_median": 0.39499101925969454,
+    "teacher_tau_mae_median": 0.009509214590031578,
+    "teacher_delta_mae_median": 0.0014060085071854363
+   }
+  },
+  {
+   "agent": "loco_spa",
+   "circuit": "spa",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 1,
+     "n": 396,
+     "rate": 0.0025252525252525255,
+     "wilson95": [
+      0.0004459082479276793,
+      0.014163529297451235
+     ]
+    },
+    "completed": {
+     "k": 372,
+     "n": 396,
+     "rate": 0.9393939393939394,
+     "wilson95": [
+      0.9114069267332626,
+      0.9589380370591439
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 1,
+       "n": 40,
+       "rate": 0.025,
+       "wilson95": [
+        0.0044268315026814095,
+        0.1288136896347409
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 372,
+     "track_excursion": 24
+    },
+    "lap_time_robust": {
+     "n": 1,
+     "mean": 186.31,
+     "median": 186.31,
+     "sd": 0.0
+    },
+    "empty_safe_set_episodes": 395,
+    "empty_safe_set_steps": 19091,
+    "projected_steps": 31881,
+    "projected_fraction": 0.003972265782595293,
+    "episodes_with_projection": 395
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 1,
+    "teacher_only": 386,
+    "neither": 9,
+    "student_progress_median_m": 6937.609874654016,
+    "teacher_progress_median_m": 6937.617898985715,
+    "student_fails_before_teacher": 24,
+    "student_fails_after_teacher": 10
+   },
+   "failure_mechanisms": {
+    "completed": 371,
+    "lateral: track excursion": 24
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.484356663911612,
+    "frac_overspeed_median": 0.022569216653780085,
+    "speed_error_mean_mps_median": -1.4028543435666614,
+    "ey_rms_m_median": 0.5616258716577637,
+    "rear_slip_ratio_p99_median": 0.5088171007792501,
+    "teacher_tau_mae_median": 0.02506820150192221,
+    "teacher_delta_mae_median": 0.008834770240881917
+   }
+  },
+  {
+   "agent": "loco_spa",
+   "circuit": "spa",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 76,
+     "n": 396,
+     "rate": 0.1919191919191919,
+     "wilson95": [
+      0.15616544042305108,
+      0.23359268841215813
+     ]
+    },
+    "completed": {
+     "k": 76,
+     "n": 396,
+     "rate": 0.1919191919191919,
+     "wilson95": [
+      0.15616544042305108,
+      0.23359268841215813
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 76,
+     "track_excursion": 320
+    },
+    "lap_time_robust": {
+     "n": 76,
+     "mean": 208.50907894736844,
+     "median": 206.89000000000001,
+     "sd": 15.068905129670753
+    }
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 76,
+    "teacher_only": 0,
+    "neither": 320,
+    "student_progress_median_m": 3856.196651438983,
+    "teacher_progress_median_m": 3844.576288816155,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 396
+   },
+   "failure_mechanisms": {
+    "lateral: track excursion": 320
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.349527929273025,
+    "frac_overspeed_median": 0.03777287233893381,
+    "speed_error_mean_mps_median": -1.245715407477127,
+    "ey_rms_m_median": 0.4328237368243009,
+    "rear_slip_ratio_p99_median": 0.5393438345938373,
+    "teacher_tau_mae_median": 0.028871213236217323,
+    "teacher_delta_mae_median": 0.00907859986934503
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 296,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.5709099088952725e-89,
+    "p_proj": 0.003972265782595293,
+    "classification": "FILTER-DEPENDENT",
+    "robust_twins_differ": 75
+   }
+  },
+  {
+   "agent": "loco_spa",
+   "circuit": "spa",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 395,
+     "n": 396,
+     "rate": 0.9974747474747475,
+     "wilson95": [
+      0.9858364707025488,
+      0.9995540917520723
+     ]
+    },
+    "completed": {
+     "k": 395,
+     "n": 396,
+     "rate": 0.9974747474747475,
+     "wilson95": [
+      0.9858364707025488,
+      0.9995540917520723
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 39,
+       "n": 40,
+       "rate": 0.975,
+       "wilson95": [
+        0.8711863103652591,
+        0.9955731684973186
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 395,
+     "slip_saturation": 1
+    },
+    "lap_time_robust": {
+     "n": 395,
+     "mean": 207.60245569620253,
+     "median": 206.47,
+     "sd": 14.642056916850205
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 386,
+    "student_mean": 208.0106994818653,
+    "teacher_mean": 208.04215025906734,
+    "ratio_mean": 0.9998911620824745,
+    "ratio_of_means": 0.9998488249753096,
+    "diff_s_min_max": [
+     -0.8900000000000148,
+     0.7400000000000091
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 386,
+    "student_only": 9,
+    "teacher_only": 0,
+    "neither": 1,
+    "student_progress_median_m": 6940.773737739919,
+    "teacher_progress_median_m": 6940.761821191647,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 10
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 1
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.3483893589855103,
+    "frac_overspeed_median": 0.02513165843567206,
+    "speed_error_mean_mps_median": -1.2661021472940084,
+    "ey_rms_m_median": 0.3050222814370107,
+    "rear_slip_ratio_p99_median": 0.49975195136447137,
+    "teacher_tau_mae_median": 0.023586263240104384,
+    "teacher_delta_mae_median": 0.0027676551211369095
+   }
+  },
+  {
+   "agent": "ppo_pilot_all4_monza",
+   "circuit": "budapest",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 320,
+     "n": 396,
+     "rate": 0.8080808080808081,
+     "wilson95": [
+      0.7664073115878419,
+      0.8438345595769489
+     ]
+    },
+    "completed": {
+     "k": 320,
+     "n": 396,
+     "rate": 0.8080808080808081,
+     "wilson95": [
+      0.7664073115878419,
+      0.8438345595769489
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 18,
+       "n": 20,
+       "rate": 0.9,
+       "wilson95": [
+        0.6989663547715128,
+        0.9721335187862319
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 31,
+       "n": 40,
+       "rate": 0.775,
+       "wilson95": [
+        0.6249690325768998,
+        0.8768390867645927
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 15,
+       "n": 16,
+       "rate": 0.9375,
+       "wilson95": [
+        0.7167126242970107,
+        0.9888806552353576
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 48,
+       "n": 64,
+       "rate": 0.75,
+       "wilson95": [
+        0.631837235413303,
+        0.8398507346902941
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 208,
+       "n": 256,
+       "rate": 0.8125,
+       "wilson95": [
+        0.7601980554703877,
+        0.8555620342634428
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 320,
+     "slip_saturation": 76
+    },
+    "lap_time_robust": {
+     "n": 320,
+     "mean": 158.59728125,
+     "median": 158.845,
+     "sd": 10.532489804792055
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 311,
+    "student_mean": 158.8383279742765,
+    "teacher_mean": 158.77109324758842,
+    "ratio_mean": 1.0003925824685291,
+    "ratio_of_means": 1.0004234695706429,
+    "diff_s_min_max": [
+     -0.3900000000000148,
+     0.46999999999999886
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 311,
+    "student_only": 9,
+    "teacher_only": 3,
+    "neither": 73,
+    "student_progress_median_m": 4316.348469622955,
+    "teacher_progress_median_m": 4316.340848827886,
+    "student_fails_before_teacher": 66,
+    "student_fails_after_teacher": 11
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 76
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.519332282262965,
+    "frac_overspeed_median": 0.008986701658993167,
+    "speed_error_mean_mps_median": -1.4490435914066926,
+    "ey_rms_m_median": 0.20925217064957824,
+    "rear_slip_ratio_p99_median": 0.5475626421221107,
+    "teacher_tau_mae_median": 0.00825813330192548,
+    "teacher_delta_mae_median": 0.001950659454672991
+   }
+  },
+  {
+   "agent": "ppo_pilot_all4_monza",
+   "circuit": "catalunya",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 394,
+     "n": 396,
+     "rate": 0.9949494949494949,
+     "wilson95": [
+      0.9817747049616449,
+      0.998613874942445
+     ]
+    },
+    "completed": {
+     "k": 394,
+     "n": 396,
+     "rate": 0.9949494949494949,
+     "wilson95": [
+      0.9817747049616449,
+      0.998613874942445
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 38,
+       "n": 40,
+       "rate": 0.95,
+       "wilson95": [
+        0.8349612263085903,
+        0.9861793326138516
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 394,
+     "slip_saturation": 2
+    },
+    "lap_time_robust": {
+     "n": 394,
+     "mean": 161.271192893401,
+     "median": 160.315,
+     "sd": 11.299686786550673
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 394,
+    "student_mean": 161.271192893401,
+    "teacher_mean": 161.38449238578679,
+    "ratio_mean": 0.9993237524433445,
+    "ratio_of_means": 0.9992979530392863,
+    "diff_s_min_max": [
+     -0.6200000000000045,
+     0.4300000000000068
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 394,
+    "student_only": 0,
+    "teacher_only": 2,
+    "neither": 0,
+    "student_progress_median_m": 4571.5277710511455,
+    "teacher_progress_median_m": 4571.512667418512,
+    "student_fails_before_teacher": 2,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 2
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.1501882678821596,
+    "frac_overspeed_median": 0.026565794206859623,
+    "speed_error_mean_mps_median": -1.0783947377577197,
+    "ey_rms_m_median": 0.21878585305268308,
+    "rear_slip_ratio_p99_median": 0.5083104632764146,
+    "teacher_tau_mae_median": 0.011153140615235613,
+    "teacher_delta_mae_median": 0.002121684115699609
+   }
+  },
+  {
+   "agent": "ppo_pilot_all4_monza",
+   "circuit": "monza",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.44252525252526,
+     "median": 156.125,
+     "sd": 11.163165636354105
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.44252525252526,
+    "teacher_mean": 157.5573484848485,
+    "ratio_mean": 0.999279404698714,
+    "ratio_of_means": 0.9992712289624862,
+    "diff_s_min_max": [
+     -0.47999999999998977,
+     0.28000000000000114
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.982375054015,
+    "teacher_progress_median_m": 5758.967812304292,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.6517092765556853,
+    "frac_overspeed_median": 0.016800947845005604,
+    "speed_error_mean_mps_median": -0.5979377795041565,
+    "ey_rms_m_median": 0.23109020116935253,
+    "rear_slip_ratio_p99_median": 0.40065199233340093,
+    "teacher_tau_mae_median": 0.010418063267788533,
+    "teacher_delta_mae_median": 0.0021795447417571542
+   }
+  },
+  {
+   "agent": "ppo_pilot_all4_monza",
+   "circuit": "spa",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 207.34593434343432,
+     "median": 206.35000000000002,
+     "sd": 14.742519626833708
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 386,
+    "student_mean": 207.81139896373057,
+    "teacher_mean": 208.0421502590674,
+    "ratio_mean": 0.998903793400826,
+    "ratio_of_means": 0.9988908435379587,
+    "diff_s_min_max": [
+     -0.6899999999999977,
+     0.5
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 386,
+    "student_only": 10,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 6940.787068742149,
+    "teacher_progress_median_m": 6940.761821191647,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 10
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.2820305511630576,
+    "frac_overspeed_median": 0.02465694906319297,
+    "speed_error_mean_mps_median": -1.211104616850617,
+    "ey_rms_m_median": 0.31185835811998475,
+    "rear_slip_ratio_p99_median": 0.5008551366194558,
+    "teacher_tau_mae_median": 0.011429275309460444,
+    "teacher_delta_mae_median": 0.0022384805927816017
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "budapest",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 313,
+     "n": 396,
+     "rate": 0.7904040404040404,
+     "wilson95": [
+      0.7476213958978841,
+      0.8276065974131892
+     ]
+    },
+    "completed": {
+     "k": 334,
+     "n": 396,
+     "rate": 0.8434343434343434,
+     "wilson95": [
+      0.8043636137310856,
+      0.8759060131411401
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 18,
+       "n": 20,
+       "rate": 0.9,
+       "wilson95": [
+        0.6989663547715128,
+        0.9721335187862319
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 31,
+       "n": 40,
+       "rate": 0.775,
+       "wilson95": [
+        0.6249690325768998,
+        0.8768390867645927
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 48,
+       "n": 64,
+       "rate": 0.75,
+       "wilson95": [
+        0.631837235413303,
+        0.8398507346902941
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 200,
+       "n": 256,
+       "rate": 0.78125,
+       "wilson95": [
+        0.7266556785803728,
+        0.8275284021800744
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 334,
+     "slip_saturation": 38,
+     "track_excursion": 24
+    },
+    "lap_time_robust": {
+     "n": 313,
+     "mean": 158.66680511182108,
+     "median": 158.87,
+     "sd": 10.553420032167695
+    },
+    "empty_safe_set_episodes": 83,
+    "empty_safe_set_steps": 3456,
+    "projected_steps": 9782,
+    "projected_fraction": 0.0017071264238633307,
+    "episodes_with_projection": 148
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 38,
+    "lateral: track excursion": 24,
+    "completed": 21
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.5220960275319997,
+    "frac_overspeed_median": 0.00938285468700971,
+    "speed_error_mean_mps_median": -1.4386561167192733,
+    "ey_rms_m_median": 0.2146901948014547,
+    "rear_slip_ratio_p99_median": 0.5428451916381762,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "budapest",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 314,
+     "n": 396,
+     "rate": 0.7929292929292929,
+     "wilson95": [
+      0.7502980105462591,
+      0.8299319653153452
+     ]
+    },
+    "completed": {
+     "k": 314,
+     "n": 396,
+     "rate": 0.7929292929292929,
+     "wilson95": [
+      0.7502980105462591,
+      0.8299319653153452
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 18,
+       "n": 20,
+       "rate": 0.9,
+       "wilson95": [
+        0.6989663547715128,
+        0.9721335187862319
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 32,
+       "n": 40,
+       "rate": 0.8,
+       "wilson95": [
+        0.652426936536005,
+        0.895000102745623
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 48,
+       "n": 64,
+       "rate": 0.75,
+       "wilson95": [
+        0.631837235413303,
+        0.8398507346902941
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 200,
+       "n": 256,
+       "rate": 0.78125,
+       "wilson95": [
+        0.7266556785803728,
+        0.8275284021800744
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 314,
+     "slip_saturation": 82
+    },
+    "lap_time_robust": {
+     "n": 314,
+     "mean": 158.60777070063696,
+     "median": 158.835,
+     "sd": 10.588208318584078
+    }
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 82
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.5093323096998126,
+    "frac_overspeed_median": 0.00938285468700971,
+    "speed_error_mean_mps_median": -1.4460515456770062,
+    "ey_rms_m_median": 0.20946335980341835,
+    "rear_slip_ratio_p99_median": 0.5428850227651227,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 20,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.9073486328125e-06,
+    "p_proj": 0.0017071264238633307,
+    "classification": "FILTER-ASSISTED",
+    "robust_twins_differ": 1
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "catalunya",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 161.49318181818182,
+     "median": 160.425,
+     "sd": 11.47314018914481
+    },
+    "empty_safe_set_episodes": 0,
+    "empty_safe_set_steps": 0,
+    "projected_steps": 73250,
+    "projected_fraction": 0.011454028299659271,
+    "episodes_with_projection": 396
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.1631228867406236,
+    "frac_overspeed_median": 0.021962196902155312,
+    "speed_error_mean_mps_median": -1.1126184930421088,
+    "ey_rms_m_median": 0.22847446376046682,
+    "rear_slip_ratio_p99_median": 0.5494120001548544,
+    "teacher_tau_mae_median": 8.937144480867326e-05,
+    "teacher_delta_mae_median": 0.0008198054546331305
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "catalunya",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 396
+    },
+    "lap_time_robust": null
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 382,
+    "lateral/yaw: slip without overspeed": 14
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.209178321183428,
+    "frac_overspeed_median": 0.007256873412926471,
+    "speed_error_mean_mps_median": -1.1816154643248398,
+    "ey_rms_m_median": 0.2098365720498637,
+    "rear_slip_ratio_p99_median": 0.513126772642661,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 396,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.2392294127517818e-119,
+    "p_proj": 0.011454028299659271,
+    "classification": "FILTER-DEPENDENT",
+    "robust_twins_differ": 396
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "catalunya",
+   "racing_line": "R1",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 161.30164141414141,
+     "median": 160.36,
+     "sd": 11.395704457546662
+    },
+    "empty_safe_set_episodes": 0,
+    "empty_safe_set_steps": 0,
+    "projected_steps": 152,
+    "projected_fraction": 2.37963098498719e-05,
+    "episodes_with_projection": 76
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.1403811194169275,
+    "frac_overspeed_median": 0.025058195732057982,
+    "speed_error_mean_mps_median": -1.084832850892621,
+    "ey_rms_m_median": 0.22002710734894823,
+    "rear_slip_ratio_p99_median": 0.5064020957194828,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "catalunya",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 161.30161616161618,
+     "median": 160.36,
+     "sd": 11.395740550655965
+    }
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.1403811194169275,
+    "frac_overspeed_median": 0.025058195732057982,
+    "speed_error_mean_mps_median": -1.084832850892621,
+    "ey_rms_m_median": 0.220029828383779,
+    "rear_slip_ratio_p99_median": 0.5064020957194828,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 0,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.0,
+    "p_proj": 2.37963098498719e-05,
+    "classification": "POLICY-DOMINATED",
+    "robust_twins_differ": 0
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "monza",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.550101010101,
+     "median": 156.265,
+     "sd": 11.190419998221987
+    },
+    "empty_safe_set_episodes": 0,
+    "empty_safe_set_steps": 0,
+    "projected_steps": 76,
+    "projected_fraction": 1.2181470572772747e-05,
+    "episodes_with_projection": 76
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.6838786595962159,
+    "frac_overspeed_median": 0.01572224429013786,
+    "speed_error_mean_mps_median": -0.6493960310846172,
+    "ey_rms_m_median": 0.23636025223499646,
+    "rear_slip_ratio_p99_median": 0.40894260270285676,
+    "teacher_tau_mae_median": null,
+    "teacher_delta_mae_median": null
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "monza",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.55012626262626,
+     "median": 156.265,
+     "sd": 11.190459373800328
+    }
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.6838786595962159,
+    "frac_overspeed_median": 0.015736301040889182,
+    "speed_error_mean_mps_median": -0.6493901851007806,
+    "ey_rms_m_median": 0.23636025223499646,
+    "rear_slip_ratio_p99_median": 0.40894260270285676,
+    "teacher_tau_mae_median": null,
+    "teacher_delta_mae_median": null
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 0,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.0,
+    "p_proj": 1.2181470572772747e-05,
+    "classification": "POLICY-DOMINATED",
+    "robust_twins_differ": 0
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "monza",
+   "racing_line": "R1",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.55737373737375,
+     "median": 156.29000000000002,
+     "sd": 11.187644865754597
+    },
+    "empty_safe_set_episodes": 0,
+    "empty_safe_set_steps": 0,
+    "projected_steps": 152,
+    "projected_fraction": 2.436181657090763e-05,
+    "episodes_with_projection": 76
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.681423512203462,
+    "frac_overspeed_median": 0.01707058756859521,
+    "speed_error_mean_mps_median": -0.647142392782917,
+    "ey_rms_m_median": 0.23437491701629504,
+    "rear_slip_ratio_p99_median": 0.4037624734257701,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "monza",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.5573484848485,
+     "median": 156.29000000000002,
+     "sd": 11.187628170926539
+    }
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.681423512203462,
+    "frac_overspeed_median": 0.017064945750457992,
+    "speed_error_mean_mps_median": -0.6471338297435408,
+    "ey_rms_m_median": 0.23437491701629504,
+    "rear_slip_ratio_p99_median": 0.4037624734257701,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 0,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.0,
+    "p_proj": 2.436181657090763e-05,
+    "classification": "POLICY-DOMINATED",
+    "robust_twins_differ": 0
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "spa",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 386,
+     "n": 396,
+     "rate": 0.9747474747474747,
+     "wilson95": [
+      0.9541461075196326,
+      0.9862266119802089
+     ]
+    },
+    "completed": {
+     "k": 386,
+     "n": 396,
+     "rate": 0.9747474747474747,
+     "wilson95": [
+      0.9541461075196326,
+      0.9862266119802089
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 38,
+       "n": 40,
+       "rate": 0.95,
+       "wilson95": [
+        0.8349612263085903,
+        0.9861793326138516
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 248,
+       "n": 256,
+       "rate": 0.96875,
+       "wilson95": [
+        0.9395583934922568,
+        0.9840817411084887
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 386,
+     "slip_saturation": 10
+    },
+    "lap_time_robust": {
+     "n": 386,
+     "mean": 208.27487046632126,
+     "median": 207.29,
+     "sd": 14.77708610921928
+    },
+    "empty_safe_set_episodes": 10,
+    "empty_safe_set_steps": 177,
+    "projected_steps": 59313,
+    "projected_fraction": 0.00728850398948916,
+    "episodes_with_projection": 396
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 10
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.3408768785503167,
+    "frac_overspeed_median": 0.023892456431594752,
+    "speed_error_mean_mps_median": -1.282495794493538,
+    "ey_rms_m_median": 0.3270823360727261,
+    "rear_slip_ratio_p99_median": 0.5664477095291921,
+    "teacher_tau_mae_median": 5.821096405260718e-05,
+    "teacher_delta_mae_median": 0.000823414311486113
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "spa",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 396
+    },
+    "lap_time_robust": null
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 383,
+    "lateral/yaw: slip without overspeed": 13
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.2492754126442134,
+    "frac_overspeed_median": 0.021248304245633613,
+    "speed_error_mean_mps_median": -1.2043434915939497,
+    "ey_rms_m_median": 0.3266753172967166,
+    "rear_slip_ratio_p99_median": 0.5541262096766895,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 386,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.2689709186578246e-116,
+    "p_proj": 0.00728850398948916,
+    "classification": "FILTER-DEPENDENT",
+    "robust_twins_differ": 386
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "spa",
+   "racing_line": "R1",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 386,
+     "n": 396,
+     "rate": 0.9747474747474747,
+     "wilson95": [
+      0.9541461075196326,
+      0.9862266119802089
+     ]
+    },
+    "completed": {
+     "k": 386,
+     "n": 396,
+     "rate": 0.9747474747474747,
+     "wilson95": [
+      0.9541461075196326,
+      0.9862266119802089
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 38,
+       "n": 40,
+       "rate": 0.95,
+       "wilson95": [
+        0.8349612263085903,
+        0.9861793326138516
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 248,
+       "n": 256,
+       "rate": 0.96875,
+       "wilson95": [
+        0.9395583934922568,
+        0.9840817411084887
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 386,
+     "slip_saturation": 10
+    },
+    "lap_time_robust": {
+     "n": 386,
+     "mean": 208.04215025906734,
+     "median": 207.2,
+     "sd": 14.689821205606563
+    },
+    "empty_safe_set_episodes": 10,
+    "empty_safe_set_steps": 180,
+    "projected_steps": 742,
+    "projected_fraction": 9.128093602571909e-05,
+    "episodes_with_projection": 84
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 10
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.2987598611316937,
+    "frac_overspeed_median": 0.023962555719361282,
+    "speed_error_mean_mps_median": -1.2399930951188392,
+    "ey_rms_m_median": 0.3184780030340135,
+    "rear_slip_ratio_p99_median": 0.493906356018514,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   }
+  },
+  {
+   "agent": "teacher",
+   "circuit": "spa",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 386,
+     "n": 396,
+     "rate": 0.9747474747474747,
+     "wilson95": [
+      0.9541461075196326,
+      0.9862266119802089
+     ]
+    },
+    "completed": {
+     "k": 386,
+     "n": 396,
+     "rate": 0.9747474747474747,
+     "wilson95": [
+      0.9541461075196326,
+      0.9862266119802089
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 38,
+       "n": 40,
+       "rate": 0.95,
+       "wilson95": [
+        0.8349612263085903,
+        0.9861793326138516
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 248,
+       "n": 256,
+       "rate": 0.96875,
+       "wilson95": [
+        0.9395583934922568,
+        0.9840817411084887
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 386,
+     "slip_saturation": 10
+    },
+    "lap_time_robust": {
+     "n": 386,
+     "mean": 208.04215025906737,
+     "median": 207.2,
+     "sd": 14.689830311652882
+    }
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 10
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.2987598611316937,
+    "frac_overspeed_median": 0.023962555719361282,
+    "speed_error_mean_mps_median": -1.2399930951188392,
+    "ey_rms_m_median": 0.31796792735599144,
+    "rear_slip_ratio_p99_median": 0.493906356018514,
+    "teacher_tau_mae_median": 0.0,
+    "teacher_delta_mae_median": 0.0
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 0,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.0,
+    "p_proj": 9.128093602571909e-05,
+    "classification": "POLICY-DOMINATED",
+    "robust_twins_differ": 0
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "budapest",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 395,
+     "track_excursion": 1
+    },
+    "lap_time_robust": null,
+    "empty_safe_set_episodes": 396,
+    "empty_safe_set_steps": 7701,
+    "projected_steps": 11176,
+    "projected_fraction": 0.010729172866789677,
+    "episodes_with_projection": 396
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 0,
+    "teacher_only": 313,
+    "neither": 83,
+    "student_progress_median_m": 458.26303106188453,
+    "teacher_progress_median_m": 4316.346324372076,
+    "student_fails_before_teacher": 396,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 366,
+    "lateral/yaw: slip without overspeed": 29,
+    "lateral: track excursion": 1
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 2.6559244699703157,
+    "frac_overspeed_median": 0.14764827962991695,
+    "speed_error_mean_mps_median": -1.4402561090877137,
+    "ey_rms_m_median": 0.24320130624518194,
+    "rear_slip_ratio_p99_median": 0.9344260119117699,
+    "teacher_tau_mae_median": 0.08126641098083776,
+    "teacher_delta_mae_median": 0.008707823951123437
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "budapest",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 396
+    },
+    "lap_time_robust": null
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 0,
+    "teacher_only": 314,
+    "neither": 82,
+    "student_progress_median_m": 441.7003747789678,
+    "teacher_progress_median_m": 4316.340848827886,
+    "student_fails_before_teacher": 396,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 358,
+    "lateral/yaw: slip without overspeed": 38
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 2.679635007044743,
+    "frac_overspeed_median": 0.144676298716238,
+    "speed_error_mean_mps_median": -1.5467798433341677,
+    "ey_rms_m_median": 0.22623856924132446,
+    "rear_slip_ratio_p99_median": 0.8957950033449538,
+    "teacher_tau_mae_median": 0.08048807995029059,
+    "teacher_delta_mae_median": 0.007323634164344053
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 0,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.0,
+    "p_proj": 0.010729172866789677,
+    "classification": "FILTER-ASSISTED",
+    "robust_twins_differ": 0
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "catalunya",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 396
+    },
+    "lap_time_robust": null,
+    "empty_safe_set_episodes": 396,
+    "empty_safe_set_steps": 8594,
+    "projected_steps": 10699,
+    "projected_fraction": 0.00647952611462808,
+    "episodes_with_projection": 396
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 0,
+    "teacher_only": 396,
+    "neither": 0,
+    "student_progress_median_m": 976.0378641936074,
+    "teacher_progress_median_m": 4569.793659774588,
+    "student_fails_before_teacher": 396,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 388,
+    "lateral/yaw: slip without overspeed": 8
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 2.1011045075152133,
+    "frac_overspeed_median": 0.15962540456227697,
+    "speed_error_mean_mps_median": -1.1532411675512169,
+    "ey_rms_m_median": 0.25752839709066355,
+    "rear_slip_ratio_p99_median": 0.8766233120404734,
+    "teacher_tau_mae_median": 0.08374595608661156,
+    "teacher_delta_mae_median": 0.009481569954154893
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "catalunya",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 395,
+     "track_excursion": 1
+    },
+    "lap_time_robust": null
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 396,
+    "student_progress_median_m": 912.1550949484811,
+    "teacher_progress_median_m": 1513.9269130633083,
+    "student_fails_before_teacher": 308,
+    "student_fails_after_teacher": 88
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 386,
+    "lateral/yaw: slip without overspeed": 9,
+    "lateral: track excursion": 1
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 2.2611276163633653,
+    "frac_overspeed_median": 0.16149438570209837,
+    "speed_error_mean_mps_median": -1.4000597271212318,
+    "ey_rms_m_median": 0.2423718883556103,
+    "rear_slip_ratio_p99_median": 0.8740015316781429,
+    "teacher_tau_mae_median": 0.08712585152889171,
+    "teacher_delta_mae_median": 0.009390282002317549
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 0,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.0,
+    "p_proj": 0.00647952611462808,
+    "classification": "FILTER-ASSISTED",
+    "robust_twins_differ": 0
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "catalunya",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 395,
+     "track_excursion": 1
+    },
+    "lap_time_robust": null
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 0,
+    "teacher_only": 396,
+    "neither": 0,
+    "student_progress_median_m": 912.1211931182206,
+    "teacher_progress_median_m": 4571.512667418512,
+    "student_fails_before_teacher": 396,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 385,
+    "lateral/yaw: slip without overspeed": 10,
+    "lateral: track excursion": 1
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 2.209208330903268,
+    "frac_overspeed_median": 0.16222116960752841,
+    "speed_error_mean_mps_median": -1.3560991304912617,
+    "ey_rms_m_median": 0.24327006688594588,
+    "rear_slip_ratio_p99_median": 0.8681995697216451,
+    "teacher_tau_mae_median": 0.085617979736688,
+    "teacher_delta_mae_median": 0.007954177676398042
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "monza",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.91676767676768,
+     "median": 156.59,
+     "sd": 11.043843816103923
+    },
+    "empty_safe_set_episodes": 0,
+    "empty_safe_set_steps": 0,
+    "projected_steps": 10,
+    "projected_fraction": 1.5991034786257432e-06,
+    "episodes_with_projection": 10
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.91676767676768,
+    "teacher_mean": 157.550101010101,
+    "ratio_mean": 1.0024131843527861,
+    "ratio_of_means": 1.0023273020094299,
+    "diff_s_min_max": [
+     -1.1500000000000057,
+     1.8900000000000148
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.524179073258,
+    "teacher_progress_median_m": 5758.512100978206,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.8219159351143973,
+    "frac_overspeed_median": 0.02016709123245297,
+    "speed_error_mean_mps_median": -0.7738042159951983,
+    "ey_rms_m_median": 0.23607511911976214,
+    "rear_slip_ratio_p99_median": 0.40424146313000264,
+    "teacher_tau_mae_median": 0.02027030167164539,
+    "teacher_delta_mae_median": 0.0017520416992147865
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "monza",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.91676767676768,
+     "median": 156.59,
+     "sd": 11.043843816103923
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.91676767676768,
+    "teacher_mean": 157.55012626262626,
+    "ratio_mean": 1.0024130397969024,
+    "ratio_of_means": 1.002327141353922,
+    "diff_s_min_max": [
+     -1.1500000000000057,
+     1.8900000000000148
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.524179073258,
+    "teacher_progress_median_m": 5758.512100978206,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.8219159351143973,
+    "frac_overspeed_median": 0.02016709123245297,
+    "speed_error_mean_mps_median": -0.7738042159951983,
+    "ey_rms_m_median": 0.23607511911976214,
+    "rear_slip_ratio_p99_median": 0.40424146313000264,
+    "teacher_tau_mae_median": 0.020269826642747603,
+    "teacher_delta_mae_median": 0.0017520416992147865
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 0,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 1.0,
+    "p_proj": 1.5991034786257432e-06,
+    "classification": "POLICY-DOMINATED",
+    "robust_twins_differ": 0
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "monza",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "completed": {
+     "k": 396,
+     "n": 396,
+     "rate": 1.0,
+     "wilson95": [
+      0.9903925450051523,
+      1.0
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 20,
+       "n": 20,
+       "rate": 1.0,
+       "wilson95": [
+        0.8388748419471806,
+        1.0
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 40,
+       "n": 40,
+       "rate": 1.0,
+       "wilson95": [
+        0.9123783988027135,
+        1.0
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 16,
+       "n": 16,
+       "rate": 1.0,
+       "wilson95": [
+        0.8063923194655637,
+        1.0
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 64,
+       "n": 64,
+       "rate": 1.0,
+       "wilson95": [
+        0.9433759402071946,
+        1.0
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 256,
+       "n": 256,
+       "rate": 1.0,
+       "wilson95": [
+        0.9852161435741286,
+        0.9999999999999999
+       ]
+      }
+     }
+    },
+    "termination": {
+     "completed": 396
+    },
+    "lap_time_robust": {
+     "n": 396,
+     "mean": 157.8688888888889,
+     "median": 156.57,
+     "sd": 11.036195972667246
+    }
+   },
+   "paired_lap_time_vs_teacher": {
+    "n": 396,
+    "student_mean": 157.8688888888889,
+    "teacher_mean": 157.5573484848485,
+    "ratio_mean": 1.0020635682870065,
+    "ratio_of_means": 1.0019773143368833,
+    "diff_s_min_max": [
+     -1.200000000000017,
+     1.8599999999999852
+    ]
+   },
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 396,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 0,
+    "student_progress_median_m": 5758.9832596397555,
+    "teacher_progress_median_m": 5758.967812304292,
+    "student_fails_before_teacher": 0,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {},
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 0.8240914634435927,
+    "frac_overspeed_median": 0.02259807125166791,
+    "speed_error_mean_mps_median": -0.7677546457068247,
+    "ey_rms_m_median": 0.23470660932743762,
+    "rear_slip_ratio_p99_median": 0.40141834699263607,
+    "teacher_tau_mae_median": 0.021228890444014305,
+    "teacher_delta_mae_median": 0.002038483909335126
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "spa",
+   "racing_line": "R0",
+   "condition": "F",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 8,
+     "n": 396,
+     "rate": 0.020202020202020204,
+     "wilson95": [
+      0.010271446296146094,
+      0.039351869102950326
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 387,
+     "track_excursion": 1,
+     "completed": 8
+    },
+    "lap_time_robust": null,
+    "empty_safe_set_episodes": 396,
+    "empty_safe_set_steps": 11677,
+    "projected_steps": 17851,
+    "projected_fraction": 0.00549037362283154,
+    "episodes_with_projection": 396
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 0,
+    "teacher_only": 386,
+    "neither": 10,
+    "student_progress_median_m": 2435.8601907059997,
+    "teacher_progress_median_m": 6937.617898985715,
+    "student_fails_before_teacher": 388,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 340,
+    "lateral/yaw: slip without overspeed": 47,
+    "completed": 8,
+    "lateral: track excursion": 1
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.565103077902616,
+    "frac_overspeed_median": 0.12305276549666286,
+    "speed_error_mean_mps_median": -0.9192144103092439,
+    "ey_rms_m_median": 0.31653162846856037,
+    "rear_slip_ratio_p99_median": 0.8471998426968907,
+    "teacher_tau_mae_median": 0.07597473812198566,
+    "teacher_delta_mae_median": 0.008598943960227201
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "spa",
+   "racing_line": "R0",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 396
+    },
+    "lap_time_robust": null
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 0,
+    "teacher_only": 0,
+    "neither": 396,
+    "student_progress_median_m": 1523.4951222394398,
+    "teacher_progress_median_m": 3844.576288816155,
+    "student_fails_before_teacher": 396,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 356,
+    "lateral/yaw: slip without overspeed": 40
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.6262023288129202,
+    "frac_overspeed_median": 0.1100939038113074,
+    "speed_error_mean_mps_median": -1.0256534259942671,
+    "ey_rms_m_median": 0.3172264180707022,
+    "rear_slip_ratio_p99_median": 0.8353581974638311,
+    "teacher_tau_mae_median": 0.07269854473854198,
+    "teacher_delta_mae_median": 0.007681759470828925
+   },
+   "filter_dependence": {
+    "paired": 396,
+    "b_filter_rescues": 8,
+    "c_filter_hurts": 0,
+    "mcnemar_p": 0.0078125,
+    "p_proj": 0.00549037362283154,
+    "classification": "FILTER-DEPENDENT",
+    "robust_twins_differ": 0
+   }
+  },
+  {
+   "agent": "treatment_a",
+   "circuit": "spa",
+   "racing_line": "R1",
+   "condition": "U",
+   "summary": {
+    "n": 396,
+    "robust": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "completed": {
+     "k": 0,
+     "n": 396,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.009607454994847843
+     ]
+    },
+    "by_block": {
+     "in_sample_gate": {
+      "robust": {
+       "k": 0,
+       "n": 20,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.16112515805281938
+       ]
+      }
+     },
+     "seed_only": {
+      "robust": {
+       "k": 0,
+       "n": 40,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.08762160119728664
+       ]
+      }
+     },
+     "mu_only": {
+      "robust": {
+       "k": 0,
+       "n": 16,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.1936076805344365
+       ]
+      }
+     },
+     "start_only": {
+      "robust": {
+       "k": 0,
+       "n": 64,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.05662405979280534
+       ]
+      }
+     },
+     "held_out": {
+      "robust": {
+       "k": 0,
+       "n": 256,
+       "rate": 0.0,
+       "wilson95": [
+        0.0,
+        0.01478385642587143
+       ]
+      }
+     }
+    },
+    "termination": {
+     "slip_saturation": 396
+    },
+    "lap_time_robust": null
+   },
+   "paired_lap_time_vs_teacher": null,
+   "joint_with_teacher": {
+    "n": 396,
+    "both_robust": 0,
+    "student_only": 0,
+    "teacher_only": 386,
+    "neither": 10,
+    "student_progress_median_m": 1537.5157352326883,
+    "teacher_progress_median_m": 6940.761821191647,
+    "student_fails_before_teacher": 396,
+    "student_fails_after_teacher": 0
+   },
+   "failure_mechanisms": {
+    "longitudinal: overspeed into slip": 355,
+    "lateral/yaw: slip without overspeed": 41
+   },
+   "tracking_medians": {
+    "speed_error_mean_abs_mps_median": 1.6214975388584523,
+    "frac_overspeed_median": 0.10372823602626607,
+    "speed_error_mean_mps_median": -1.120264419528938,
+    "ey_rms_m_median": 0.31454470733162365,
+    "rear_slip_ratio_p99_median": 0.8324835005907731,
+    "teacher_tau_mae_median": 0.07360478617236693,
+    "teacher_delta_mae_median": 0.0074017759791388926
+   }
+  }
+ ]
+}

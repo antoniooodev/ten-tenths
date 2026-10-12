@@ -1,0 +1,114 @@
+{
+ "demo_monza_speed_l0_a0": {
+  "circuit": "monza",
+  "kind": "speed",
+  "lap": 0,
+  "attempt": 0,
+  "mu": 0.8,
+  "steps": 600,
+  "completed": false,
+  "events": {
+   "track_excursion": false,
+   "slip_saturation": false,
+   "low_speed": false
+  },
+  "no_safe": 0,
+  "healthy": false,
+  "progress_m": 61.48304510396031,
+  "exec_projected_steps": 1,
+  "label_projected_differs_rows": 465,
+  "delta_std": 0.06614182524183249,
+  "eta_std": 0.0,
+  "terminal_s": 996.8413831132718
+ },
+ "demo_spa_lateral_l3_a1": {
+  "circuit": "spa",
+  "kind": "lateral",
+  "lap": 3,
+  "attempt": 1,
+  "mu": 1.0,
+  "steps": 600,
+  "completed": false,
+  "events": {
+   "track_excursion": false,
+   "slip_saturation": false,
+   "low_speed": false
+  },
+  "no_safe": 0,
+  "healthy": false,
+  "progress_m": 108.15411052528248,
+  "exec_projected_steps": 0,
+  "label_projected_differs_rows": 599,
+  "delta_std": 0.0,
+  "eta_std": 0.12873983713185191,
+  "terminal_s": 508.1129152846784
+ },
+ "demo_catalunya_none_l1_a0": {
+  "circuit": "catalunya",
+  "kind": "none",
+  "lap": 1,
+  "attempt": 0,
+  "mu": 1.2,
+  "steps": 600,
+  "completed": false,
+  "events": {
+   "track_excursion": false,
+   "slip_saturation": false,
+   "low_speed": false
+  },
+  "no_safe": 0,
+  "healthy": false,
+  "progress_m": 109.76503941650572,
+  "exec_projected_steps": 0,
+  "label_projected_differs_rows": 0,
+  "delta_std": 0.0,
+  "eta_std": 0.0,
+  "terminal_s": 3562.5536385050245
+ },
+ "demo_budapest_speed_l7_a2": {
+  "circuit": "budapest",
+  "kind": "speed",
+  "lap": 7,
+  "attempt": 2,
+  "mu": 1.2,
+  "steps": 600,
+  "completed": false,
+  "events": {
+   "track_excursion": false,
+   "slip_saturation": false,
+   "low_speed": false
+  },
+  "no_safe": 0,
+  "healthy": false,
+  "progress_m": 143.3590906490731,
+  "exec_projected_steps": 2,
+  "label_projected_differs_rows": 0,
+  "delta_std": 0.05902263262041794,
+  "eta_std": 0.0,
+  "terminal_s": 780.5033836325058
+ },
+ "demo_monza_lateral_l5_a0": {
+  "circuit": "monza",
+  "kind": "lateral",
+  "lap": 5,
+  "attempt": 0,
+  "mu": 0.8,
+  "steps": 600,
+  "completed": false,
+  "events": {
+   "track_excursion": false,
+   "slip_saturation": false,
+   "low_speed": false
+  },
+  "no_safe": 0,
+  "healthy": false,
+  "progress_m": 59.58308942651797,
+  "exec_projected_steps": 1,
+  "label_projected_differs_rows": 599,
+  "delta_std": 0.0,
+  "eta_std": 0.16922566781290818,
+  "terminal_s": 994.9414274358295
+ },
+ "equiv_speed_gen_vs_gen_mc": true,
+ "equiv_lateral_gen_vs_gen_mc": true
+}

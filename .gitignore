@@ -1,0 +1,29 @@
+# Large or generated data
+datasets/
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# Literature: third-party code (each folder is its own git repository) and papers; the metadata
+# (research/paper_downloads/*.tsv, README files) stays in the repository, so the corpus can be rebuilt
+research/code/
+research/**/*.pdf
+research/01_autonomous_racing/03_f1tenth_environment
+
+# Tools
+.ruff_cache/
+
+# Working documents kept out of the repository
+docs/HISTORY.md
+docs/REDESIGN.md
+docs/RESULTS.md

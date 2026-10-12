@@ -1,0 +1,23 @@
+{
+ "name": "MATv0",
+ "speed_safety": 1.25,
+ "max_speed_mps": 100.0,
+ "target_feedforward": true,
+ "friction_limiter": true,
+ "yaw_feedforward_damping": true,
+ "certification": {
+  "protocol": "data/protocols/monza_R0.json",
+  "filtered": "396/396 robust, 0 empty-set episodes, 76 episodes with one projection at step 0, mean lap 157.55 s",
+  "unfiltered": "396/396 robust, mean lap 157.55 s",
+  "results": "results/final_results.json (agent teacher, monza, R0)"
+ },
+ "parameters": {
+  "ETA_BUDGET": 0.85,
+  "K_R_s": 0.05,
+  "T_target_preview_m": 5,
+  "ALPHA_FF_CAP_RAD": 0.1,
+  "KP_ACCEL": 0.15,
+  "KP_BRAKE": 0.25,
+  "K_STANLEY": 3.0
+ }
+}

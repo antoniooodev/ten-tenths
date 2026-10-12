@@ -1,0 +1,6 @@
+{
+ "max_abs_obs_diff": 0.0,
+ "max_abs_reward_diff": 5.551115123125783e-16,
+ "mean_abs_reward_diff": 5.632994071191888e-17,
+ "steps": 3000
+}

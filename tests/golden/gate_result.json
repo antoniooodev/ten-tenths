@@ -1,0 +1,31 @@
+{
+ "passed": true,
+ "laps": [
+  {
+   "passed": true,
+   "start_index": 0,
+   "start_s_m": 935.3583380093115,
+   "mu": 0.9,
+   "seed": 43,
+   "steps": 16509,
+   "progress_m": 5758.4781990208085,
+   "terminal_s_m": 6693.83653703012,
+   "terminal_vx_mps": 10.291816832801837,
+   "last_action": [
+    -0.16479423642158508,
+    0.37275147438049316
+   ],
+   "no_safe": 0,
+   "events": {
+    "track_excursion": false,
+    "slip_saturation": false,
+    "low_speed": false
+   },
+   "mean_grip": 0.49317173773144934,
+   "mean_curve_grip": 0.5350734535288005,
+   "max_grip": 0.752897393213719,
+   "max_rear_ratio": 0.3992380118746631,
+   "shield_projections": 1
+  }
+ ]
+}

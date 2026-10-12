@@ -1,0 +1,99 @@
+{
+"log_std": {
+"sha256": "abb224ee3f128a3043b68ce96138ef41155d32e0118b3e261e01a840514b956e",
+"sum": 0.0,
+"shape": [
+2
+]
+},
+"mlp_extractor.policy_net.0.weight": {
+"sha256": "ea84d5b0ceee3d7c4718434beff017e4c0a5a012e9224062c7bbff4cbd5bea7a",
+"sum": 17.598129412298704,
+"shape": [
+512,
+116
+]
+},
+"mlp_extractor.policy_net.0.bias": {
+"sha256": "baa10831a35992f4d60c093216be46944015e4362db35238d61bb5313657d47b",
+"sum": 0.0,
+"shape": [
+512
+]
+},
+"mlp_extractor.policy_net.2.weight": {
+"sha256": "2f89ee16a1ffbf00800d5b2771c1bf66b564cf3ab4e8d294ef7d1faf81efec9c",
+"sum": 15.751074921184525,
+"shape": [
+512,
+512
+]
+},
+"mlp_extractor.policy_net.2.bias": {
+"sha256": "baa10831a35992f4d60c093216be46944015e4362db35238d61bb5313657d47b",
+"sum": 0.0,
+"shape": [
+512
+]
+},
+"mlp_extractor.value_net.0.weight": {
+"sha256": "4162d48a4cdc54dd96d13fc5e610235875bb77889c86a688216b9c3ba09d4270",
+"sum": -6.202877231834009,
+"shape": [
+512,
+116
+]
+},
+"mlp_extractor.value_net.0.bias": {
+"sha256": "baa10831a35992f4d60c093216be46944015e4362db35238d61bb5313657d47b",
+"sum": 0.0,
+"shape": [
+512
+]
+},
+"mlp_extractor.value_net.2.weight": {
+"sha256": "fa15127a17e0931056766d230cba6aa896a0761892059d39d6a50d528f08954a",
+"sum": 20.69131664104208,
+"shape": [
+512,
+512
+]
+},
+"mlp_extractor.value_net.2.bias": {
+"sha256": "baa10831a35992f4d60c093216be46944015e4362db35238d61bb5313657d47b",
+"sum": 0.0,
+"shape": [
+512
+]
+},
+"action_net.weight": {
+"sha256": "01306c7be57a70958d2867f58f66ded7687fb4e1f6b31fdda47267067bc45544",
+"sum": 0.017360725054572868,
+"shape": [
+2,
+512
+]
+},
+"action_net.bias": {
+"sha256": "abb224ee3f128a3043b68ce96138ef41155d32e0118b3e261e01a840514b956e",
+"sum": 0.0,
+"shape": [
+2
+]
+},
+"value_net.weight": {
+"sha256": "3b835f15685c1f9cdb7965900b16c332d4bb7931dae16657daffb7074778a7a7",
+"sum": -1.1957623303242144,
+"shape": [
+1,
+512
+]
+},
+"value_net.bias": {
+"sha256": "6407f843e5892519d30e29178da55697e4452a1d59385271f5c1343ff7620169",
+"sum": 0.0,
+"shape": [
+1
+]
+}
+}

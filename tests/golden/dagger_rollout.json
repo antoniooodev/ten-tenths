@@ -1,0 +1,56 @@
+{
+ "report": {
+  "mu": 1.1,
+  "seed": 43,
+  "completed": false,
+  "steps": 300,
+  "progress_m": 30.3943507682161,
+  "terminal_s_m": 965.7526887775276,
+  "corner": "Variante del Rettifilo",
+  "events": {
+   "track_excursion": false,
+   "slip_saturation": false,
+   "low_speed": false
+  },
+  "no_safe_actions": 0,
+  "max_rear_ratio": 0.2480734979637512,
+  "switched": false,
+  "switch_progress_m": null,
+  "switch_state": null
+ },
+ "report_switch": {
+  "mu": 1.1,
+  "seed": 43,
+  "completed": false,
+  "steps": 300,
+  "progress_m": 30.36722935420255,
+  "terminal_s_m": 965.7255673635141,
+  "corner": "Variante del Rettifilo",
+  "events": {
+   "track_excursion": false,
+   "slip_saturation": false,
+   "low_speed": false
+  },
+  "no_safe_actions": 0,
+  "max_rear_ratio": 0.2455042421954351,
+  "switched": true,
+  "switch_progress_m": 20.0,
+  "switch_state": [
+   955.4246208273393,
+   0.16563133006589373,
+   -0.009751100523924066,
+   10.692710775018,
+   0.23186112225597813,
+   0.34285063067032084,
+   0.08641638098256317
+  ]
+ },
+ "args": {
+  "raceline": "/Users/antoniotangaro/Desktop/contextual_bicycle_pacejka/artifacts/tracks/monza_raceline_axle_limited_recovery083.npz",
+  "seed": "42",
+  "start_s": "935.3583380093115",
+  "start_vx_mu_ref": "5.928924263594259",
+  "mu_ref": "0.9",
+  "max_steps": "300"
+ }
+}

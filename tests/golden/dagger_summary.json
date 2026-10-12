@@ -1,0 +1,72 @@
+[
+ {
+  "iteration": 1,
+  "collection": [
+   {
+    "failure": {
+     "mu": 1.0,
+     "seed": 42,
+     "completed": false,
+     "steps": 400,
+     "progress_m": 39.78284162712055,
+     "terminal_s_m": 975.1411796364321,
+     "corner": "Variante del Rettifilo",
+     "events": {
+      "track_excursion": false,
+      "slip_saturation": false,
+      "low_speed": false
+     },
+     "no_safe_actions": 0,
+     "max_rear_ratio": 0.3831141358023072,
+     "switched": false,
+     "switch_progress_m": null,
+     "switch_state": null
+    },
+    "window_start_progress_m": 9.782841627120547,
+    "selected_labels": 285,
+    "teacher_recovery": {
+     "mu": 1.0,
+     "seed": 42,
+     "completed": false,
+     "steps": 400,
+     "progress_m": 39.74870377151217,
+     "terminal_s_m": 975.1070417808237,
+     "corner": "Variante del Rettifilo",
+     "events": {
+      "track_excursion": false,
+      "slip_saturation": false,
+      "low_speed": false
+     },
+     "no_safe_actions": 0,
+     "max_rear_ratio": 0.3799254211003444,
+     "switched": true,
+     "switch_progress_m": 9.782841627120547,
+     "switch_state": [
+      945.2081497701128,
+      -0.0390195881343287,
+      -0.0068468318406367384,
+      10.215301835314543,
+      0.028702918711087114,
+      0.027141869609638263,
+      0.012663445559376294
+     ]
+    }
+   }
+  ],
+  "balance": {
+   "base_labels": 4000,
+   "critical_labels": 285,
+   "critical_weight": 10.0,
+   "effective_critical_labels": 2850.0
+  },
+  "training": {
+   "best_validation_mse": 0.0004297058330848813,
+   "epochs": 1
+  },
+  "gate_passes": 1,
+  "gate_total": 1,
+  "gate_passed": true,
+  "passed_mean_time_s": 156.70000000000002,
+  "model": "/var/folders/tr/27v4vn0n3t14nd8xztg368r00000gn/T/legacy_scratch_oocbx09u/dagger/iteration_1/pure_bc_policy.zip"
+ }
+]
