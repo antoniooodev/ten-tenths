@@ -1,0 +1,30 @@
+category	filename	title	source
+imitation_gap	01_ADVISOR_Bridging_the_Imitation_Gap.pdf	Bridging the Imitation Gap by Adaptive Insubordination	https://arxiv.org/abs/2007.12173
+imitation_gap	02_Impossibly_Good_Experts_and_How_to_Follow_Them.pdf	Impossibly Good Experts and How to Follow Them	https://openreview.net/forum?id=sciA_xgYofB
+imitation_gap	03_A2D_Robust_Asymmetric_Learning_in_POMDPs.pdf	Robust Asymmetric Learning in POMDPs	https://arxiv.org/abs/2012.15566
+imitation_gap	04_COSIL_Learning_under_Partial_Observability.pdf	Leveraging Fully Observable Policies for Learning under Partial Observability	https://arxiv.org/abs/2211.01991
+imitation_gap	05_TGRL_Teacher_Guided_Reinforcement_Learning.pdf	TGRL: An Algorithm for Teacher Guided Reinforcement Learning	https://arxiv.org/abs/2307.03186
+imitation_gap	06_Student_Informed_Teacher_Training.pdf	Student-Informed Teacher Training	https://arxiv.org/abs/2412.09149
+imitation_gap	07_Sequence_Model_Imitation_with_Unobserved_Contexts.pdf	Sequence Model Imitation Learning with Unobserved Contexts	https://arxiv.org/abs/2208.02225
+imitation_gap	08_Scaffolder_Privileged_Sensing_Scaffolds_RL.pdf	Privileged Sensing Scaffolds Reinforcement Learning	https://arxiv.org/abs/2405.14853
+suboptimal_demonstrations	09_Overcoming_Exploration_in_RL_with_Demonstrations.pdf	Overcoming Exploration in Reinforcement Learning with Demonstrations	https://arxiv.org/abs/1709.10089
+suboptimal_demonstrations	10_THOR_Truncated_Horizon_Policy_Search.pdf	Truncated Horizon Policy Search	https://arxiv.org/abs/1805.11240
+teacher_student	11_Learning_Quadrupedal_Locomotion_over_Challenging_Terrain.pdf	Learning Quadrupedal Locomotion over Challenging Terrain	https://arxiv.org/abs/2010.11251
+teacher_student	12_RMA_Rapid_Motor_Adaptation.pdf	Rapid Motor Adaptation for Legged Robots	https://arxiv.org/abs/2107.04034
+teacher_student	13_Learning_by_Cheating.pdf	Learning by Cheating	https://arxiv.org/abs/1912.12294
+teacher_student	14_Roach_End_to_End_Urban_Driving_RL_Coach.pdf	End-to-End Urban Driving by Imitating a Reinforcement Learning Coach	https://arxiv.org/abs/2108.08265
+teacher_student	15_Asymmetric_Actor_Critic_for_Image_Based_RL.pdf	Asymmetric Actor Critic for Image-Based Robot Learning	https://arxiv.org/abs/1710.06542
+racing	16_FUCHS_Super_Human_Performance_in_Gran_Turismo_Sport.pdf	Super-Human Performance in Gran Turismo Sport Using Deep Reinforcement Learning	https://arxiv.org/abs/2008.07971
+racing	17_Song_Reaching_the_Limit_in_Autonomous_Racing.pdf	Reaching the Limit in Autonomous Racing: Optimal Control versus Reinforcement Learning	https://arxiv.org/abs/2310.10943
+racing	18_GT_Sophy_Nature_2022.pdf	Outracing champion Gran Turismo drivers with deep reinforcement learning	https://www.nature.com/articles/s41586-021-04357-7
+racing	19_Swift_Champion_level_drone_racing_Nature_2023.pdf	Champion-level drone racing using deep reinforcement learning	https://www.nature.com/articles/s41586-023-06419-4
+coach_tools	20_RLPD_Reinforcement_Learning_with_Prior_Data.pdf	Efficient Online Reinforcement Learning with Offline Data	https://arxiv.org/abs/2302.02948
+coach_tools	21_JSRL_Jump_Start_Reinforcement_Learning.pdf	Jump-Start Reinforcement Learning	https://arxiv.org/abs/2204.02372
+coach_tools	22_Cal_QL_Calibrated_Offline_RL.pdf	Cal-QL: Calibrated Offline RL Pre-Training for Efficient Online Fine-Tuning	https://arxiv.org/abs/2303.05479
+coach_tools	23_TD3_Addressing_Function_Approximation_Error.pdf	Addressing Function Approximation Error in Actor-Critic Methods	https://arxiv.org/abs/1802.09477
+coach_tools	24_FAWAC.pdf	FAWAC: Feasibility Informed Advantage Weighted Regression for Persistent Safety in Offline Reinforcement Learning	https://arxiv.org/abs/2412.08880
+teacher_student	25_Baisero_Unbiased_Asymmetric_RL_under_Partial_Observability.pdf	Unbiased Asymmetric Reinforcement Learning under Partial Observability	https://arxiv.org/abs/2105.11674
+evaluation_methodology	26_Henderson_Deep_RL_that_Matters.pdf	Deep Reinforcement Learning that Matters	https://arxiv.org/abs/1709.06560
+evaluation_methodology	27_Colas_How_Many_Random_Seeds.pdf	How Many Random Seeds? Statistical Power Analysis in Deep Reinforcement Learning Experiments	https://arxiv.org/abs/1806.08295
+evaluation_methodology	28_Agarwal_Deep_RL_at_the_Edge_of_the_Statistical_Precipice.pdf	Deep Reinforcement Learning at the Edge of the Statistical Precipice	https://arxiv.org/abs/2108.13264
+evaluation_methodology	29_Patterson_Empirical_Design_in_RL.pdf	Empirical Design in Reinforcement Learning	https://arxiv.org/abs/2304.01315
