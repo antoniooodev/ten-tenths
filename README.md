@@ -167,7 +167,7 @@ obs, reward, terminated, truncated, info = env.step(np.array([0.0, 0.5], dtype=n
 
 **Reset.** Draws (or receives) the setup with its balance index, places the car on the centreline (`e_y = e_psi = vy = r = delta = 0`) at a random point of the lap and a random speed, zeroes the memory and the commands, and returns the first observation.
 
-**Step.** The action `[a_1, a_2] ∈ [−1, 1]²` gives the steering reference `delta_ref = 0.5 a_1` rad and the rate `5 a_2` 1/s of the longitudinal command `tau`, integrated once per decision. Then, for 5 plant steps: the traction fades out within 5 % of the top speed of the stage (`limit_top_speed`), `step_plant` advances the car, and the failures are checked; the decision stops at the first failure. A failure ends the episode with its penalty; the vectorised environment starts the next one at once, at a random point of the centreline, as in Czechmanowski et al. (IROS 2025). `info` holds the `failure` (or None), the `reward_terms`, the `progress` [m], the raw `state` and `setup`, and the `laps` completed.
+**Step.** The action `[a_1, a_2] ∈ [−1, 1]²` gives the steering reference `delta_ref = 0.5 a_1` rad and the rate `5 a_2` 1/s of the longitudinal command `tau`, integrated once per decision. The same top-speed bound caps the integrated command, so that it does not wind up to full throttle while the speed is bounded. Then, for 5 plant steps: the traction fades out within 5 % of the top speed of the stage (`limit_top_speed`), `step_plant` advances the car, and the failures are checked; the decision stops at the first failure. A failure ends the episode with its penalty; the vectorised environment starts the next one at once, at a random point of the centreline, as in Czechmanowski et al. (IROS 2025). `info` holds the `failure` (or None), the `reward_terms`, the `progress` [m], the raw `state` and `setup`, and the `laps` completed.
 
 ### Speed stages — `env/stages.py`
 
@@ -265,7 +265,7 @@ r_k = ds_k / (v · 0.05 s)                                        progress along
     − 1 · 1[failure]
 ```
 
-`v` is the top speed of the stage, so the failure penalty keeps the same weight at every stage. The progress reward follows Czechmanowski et al. (IROS 2025, equation 3).
+`v` is the top speed of the stage, so the failure penalty keeps the same weight at every stage. The learner receives `0.1 r_k`: discounted returns of about 10, close to those of progress in metres in Czechmanowski et al., which keeps the value loss small without changing the optimum. The progress reward follows Czechmanowski et al. (IROS 2025, equation 3).
 
 ---
 

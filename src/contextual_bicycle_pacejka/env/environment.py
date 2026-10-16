@@ -2,6 +2,8 @@
 
 Every decision integrates the rate of the longitudinal command once, then holds the steering reference and the
 command for ``DECISION_STEPS`` plant steps; the top speed of the stage fades out the traction before each step. The
+integrated command itself is bounded by what the top speed lets through (anti-windup): near the top speed it stays
+close to zero instead of winding up to full throttle, so braking acts at once. The
 decision stops at the first failure (``model/termination.py``): the episode terminates with the failure penalty, and
 the vectorised environment starts the next one at once, at a random point of the centreline (Czechmanowski et al.,
 IROS 2025). Truncation is the ``TimeLimit`` of ``env/factory.py``.
@@ -52,6 +54,9 @@ class RacingEnv(gym.Env):
         Range of the balance index b drawn at every reset ((0, 0): the Nominal policy).
     oracle : bool
         Whether the observation ends with b (the Oracle policy).
+    edge_margin : float
+        Distance [m] inside the track edges at which the car counts as off track; training uses
+        ``TRAINING_EDGE_MARGIN_M``, so that the policy keeps a margin, and evaluation the true edges (0).
 
     Reset options
     -------------
@@ -63,7 +68,12 @@ class RacingEnv(gym.Env):
     metadata: dict[str, Any] = {"render_modes": []}
 
     def __init__(
-        self, track: RealTrack, stage: SpeedStage, b_range: tuple[float, float] = (B_NOM, B_NOM), oracle: bool = False,
+        self,
+        track: RealTrack,
+        stage: SpeedStage,
+        b_range: tuple[float, float] = (B_NOM, B_NOM),
+        oracle: bool = False,
+        edge_margin: float = 0.0,
     ) -> None:
         super().__init__()
         self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(OBS_DIM + int(oracle),),
@@ -74,6 +84,7 @@ class RacingEnv(gym.Env):
         self.stage = stage
         self.b_range = b_range
         self.oracle = oracle
+        self.edge_margin = edge_margin
         self.state = VehicleState()
         self.memory = VehicleMemory.zeros()
         self.setup = SetupVector()
@@ -110,7 +121,8 @@ class RacingEnv(gym.Env):
         tau_rate = float(action[ACTION.TAU_RATE]) * TAU_RATE_MAX
         delta_ref_change = delta_ref - self.delta_ref
         self.delta_ref, self.tau_rate = delta_ref, tau_rate
-        self.tau = min(1.0, max(-1.0, self.tau + tau_rate * DECISION_DT))
+        self.tau = limit_top_speed(min(1.0, max(-1.0, self.tau + tau_rate * DECISION_DT)), self.state.vx,
+                                   self.stage.top_speed)  # no windup of the command behind the speed bound
 
         s_before = self.state.s
         failure = None
@@ -122,7 +134,7 @@ class RacingEnv(gym.Env):
             except AdmissibilityError:  # the state is not advanced
                 failure = "inadmissible"
                 break
-            failure = check_failure(self.state, self.track)
+            failure = check_failure(self.state, self.track, self.edge_margin)
             if failure is not None:
                 break
 

@@ -51,6 +51,7 @@ def test_layouts() -> None:
     assert nominal.observation_space.shape == (OBS_DIM,) and oracle.observation_space.shape == (OBS_DIM + 1,)
     assert nominal.action_space.shape == (ACTION_DIM,)
     assert np.all(nominal.action_space.low == -1.0) and np.all(nominal.action_space.high == 1.0)
+    assert nominal.unwrapped.edge_margin == 0.0 and make_env(CATALUNYA, edge_margin=0.3).unwrapped.edge_margin == 0.3
 
 
 def test_registered_gymnasium_id() -> None:
@@ -108,6 +109,17 @@ def test_longitudinal_command_integrates_its_rate() -> None:
     assert env.tau == pytest.approx(0.9) and env.delta_ref == 0.0
 
 
+def test_longitudinal_command_does_not_wind_up_at_top_speed() -> None:
+    """Full throttle at the top speed leaves the command near zero, so one braking decision brakes at once."""
+    env = make_env(CATALUNYA, stage=3).unwrapped
+    env.reset(seed=0, options={"initial_s": MAIN_STRAIGHT_S, "initial_vx": 19.0})
+    for _ in range(100):  # 5 s of full throttle down the main straight
+        env.step(np.array([0.0, 1.0], dtype=np.float32))
+    assert env.state.vx == pytest.approx(20.0, abs=0.4) and 0.0 <= env.tau < 0.3
+    env.step(np.array([0.0, -1.0], dtype=np.float32))
+    assert env.tau < 0.0
+
+
 @pytest.mark.parametrize("number", range(1, len(STAGE_TOP_SPEEDS_MPS)))
 def test_top_speed_bound(number: int) -> None:
     """Full throttle down the main straight for up to 30 s: vx reaches the top speed of the stage and stays within
@@ -130,7 +142,8 @@ def test_reward_is_the_normalised_progress() -> None:
     _, reward, terminated, _, info = env.step(np.array([0.0, 0.0], dtype=np.float32))
     assert not terminated and info["progress"] == pytest.approx(20.0 * DECISION_DT, rel=1e-3)
     assert info["reward_terms"]["progress"] == pytest.approx(info["progress"] / (30.0 * DECISION_DT))
-    assert info["reward_terms"]["action_rate"] == 0.0 and reward == info["reward_terms"]["progress"]
+    assert info["reward_terms"]["action_rate"] == 0.0
+    assert reward == pytest.approx(0.1 * info["reward_terms"]["progress"])
     _, reward, _, _, info = env.step(np.array([0.5, -1.0], dtype=np.float32))
     assert info["reward_terms"]["action_rate"] == pytest.approx(-0.01 * (0.25 ** 2 + 1.0))
 
@@ -141,6 +154,8 @@ def test_failures_of_a_state() -> None:
     assert check_failure(VehicleState(s=s, epsi=-SPIN_EPSI_RAD - 0.01, vx=10.0), TRACK) == "spin"
     assert check_failure(VehicleState(s=s, vx=STALL_SPEED_MPS - 0.01), TRACK) == "stall"
     assert check_failure(VehicleState(s=s, vx=10.0), TRACK) is None
+    inside = VehicleState(s=s, ey=TRACK.boundary_left(s) - 0.2, vx=10.0)
+    assert check_failure(inside, TRACK) is None and check_failure(inside, TRACK, edge_margin=0.3) == "off_track"
 
 
 def test_failures_end_the_episode_with_the_penalty() -> None:
@@ -159,7 +174,7 @@ def test_failures_end_the_episode_with_the_penalty() -> None:
         _, reward, terminated, _, info = env.step(np.array([0.0, -1.0], dtype=np.float32))
         if terminated:
             break
-    assert terminated and info["failure"] == "stall" and reward < -0.9
+    assert terminated and info["failure"] == "stall" and reward < -0.09
 
 
 def test_inadmissible_plant_state_ends_the_episode(monkeypatch: pytest.MonkeyPatch) -> None:

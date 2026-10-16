@@ -7,6 +7,8 @@
 The top speed of a speed stage is an actuator bound on the traction alone, applied before the plant:
 
     tau_eff = min(tau, clip((v_top - vx) / (SPEED_LIMIT_BAND v_top), 0, 1))   for tau > 0;  braking is free
+
+The environment applies the same bound to its integrated command, so that the command does not wind up.
 """
 
 from __future__ import annotations

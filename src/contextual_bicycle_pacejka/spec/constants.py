@@ -67,8 +67,10 @@ START_SPEED_MIN_MPS: float = 3.0  # [m/s] slowest start; the fastest is the top 
 # ---------------------------------------------------------------------------
 SPIN_EPSI_RAD: float = 1.5707963267948966  # [rad] spin: heading error beyond pi / 2
 STALL_SPEED_MPS: float = 1.5  # [m/s] stall: vx below this speed
+TRAINING_EDGE_MARGIN_M: float = 0.3  # [m] in training the car leaves the track this far inside the edge
 FAILURE_PENALTY: float = 1.0  # [-] in units of the largest progress of one decision
 ACTION_RATE_WEIGHT: float = 0.01  # [-] weight of the squared normalised change of the actions
+REWARD_SCALE: float = 0.1  # [-] scale of the reward: discounted returns of about 10, as with progress in metres
 EPISODE_DECISIONS: int = 1024  # [decisions] truncation of an episode (51.2 s)
 
 # ---------------------------------------------------------------------------

@@ -103,8 +103,9 @@ class RealTrack:
         """Smaller of the two edge distances [m]."""
         return min(self.boundary_right(s), self.boundary_left(s))
 
-    def is_out_of_bounds(self, ey: float, s: float) -> bool:
-        """Whether lateral offset ey [m] (positive = left) is beyond the edge on its own side at s."""
+    def is_out_of_bounds(self, ey: float, s: float, margin: float = 0.0) -> bool:
+        """Whether lateral offset ey [m] (positive = left) is beyond the edge on its own side at s, moved inwards by
+        ``margin`` [m]."""
         if ey >= 0.0:
-            return float(ey) > self.boundary_left(s)
-        return abs(float(ey)) > self.boundary_right(s)
+            return float(ey) > self.boundary_left(s) - margin
+        return abs(float(ey)) > self.boundary_right(s) - margin
