@@ -14,6 +14,7 @@ The previous imitation line (scripted teacher, safety filter, perturbed demonstr
 - [2. Tracks](#2-tracks--modeltrackpy-tracks)
 - [3. Environment](#3-environment--env)
 - [4. The learning problem: state, observation, action, reward](#4-the-learning-problem-state-observation-action-reward)
+- [5. Training](#5-training--learning)
 - [Tests](#tests)
 
 ## Quick start
@@ -32,11 +33,12 @@ src/contextual_bicycle_pacejka/
     model/       vehicle plant, tyres, load transfer, powertrain, track, steady-state handling, observation, failures, reward
     env/         Gymnasium environment at 20 Hz, its factory and vectorised form, speed stages, setup sampling
     tracks/      centreline reference of a circuit from the TUM racetrack database
+    learning/    PPO configuration and training curves
     evaluation/  result analysis (Wilson, McNemar, several seeds) and the check of the balance index
 data/tracks/     the four circuits: TUM centreline CSV and its reference (curvature and track widths)
 docs/figures/    figures of this README
 research/        literature corpus metadata (the papers and third-party code are not tracked)
-scripts/         command-line entry points (check of the balance index, throughput of the environment)
+scripts/         command-line entry points (training, check of the balance index, throughput of the environment)
 tests/           plant and environment rollouts, balance index, track preparation, analysis, against recorded golden data
 ```
 
@@ -266,6 +268,28 @@ r_k = ds_k / (v · 0.05 s)                                        progress along
 ```
 
 `v` is the top speed of the stage, so the failure penalty keeps the same weight at every stage. The learner receives `0.1 r_k`: discounted returns of about 10, close to those of progress in metres in Czechmanowski et al., which keeps the value loss small without changing the optimum. The progress reward follows Czechmanowski et al. (IROS 2025, equation 3).
+
+---
+
+## 5. Training — `learning/`
+
+PPO of Stable-Baselines3 is configured as in Czechmanowski et al. (IROS 2025) (`learning/ppo.py`):
+
+| Setting                 | Value                                                          |
+| ----------------------- | -------------------------------------------------------------- |
+| actor, critic           | separate MLPs, 256 × 2 and 512 × 2, LeakyReLU (slope 0.2)      |
+| environments, rollout   | 320 (10 processes × 32), 1024 decisions each                   |
+| discount                | 0.99 per decision (about 5 s)                                  |
+| learning rate           | linear from 1e-3 to 1e-4 over each stage                       |
+| minibatch, epochs       | 1024, 5                                                        |
+| other settings          | Stable-Baselines3 defaults                                     |
+
+The policy trains through the speed stages in order, each stage starting from the weights of the previous one (the optimiser starts afresh), for 20 M decisions per stage at 5 and 10 m/s and 60 M decisions per stage from 20 m/s. Training runs at about 22,000 decisions/s on a 10-core machine, update included.
+
+```bash
+python scripts/train_curriculum.py --seed 0 --stages 1 --budget 20000000
+python scripts/train_curriculum.py --seed 0 --stages 2 --budget 20000000 --init outputs/models/nominal/s0/stage1.zip
+```
 
 ---
 
