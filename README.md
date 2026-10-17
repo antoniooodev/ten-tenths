@@ -14,7 +14,7 @@ The previous imitation line (scripted teacher, safety filter, perturbed demonstr
 - [2. Tracks](#2-tracks--modeltrackpy-tracks)
 - [3. Environment](#3-environment--env)
 - [4. The learning problem: state, observation, action, reward](#4-the-learning-problem-state-observation-action-reward)
-- [5. Training](#5-training--learning)
+- [5. Training and evaluation](#5-training-and-evaluation--learning-evaluation)
 - [Tests](#tests)
 
 ## Quick start
@@ -34,11 +34,11 @@ src/contextual_bicycle_pacejka/
     env/         Gymnasium environment at 20 Hz, its factory and vectorised form, speed stages, setup sampling
     tracks/      centreline reference of a circuit from the TUM racetrack database
     learning/    PPO configuration and training curves
-    evaluation/  result analysis (Wilson, McNemar, several seeds) and the check of the balance index
+    evaluation/  protocol laps, stage criterion, result statistics and the check of the balance index
 data/tracks/     the four circuits: TUM centreline CSV and its reference (curvature and track widths)
 docs/figures/    figures of this README
 research/        literature corpus metadata (the papers and third-party code are not tracked)
-scripts/         command-line entry points (training, check of the balance index, throughput of the environment)
+scripts/         command-line entry points (training, evaluation, check of the balance index, throughput)
 tests/           plant and environment rollouts, balance index, track preparation, analysis, against recorded golden data
 ```
 
@@ -271,7 +271,7 @@ r_k = ds_k / (v · 0.05 s)                                        progress along
 
 ---
 
-## 5. Training — `learning/`
+## 5. Training and evaluation — `learning/`, `evaluation/`
 
 PPO of Stable-Baselines3 is configured as in Czechmanowski et al. (IROS 2025) (`learning/ppo.py`):
 
@@ -289,7 +289,10 @@ The policy trains through the speed stages in order, each stage starting from th
 ```bash
 python scripts/train_curriculum.py --seed 0 --stages 1 --budget 20000000
 python scripts/train_curriculum.py --seed 0 --stages 2 --budget 20000000 --init outputs/models/nominal/s0/stage1.zip
+python scripts/evaluate_stage.py --stage 1 --seeds 0 1 2 3 4
 ```
+
+**Evaluation** (`evaluation/laps.py`, `evaluation/stage_gate.py`): from 10 starts equally spaced along the lap, at 3 m/s, the deterministic policy drives one lap or fails; a lap slower than four times the lap at top speed fails as a timeout. A seed passes when it completes at least 9 of its 10 laps, and a stage passes when at least 4 of 5 seeds pass. The completion rate over seeds × starts is reported with a 95 % interval from a two-level bootstrap that resamples seeds and starts independently. Lap times are compared with a point-mass lap at the top speed of the stage, a yardstick that no policy uses.
 
 ---
 

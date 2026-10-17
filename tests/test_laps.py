@@ -1,0 +1,73 @@
+"""Protocol laps, the point-mass yardstick and the stage criterion."""
+
+from __future__ import annotations
+
+import numpy as np
+import pytest
+from conftest import REPO
+
+from contextual_bicycle_pacejka.env import make_env, make_stage
+from contextual_bicycle_pacejka.evaluation.laps import (
+    LAP_STARTS,
+    drive_lap,
+    longitudinal_limits,
+    point_mass_lap_time,
+    protocol_starts,
+)
+from contextual_bicycle_pacejka.evaluation.stage_gate import stage_gate, two_level_bootstrap
+from contextual_bicycle_pacejka.spec.constants import DELTA_MAX
+
+CATALUNYA = REPO / "data/tracks/catalunya/reference.npz"
+
+
+def centreline_follower(env):
+    """Deterministic test input: kinematic steering with feedback, full throttle (the stage bounds the speed)."""
+    def policy(obs: np.ndarray) -> np.ndarray:
+        state = env.state
+        delta = 2.6 * env.track.kappa(state.s) - 0.05 * state.ey - 0.5 * state.epsi
+        return np.array([np.clip(delta / DELTA_MAX, -1.0, 1.0), 1.0], dtype=np.float32)
+    return policy
+
+
+def test_a_centreline_follower_completes_the_first_stage() -> None:
+    env = make_env(CATALUNYA, stage=1).unwrapped
+    starts = protocol_starts(env.track)
+    assert len(starts) == LAP_STARTS and starts[1] == pytest.approx(env.track.track_length / LAP_STARTS)
+    record = drive_lap(centreline_follower(env), env, starts[3])
+    assert record.completed and record.failure is None
+    assert record.lap_time == pytest.approx(env.track.track_length / 5.0, rel=0.01)
+
+
+def test_timeout_and_failure() -> None:
+    env = make_env(CATALUNYA, stage=1).unwrapped
+    record = drive_lap(lambda obs: np.array([0.0, 0.0], dtype=np.float32), env, 0.0, timeout_s=5.0)
+    assert not record.completed and record.failure == "timeout" and record.decisions == 100
+    record = drive_lap(lambda obs: np.array([1.0, 0.0], dtype=np.float32), env, 0.0)
+    assert not record.completed and record.failure == "off_track" and record.failure_s is not None
+
+
+def test_point_mass_yardstick() -> None:
+    env = make_env(CATALUNYA, stage=1).unwrapped
+    traction, braking = longitudinal_limits()
+    assert traction == pytest.approx(5.606, abs=1e-3) and braking == pytest.approx(8.349, abs=1e-3)
+    length = env.track.track_length
+    assert point_mass_lap_time(env.track, make_stage(1, env.track)) == pytest.approx(length / 5.0, rel=1e-6)
+    free = point_mass_lap_time(env.track, make_stage(7, env.track))
+    assert 120.0 < free < point_mass_lap_time(env.track, make_stage(6, env.track))
+
+
+def test_stage_criterion() -> None:
+    times = np.full((5, 10), 100.0)
+    passed = stage_gate(np.ones((5, 10), dtype=bool), times)
+    assert passed["passed"] and passed["seeds_passing"] == 5 and passed["completion"]["interval"] == [1.0, 1.0]
+    assert passed["lap_time"]["mean"] == 100.0
+    completed = np.ones((5, 10), dtype=bool)
+    completed[0] = False  # one seed never completes a lap, another misses one lap: 4 of 5 seeds pass
+    completed[1, 3] = False
+    one_seed_down = stage_gate(completed, np.where(completed, times, np.nan))
+    assert one_seed_down["passed"] and one_seed_down["seeds_passing"] == 4
+    completed[2, :2] = False  # a third seed misses two laps: 3 of 5
+    failed = stage_gate(completed, np.where(completed, times, np.nan))
+    assert not failed["passed"] and failed["seeds_passing"] == 3 and failed["completion"]["rate"] == 0.74
+    assert failed["per_seed"]["completed"] == [0, 9, 8, 10, 10] and failed["per_seed"]["mean_lap_time"][0] is None
+    assert two_level_bootstrap(np.arange(50.0).reshape(5, 10)) == two_level_bootstrap(np.arange(50.0).reshape(5, 10))
