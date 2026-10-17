@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 
 import pytest
@@ -15,6 +16,7 @@ from contextual_bicycle_pacejka.model.termination import FAILURES
 from contextual_bicycle_pacejka.spec.constants import OBS_DIM
 
 CATALUNYA = REPO / "data/tracks/catalunya/reference.npz"
+TRAIN_SCRIPT = REPO / "scripts/train_curriculum.py"
 SMALL = PPOConfig(n_steps=64, batch_size=64, n_epochs=1)
 
 
@@ -55,3 +57,19 @@ def test_start_from_another_model_and_write_curves(tmp_path) -> None:
     env.close()
     second.env.close()
 
+
+
+def test_learning_rate_of_the_command_line() -> None:
+    """--lr-start and --lr-end of scripts/train_curriculum.py reach the schedule; by default, those of PPOConfig."""
+    spec = importlib.util.spec_from_file_location("train_curriculum", TRAIN_SCRIPT)
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+    required = ["--seed", "0", "--stages", "3", "--budget", "1000"]
+    assert script.ppo_config(script.parse_args(required)) == PPOConfig()
+    config = script.ppo_config(script.parse_args([*required, "--lr-start", "3e-4", "--lr-end", "3e-5"]))
+    assert (config.learning_rate_start, config.learning_rate_end) == (3e-4, 3e-5)
+    env = make_vec_env(CATALUNYA, 2, seed=0)
+    model = make_ppo(env, config, seed=0)
+    assert model.lr_schedule(1.0) == pytest.approx(3e-4) and model.lr_schedule(0.0) == pytest.approx(3e-5)
+    assert model.lr_schedule(0.5) == pytest.approx(1.65e-4)
+    env.close()

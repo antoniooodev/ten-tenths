@@ -280,15 +280,17 @@ PPO of Stable-Baselines3 is configured as in Czechmanowski et al. (IROS 2025) (`
 | actor, critic           | separate MLPs, 256 × 2 and 512 × 2, LeakyReLU (slope 0.2)      |
 | environments, rollout   | 320 (10 processes × 32), 1024 decisions each                   |
 | discount                | 0.99 per decision (about 5 s)                                  |
-| learning rate           | linear from 1e-3 to 1e-4 over each stage                       |
+| learning rate           | linear over each stage, 1e-3 to 1e-4; 3e-4 to 3e-5 from 20 m/s |
 | minibatch, epochs       | 1024, 5                                                        |
 | other settings          | Stable-Baselines3 defaults                                     |
 
-The policy trains through the speed stages in order, each stage starting from the weights of the previous one (the optimiser starts afresh), for 20 M decisions per stage at 5 and 10 m/s and 60 M decisions per stage from 20 m/s. Training runs at about 22,000 decisions/s on a 10-core machine, update included.
+The policy trains through the speed stages in order, each stage starting from the weights of the previous one (the optimiser starts afresh), for 20 M decisions per stage at 5 and 10 m/s and 60 M decisions per stage from 20 m/s. From 20 m/s the learning rate runs from 3e-4 to 3e-5 (`--lr-start`, `--lr-end`), so that a policy that already drives does not drift away. Training runs at about 22,000 decisions/s on a 10-core machine, update included.
 
 ```bash
 python scripts/train_curriculum.py --seed 0 --stages 1 --budget 20000000
 python scripts/train_curriculum.py --seed 0 --stages 2 --budget 20000000 --init outputs/models/nominal/s0/stage1.zip
+python scripts/train_curriculum.py --seed 0 --stages 3 --budget 60000000 --init outputs/models/nominal/s0/stage2.zip \
+    --lr-start 3e-4 --lr-end 3e-5
 python scripts/evaluate_stage.py --stage 1 --seeds 0 1 2 3 4
 ```
 

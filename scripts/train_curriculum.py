@@ -2,10 +2,11 @@
 
     python scripts/train_curriculum.py --seed 0 --stages 1 --budget 20000000
     python scripts/train_curriculum.py --seed 0 --stages 2 3 --budget 12000000 \
-        --init outputs/models/nominal/s0/stage1.zip
+        --init outputs/models/nominal/s0/stage1.zip --lr-start 3e-4 --lr-end 3e-5
 
 Models go to <models>/<tag>/s<seed>/stage<k>.zip and the training curves to <logs>/<tag>/s<seed>_stage<k>.jsonl.
 ``--b-range`` and ``--oracle`` select the vehicle family and the oracle input (default: the nominal car).
+``--lr-start`` and ``--lr-end`` set the linear learning rate of every stage (default: 1e-3 to 1e-4).
 """
 
 from __future__ import annotations
@@ -22,7 +23,8 @@ from contextual_bicycle_pacejka.spec.constants import TRAINING_EDGE_MARGIN_M
 CATALUNYA = "data/tracks/catalunya/reference.npz"
 
 
-def main() -> None:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """Return the arguments of the command line (``argv``, or ``sys.argv``)."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--stages", type=int, nargs="+", required=True)
@@ -33,24 +35,40 @@ def main() -> None:
     parser.add_argument("--oracle", action="store_true")
     parser.add_argument("--edge-margin", type=float, default=TRAINING_EDGE_MARGIN_M,
                         help="[m] the car counts as off track this far inside the edge (training only)")
+    parser.add_argument("--lr-start", type=float, default=PPOConfig.learning_rate_start,
+                        help="learning rate at the start of every stage")
+    parser.add_argument("--lr-end", type=float, default=PPOConfig.learning_rate_end,
+                        help="learning rate at the end of every stage")
     parser.add_argument("--workers", type=int, default=10)
     parser.add_argument("--envs-per-worker", type=int, default=32)
     parser.add_argument("--models", type=Path, default=Path("outputs/models"))
     parser.add_argument("--logs", type=Path, default=Path("outputs/logs"))
-    args = parser.parse_args()
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-    budgets = args.budget * len(args.stages) if len(args.budget) == 1 else args.budget
-    if len(budgets) != len(args.stages):
+    args = parser.parse_args(argv)
+    args.budgets = args.budget * len(args.stages) if len(args.budget) == 1 else args.budget
+    if len(args.budgets) != len(args.stages):
         parser.error("--budget takes one value or one per stage")
+    return args
+
+
+def ppo_config(args: argparse.Namespace) -> PPOConfig:
+    """Return the PPO configuration with the learning rate of the command line."""
+    return PPOConfig(learning_rate_start=args.lr_start, learning_rate_end=args.lr_end)
+
+
+def main() -> None:
+    args = parse_args()
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+    config = ppo_config(args)
 
     init = args.init
-    for stage, budget in zip(args.stages, budgets, strict=True):
+    for stage, budget in zip(args.stages, args.budgets, strict=True):
         env = make_vec_env(CATALUNYA, args.workers * args.envs_per_worker, seed=100_000 * args.seed + 1_000 * stage,
                            stage=stage, b_range=tuple(args.b_range), oracle=args.oracle,
                            edge_margin=args.edge_margin, workers=args.workers)
-        model = make_ppo(env, PPOConfig(), seed=args.seed, init_from=init)
+        model = make_ppo(env, config, seed=args.seed, init_from=init)
         curves = args.logs / args.tag / f"s{args.seed}_stage{stage}.jsonl"
-        logging.info("seed %d, stage %d: %d decisions from %s", args.seed, stage, budget, init or "random weights")
+        logging.info("seed %d, stage %d: %d decisions from %s, learning rate %g to %g", args.seed, stage, budget,
+                     init or "random weights", config.learning_rate_start, config.learning_rate_end)
         model.learn(total_timesteps=budget, callback=TrainingCurves(curves))
         path = args.models / args.tag / f"s{args.seed}" / f"stage{stage}.zip"
         path.parent.mkdir(parents=True, exist_ok=True)
