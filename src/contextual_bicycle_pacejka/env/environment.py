@@ -52,6 +52,8 @@ class RacingEnv(gym.Env):
         Speed stage: top speed, preview, observation scales and start speeds.
     b_range : (float, float)
         Range of the balance index b drawn at every reset ((0, 0): the Nominal policy).
+    b_exclude : ((float, float), ...)
+        Open bands of b never drawn (around the held-out values of b).
     oracle : bool
         Whether the observation ends with b (the Oracle policy).
     edge_margin : float
@@ -74,6 +76,7 @@ class RacingEnv(gym.Env):
         b_range: tuple[float, float] = (B_NOM, B_NOM),
         oracle: bool = False,
         edge_margin: float = 0.0,
+        b_exclude: tuple[tuple[float, float], ...] = (),
     ) -> None:
         super().__init__()
         self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(OBS_DIM + int(oracle),),
@@ -83,6 +86,7 @@ class RacingEnv(gym.Env):
         self.track = track
         self.stage = stage
         self.b_range = b_range
+        self.b_exclude = b_exclude
         self.oracle = oracle
         self.edge_margin = edge_margin
         self.state = VehicleState()
@@ -102,7 +106,7 @@ class RacingEnv(gym.Env):
         if "setup" in options:
             self.setup = SetupVector.from_array(np.asarray(options["setup"], dtype=np.float64))
         else:
-            self.setup = sample_setup(rng, self.b_range)
+            self.setup = sample_setup(rng, self.b_range, self.b_exclude)
         validate_setup(self.setup.to_array())
 
         s0 = float(options.get("initial_s", rng.uniform(0.0, self.track.track_length)))

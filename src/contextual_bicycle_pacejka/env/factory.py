@@ -21,6 +21,7 @@ def make_env(
     b_range: tuple[float, float] = (B_NOM, B_NOM),
     oracle: bool = False,
     edge_margin: float = 0.0,
+    b_exclude: tuple[tuple[float, float], ...] = (),
     max_episode_steps: int = EPISODE_DECISIONS,
 ) -> gym.Env:
     """Return the environment of speed stage ``stage`` on a circuit, wrapped in a time limit of decisions.
@@ -28,7 +29,8 @@ def make_env(
     ``reference`` is the centreline reference NPZ of the circuit or an already loaded :class:`RealTrack`.
     """
     track = reference if isinstance(reference, RealTrack) else RealTrack(str(reference))
-    env = RacingEnv(track, make_stage(stage, track), b_range=b_range, oracle=oracle, edge_margin=edge_margin)
+    env = RacingEnv(track, make_stage(stage, track), b_range=b_range, oracle=oracle, edge_margin=edge_margin,
+                    b_exclude=b_exclude)
     return gym.wrappers.TimeLimit(env, max_episode_steps=int(max_episode_steps))
 
 
@@ -40,6 +42,7 @@ def make_vec_env(
     b_range: tuple[float, float] = (B_NOM, B_NOM),
     oracle: bool = False,
     edge_margin: float = 0.0,
+    b_exclude: tuple[tuple[float, float], ...] = (),
     workers: int = 0,
 ) -> VecEnv:
     """Return ``n_envs`` copies of ``make_env``, copy i seeded with ``seed + i``.
@@ -49,7 +52,8 @@ def make_vec_env(
     collection of a rollout never stops.
     """
     def factory() -> Callable[[], gym.Env]:
-        return lambda: make_env(str(reference), stage=stage, b_range=b_range, oracle=oracle, edge_margin=edge_margin)
+        return lambda: make_env(str(reference), stage=stage, b_range=b_range, oracle=oracle, edge_margin=edge_margin,
+                                b_exclude=b_exclude)
 
     env_fns = [factory() for _ in range(n_envs)]
     vec_env = BatchedSubprocVecEnv(env_fns, workers) if workers > 0 else DummyVecEnv(env_fns)

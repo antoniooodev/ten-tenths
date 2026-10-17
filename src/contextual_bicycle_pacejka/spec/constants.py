@@ -76,6 +76,7 @@ EPISODE_DECISIONS: int = 1024  # [decisions] truncation of an episode (51.2 s)
 # ---------------------------------------------------------------------------
 # Observation scales
 # ---------------------------------------------------------------------------
+HELD_OUT_HALF_WIDTH: float = 0.01  # [-] half-width of the band of b kept out of training around a held-out value
 B_OBS_SCALE: float = 0.2  # [-] largest |b| of the drivable range (scripts/check_balance_index.py)
 
 # ---------------------------------------------------------------------------

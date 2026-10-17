@@ -12,7 +12,7 @@ from conftest import REPO
 
 from contextual_bicycle_pacejka import ENV_ID
 
-from contextual_bicycle_pacejka.env import environment, make_env, make_stage
+from contextual_bicycle_pacejka.env import environment, held_out_bands, make_env, make_stage, sample_setup
 from contextual_bicycle_pacejka.model.observation import vehicle_world_position
 from contextual_bicycle_pacejka.model.state import AdmissibilityError, VehicleState
 from contextual_bicycle_pacejka.model.termination import check_failure
@@ -199,6 +199,23 @@ def test_starts_and_oracle_input() -> None:
         assert -0.2 <= b <= 0.1 and obs[OBS.B] == pytest.approx(b / 0.2, rel=1e-6)
     nominal_obs, info = make_env(CATALUNYA, stage=5).reset(seed=0)
     assert nominal_obs.shape == (OBS_DIM,) and info["setup"][-1] == 0.0
+
+
+def test_held_out_bands_are_never_drawn() -> None:
+    """b is drawn over its range but never in the open bands of half-width 0.01 around the held-out values."""
+    bands = held_out_bands((-0.10, 0.09))
+    np.testing.assert_allclose(bands, [(-0.11, -0.09), (0.08, 0.10)])
+    rng = np.random.default_rng(0)
+    draws = np.array([sample_setup(rng, (-0.20, 0.17), bands).b for _ in range(20_000)])
+    assert draws.min() >= -0.20 and draws.max() <= 0.17
+    assert not np.any((np.abs(draws + 0.10) < 0.01) | (np.abs(draws - 0.09) < 0.01))
+    assert np.mean(draws < -0.11) == pytest.approx(0.09 / 0.33, abs=0.02)  # uniform over the rest of the range
+    env = make_env(CATALUNYA, stage=3, b_range=(-0.20, 0.17), b_exclude=bands)
+    for seed in range(200):
+        _, info = env.reset(seed=seed)
+        assert not any(lo < info["setup"][-1] < hi for lo, hi in bands)
+    with pytest.raises(ValueError):
+        sample_setup(rng, (-0.105, -0.095), bands)
 
 
 def test_reproducible_from_the_seed() -> None:

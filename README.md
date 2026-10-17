@@ -196,7 +196,7 @@ Every episode has its own setup `xi = [m, mu, hcg, tau_d, b]`. Only the balance 
 | `tau_d` | steering lag             | 0.03 s                                  |
 | `b`     | balance index            | uniform in `b_range` (default: `b = 0`) |
 
-`sample_setup(rng, b_range)` draws a setup; `randomized_setup(mu, default_rng(seed), b_range)` also **overwrites** its friction by `mu`, so that every episode is reproducible from `(mu, seed)`.
+`sample_setup(rng, b_range, b_exclude)` draws a setup, drawing `b` again while it falls in one of the open bands `b_exclude` (`held_out_bands(centres)` gives bands of half-width 0.01 around held-out values of `b`); `randomized_setup(mu, default_rng(seed), b_range)` also **overwrites** its friction by `mu`, so that every episode is reproducible from `(mu, seed)`.
 
 ---
 
