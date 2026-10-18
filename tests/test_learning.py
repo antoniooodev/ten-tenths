@@ -5,13 +5,14 @@ from __future__ import annotations
 import importlib.util
 import json
 
+import numpy as np
 import pytest
 import torch
 from conftest import REPO
 
 from contextual_bicycle_pacejka.env import make_vec_env
 from contextual_bicycle_pacejka.learning.monitor import TrainingCurves
-from contextual_bicycle_pacejka.learning.ppo import PPOConfig, make_ppo
+from contextual_bicycle_pacejka.learning.ppo import PPOConfig, make_ppo, widen_inputs
 from contextual_bicycle_pacejka.model.termination import FAILURES
 from contextual_bicycle_pacejka.spec.constants import OBS_DIM
 
@@ -73,3 +74,25 @@ def test_learning_rate_of_the_command_line() -> None:
     assert model.lr_schedule(1.0) == pytest.approx(3e-4) and model.lr_schedule(0.0) == pytest.approx(3e-5)
     assert model.lr_schedule(0.5) == pytest.approx(1.65e-4)
     env.close()
+
+
+def test_oracle_starts_as_the_nominal_policy(tmp_path) -> None:
+    """An Oracle started from a Nominal model gets a zero column for b: same actions and values whatever b is."""
+    nominal = make_ppo(make_vec_env(CATALUNYA, 2, seed=0, stage=2), SMALL, seed=0)
+    nominal.save(tmp_path / "nominal.zip")
+    oracle_env = make_vec_env(CATALUNYA, 2, seed=0, stage=3, b_range=(-0.2, 0.17), oracle=True)
+    oracle = make_ppo(oracle_env, SMALL, seed=1, init_from=tmp_path / "nominal.zip")
+    first = oracle.policy.mlp_extractor.policy_net[0].weight
+    assert first.shape == (256, OBS_DIM + 1) and torch.all(first[:, -1] == 0.0)
+    obs = torch.as_tensor(np.random.default_rng(0).normal(size=(8, OBS_DIM)), dtype=torch.float32)
+    for b in (-1.0, 0.0, 0.85):
+        with_b = torch.cat([obs, torch.full((8, 1), b)], dim=1)
+        with torch.no_grad():
+            assert torch.allclose(oracle.policy.predict_values(with_b), nominal.policy.predict_values(obs))
+            assert torch.allclose(oracle.policy.get_distribution(with_b).distribution.mean,
+                                  nominal.policy.get_distribution(obs).distribution.mean)
+    with pytest.raises(ValueError):
+        widen_inputs({"w": torch.zeros(3, 5)}, {"w": torch.zeros(3, 4)})
+    nominal.env.close()
+    oracle_env.close()
+

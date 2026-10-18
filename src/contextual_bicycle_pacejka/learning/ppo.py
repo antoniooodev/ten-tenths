@@ -7,7 +7,9 @@ target KL divergence of 0.02: the epochs of an update stop once the approximate 
 a policy that has already narrowed from jumping when a new stage restarts the learning rate at 1e-3.
 
 A model can start from the weights of another one (the previous speed stage): actor, critic and log-std are copied,
-while the optimiser and the learning-rate schedule start afresh.
+while the optimiser and the learning-rate schedule start afresh. When the new observation ends with more inputs (the
+Oracle's b after a Nominal policy), the first layers get zero weights for them, so the new policy and value start
+exactly as the old ones.
 """
 
 from __future__ import annotations
@@ -15,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+import torch
 from stable_baselines3 import PPO
 from stable_baselines3.common.utils import LinearSchedule
 from stable_baselines3.common.vec_env import VecEnv
@@ -73,5 +76,18 @@ def make_ppo(env: VecEnv, config: PPOConfig, seed: int, init_from: str | Path | 
     )
     if init_from is not None:
         previous = PPO.load(str(init_from), device="cpu")
-        model.policy.load_state_dict(previous.policy.state_dict())
+        model.policy.load_state_dict(widen_inputs(previous.policy.state_dict(), model.policy.state_dict()))
     return model
+
+
+def widen_inputs(source: dict[str, torch.Tensor], target: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
+    """Return ``source`` shaped as ``target``: a weight with fewer input columns gets zero columns appended."""
+    widened = {}
+    for name, value in source.items():
+        shape = target[name].shape
+        if value.shape != shape:
+            if value.dim() != 2 or value.shape[0] != shape[0] or value.shape[1] > shape[1]:
+                raise ValueError(f"{name}: {tuple(value.shape)} cannot widen to {tuple(shape)}")
+            value = torch.cat([value, value.new_zeros(shape[0], shape[1] - value.shape[1])], dim=1)
+        widened[name] = value
+    return widened
