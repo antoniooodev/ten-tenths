@@ -5,7 +5,8 @@
         --init outputs/models/nominal/s0/stage1.zip --lr-start 3e-4 --lr-end 3e-5
 
 Models go to <models>/<tag>/s<seed>/stage<k>.zip and the training curves to <logs>/<tag>/s<seed>_stage<k>.jsonl.
-``--b-range`` and ``--oracle`` select the vehicle family and the oracle input (default: the nominal car).
+``--b-range`` and ``--oracle`` select the vehicle family and the oracle input (default: the nominal car);
+``--b-held-out`` keeps a band of half-width ``HELD_OUT_HALF_WIDTH`` around each of its values out of training.
 ``--lr-start`` and ``--lr-end`` set the linear learning rate of every stage (default: 1e-3 to 1e-4).
 """
 
@@ -15,7 +16,7 @@ import argparse
 import logging
 from pathlib import Path
 
-from contextual_bicycle_pacejka.env import make_vec_env
+from contextual_bicycle_pacejka.env import held_out_bands, make_vec_env
 from contextual_bicycle_pacejka.learning.monitor import TrainingCurves
 from contextual_bicycle_pacejka.learning.ppo import PPOConfig, make_ppo
 from contextual_bicycle_pacejka.spec.constants import TRAINING_EDGE_MARGIN_M
@@ -32,6 +33,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--init", type=Path, help="model whose weights start the first stage (default: random)")
     parser.add_argument("--tag", default="nominal")
     parser.add_argument("--b-range", type=float, nargs=2, default=(0.0, 0.0))
+    parser.add_argument("--b-held-out", type=float, nargs="+", default=[], help="held-out values of b")
     parser.add_argument("--oracle", action="store_true")
     parser.add_argument("--edge-margin", type=float, default=TRAINING_EDGE_MARGIN_M,
                         help="[m] the car counts as off track this far inside the edge (training only)")
@@ -63,8 +65,8 @@ def main() -> None:
     init = args.init
     for stage, budget in zip(args.stages, args.budgets, strict=True):
         env = make_vec_env(CATALUNYA, args.workers * args.envs_per_worker, seed=100_000 * args.seed + 1_000 * stage,
-                           stage=stage, b_range=tuple(args.b_range), oracle=args.oracle,
-                           edge_margin=args.edge_margin, workers=args.workers)
+                           stage=stage, b_range=tuple(args.b_range), oracle=args.oracle, edge_margin=args.edge_margin,
+                           b_exclude=held_out_bands(tuple(args.b_held_out)), workers=args.workers)
         model = make_ppo(env, config, seed=args.seed, init_from=init)
         curves = args.logs / args.tag / f"s{args.seed}_stage{stage}.jsonl"
         logging.info("seed %d, stage %d: %d decisions from %s, learning rate %g to %g", args.seed, stage, budget,

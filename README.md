@@ -294,6 +294,14 @@ python scripts/train_curriculum.py --seed 0 --stages 3 --budget 60000000 --init 
 python scripts/evaluate_stage.py --stage 1 --seeds 0 1 2 3 4
 ```
 
+**Randomised and Oracle.** The same recipe trains on a range of `b` (`--b-range lo hi`), drawn at every reset outside the bands around held-out values (`--b-held-out`); the Oracle also reads `b` (`--oracle`). Both start from the weights of a Nominal policy: the Oracle's first layers get a zero column for `b`, so it starts exactly as the Nominal policy (`learning/ppo.py`, `widen_inputs`). `evaluate_stage.py --b` drives the protocol laps with a car of balance index `b`, and recognises an Oracle model from the size of its observation.
+
+```bash
+python scripts/train_curriculum.py --seed 0 --stages 3 --budget 60000000 --init outputs/models/nominal/s0/stage2.zip \
+    --lr-start 3e-4 --lr-end 3e-5 --b-range -0.2 0.17 --b-held-out -0.1 0.09 --oracle --tag oracle_w1
+python scripts/evaluate_stage.py --stage 3 --tag oracle_w1 --b -0.13
+```
+
 **Evaluation** (`evaluation/laps.py`, `evaluation/stage_gate.py`): from 10 starts equally spaced along the lap, at 3 m/s, the deterministic policy drives one lap or fails; a lap slower than four times the lap at top speed fails as a timeout. A seed passes when it completes at least 9 of its 10 laps, and a stage passes when at least 4 of 5 seeds pass. The completion rate over seeds × starts is reported with a 95 % interval from a two-level bootstrap that resamples seeds and starts independently. Lap times are compared with a point-mass lap at the top speed of the stage, a yardstick that no policy uses.
 
 ---

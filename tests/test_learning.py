@@ -18,6 +18,7 @@ from contextual_bicycle_pacejka.spec.constants import OBS_DIM
 
 CATALUNYA = REPO / "data/tracks/catalunya/reference.npz"
 TRAIN_SCRIPT = REPO / "scripts/train_curriculum.py"
+EVALUATE_SCRIPT = REPO / "scripts/evaluate_stage.py"
 SMALL = PPOConfig(n_steps=64, batch_size=64, n_epochs=1)
 
 
@@ -60,11 +61,16 @@ def test_start_from_another_model_and_write_curves(tmp_path) -> None:
 
 
 
-def test_learning_rate_of_the_command_line() -> None:
-    """--lr-start and --lr-end of scripts/train_curriculum.py reach the schedule; by default, those of PPOConfig."""
-    spec = importlib.util.spec_from_file_location("train_curriculum", TRAIN_SCRIPT)
+def load_script(path):
+    spec = importlib.util.spec_from_file_location(path.stem, path)
     script = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(script)
+    return script
+
+
+def test_learning_rate_of_the_command_line() -> None:
+    """--lr-start and --lr-end of scripts/train_curriculum.py reach the schedule; by default, those of PPOConfig."""
+    script = load_script(TRAIN_SCRIPT)
     required = ["--seed", "0", "--stages", "3", "--budget", "1000"]
     assert script.ppo_config(script.parse_args(required)) == PPOConfig()
     config = script.ppo_config(script.parse_args([*required, "--lr-start", "3e-4", "--lr-end", "3e-5"]))
@@ -96,3 +102,20 @@ def test_oracle_starts_as_the_nominal_policy(tmp_path) -> None:
     nominal.env.close()
     oracle_env.close()
 
+
+def test_held_out_values_and_protocol_balance_of_the_command_line(tmp_path) -> None:
+    """--b-held-out of the training script and --b of the evaluation script; the evaluation reads an Oracle from the
+    size of its observation."""
+    args = load_script(TRAIN_SCRIPT).parse_args(["--seed", "0", "--stages", "3", "--budget", "1000",
+                                                 "--b-held-out", "-0.1", "0.09"])
+    assert args.b_held_out == [-0.1, 0.09]
+    evaluate = load_script(EVALUATE_SCRIPT)
+    env = make_vec_env(CATALUNYA, 2, seed=0, oracle=True)
+    make_ppo(env, SMALL, seed=0).save(tmp_path / "oracle.zip")
+    env.close()
+    model = evaluate.PPO.load(tmp_path / "oracle.zip", device="cpu")
+    track = evaluate.RealTrack(str(CATALUNYA))
+    protocol = evaluate.protocol_env(model, track, 3, -0.13)
+    obs, info = protocol.reset(seed=0)
+    assert protocol.oracle and info["setup"][-1] == pytest.approx(-0.13) and obs[-1] == pytest.approx(-0.65)
+    assert not evaluate.protocol_env(make_ppo(make_vec_env(CATALUNYA, 2, seed=0), SMALL, seed=0), track, 3, 0.0).oracle
