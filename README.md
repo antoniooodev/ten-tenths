@@ -34,7 +34,7 @@ src/contextual_bicycle_pacejka/
     env/         Gymnasium environment at 20 Hz, its factory and vectorised form, speed stages, setup sampling
     tracks/      centreline reference of a circuit from the TUM racetrack database
     learning/    PPO configuration and training curves
-    evaluation/  protocol laps, stage criterion, result statistics and the check of the balance index
+    evaluation/  protocol laps, stage criterion, corners, evaluation over b, result statistics and the check of the balance index
 data/tracks/     the four circuits: TUM centreline CSV and its reference (curvature and track widths)
 docs/figures/    figures of this README
 research/        literature corpus metadata (the papers and third-party code are not tracked)
@@ -300,6 +300,13 @@ python scripts/evaluate_stage.py --stage 1 --seeds 0 1 2 3 4
 python scripts/train_curriculum.py --seed 0 --stages 3 --budget 60000000 --init outputs/models/nominal/s0/stage2.zip \
     --lr-start 3e-4 --lr-end 3e-5 --b-range -0.2 0.17 --b-held-out -0.1 0.09 --oracle --tag oracle_w1
 python scripts/evaluate_stage.py --stage 3 --tag oracle_w1 --b -0.13
+```
+
+**Evaluation over b** (`evaluation/balance_study.py`, `evaluation/corners.py`). `scripts/evaluate_balance.py --tag <tag>` drives the protocol laps of every seed at each of 13 values of b from −0.23 to +0.20, with the mean action and with three seeded repeats of the stochastic policy, and records for each of the 9 grip-limited corners the entry, minimum and exit speed, the braking point, the peak steering and the peak front and rear slip over the peak slip. For each width of the training range a value of b is nominal, interpolation, held-out or extrapolation. `scripts/summarise_balance.py` compares the policies paired by seed and start (the models of one seed start from the same weights): the cost of randomisation (Randomised − Nominal), the completion and lap time per class of b, and the regret R(b) = T_Randomised(b) − T_Oracle(b); lap times are also divided by the point-mass lap with the cornering limit of that b (`point_mass_lap_time(..., lateral_ratio)`). A width shows a clear gap between Oracle and Randomised when, over its interpolation and held-out values, the completion difference is at least 0.10 or the regret at least 0.5 s, with the 95 % interval above 0.
+
+```bash
+python scripts/evaluate_balance.py --tag randomised_w1_b2
+python scripts/summarise_balance.py
 ```
 
 **Evaluation** (`evaluation/laps.py`, `evaluation/stage_gate.py`): from 10 starts equally spaced along the lap, at 3 m/s, the deterministic policy drives one lap or fails; a lap slower than four times the lap at top speed fails as a timeout. A seed passes when it completes at least 9 of its 10 laps, and a stage passes when at least 4 of 5 seeds pass. The completion rate over seeds × starts is reported with a 95 % interval from a two-level bootstrap that resamples seeds and starts independently. Lap times are compared with a point-mass lap at the top speed of the stage, a yardstick that no policy uses.
