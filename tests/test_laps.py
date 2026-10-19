@@ -7,6 +7,7 @@ import pytest
 from conftest import REPO
 
 from contextual_bicycle_pacejka.env import make_env, make_stage
+from contextual_bicycle_pacejka.evaluation.corners import CORNER_WINDOWS_M, CornerRecorder
 from contextual_bicycle_pacejka.evaluation.laps import (
     LAP_STARTS,
     drive_lap,
@@ -54,6 +55,24 @@ def test_point_mass_yardstick() -> None:
     assert point_mass_lap_time(env.track, make_stage(1, env.track)) == pytest.approx(length / 5.0, rel=1e-6)
     free = point_mass_lap_time(env.track, make_stage(7, env.track))
     assert 120.0 < free < point_mass_lap_time(env.track, make_stage(6, env.track))
+    third = make_stage(3, env.track)
+    assert point_mass_lap_time(env.track, third, lateral_ratio=1.0) == point_mass_lap_time(env.track, third)
+    assert point_mass_lap_time(env.track, third, lateral_ratio=0.808) == pytest.approx(235.8, abs=0.1)
+
+
+def test_corner_measurements_of_a_lap() -> None:
+    """The centreline follower at 5 m/s from s = 1395 m drives through every window, the last ones after the start
+    line; it never brakes, and its slips stay well below the peak."""
+    env = make_env(CATALUNYA, stage=1).unwrapped
+    recorder = CornerRecorder()
+    record = drive_lap(centreline_follower(env), env, 1395.0, observer=recorder)
+    assert record.completed and len(recorder.samples) == record.decisions + 1  # after the reset and every decision
+    corners = recorder.corners(env.track.track_length)
+    assert [tuple(c["window"]) for c in corners] == list(CORNER_WINDOWS_M)  # in the order of the windows
+    for corner in corners:
+        assert 4.8 < corner["min_speed"] <= corner["entry_speed"] <= 5.1 and corner["braking_s"] is None
+        assert corner["window"][0] <= corner["min_speed_s"] <= corner["window"][1]
+        assert 0.0 < corner["peak_slip_front"] < 0.5 and 0.0 < corner["peak_slip_rear"] < 0.5
 
 
 def test_stage_criterion() -> None:

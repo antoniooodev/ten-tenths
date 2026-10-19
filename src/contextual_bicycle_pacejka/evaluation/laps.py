@@ -7,7 +7,10 @@ interpolated within the last decision.
 
 The point-mass lap time drives the centreline at the largest speed the friction ellipse allows, with the traction
 and braking limits of the plant (rear-wheel drive; front brake share 0.65, so the rear axle locks first) and the top
-speed of the stage. No policy uses it; it only scales lap times across stages.
+speed of the stage. ``lateral_ratio`` scales the lateral limit, for a balance index b with a lower cornering limit
+(a_y,max(b) / a_y,max(0)). No policy uses it; it only scales lap times across stages and values of b.
+
+An observer passed to ``drive_lap`` is called with the environment after the reset and after every decision.
 """
 
 from __future__ import annotations
@@ -61,12 +64,17 @@ def protocol_starts(track: RealTrack) -> list[float]:
     return [i * track.track_length / LAP_STARTS for i in range(LAP_STARTS)]
 
 
-def drive_lap(policy: Policy, env: RacingEnv, start_s: float, timeout_s: float | None = None) -> LapRecord:
+def drive_lap(
+    policy: Policy, env: RacingEnv, start_s: float, timeout_s: float | None = None,
+    observer: Callable[[RacingEnv], None] | None = None,
+) -> LapRecord:
     """Drive one lap of ``env`` (an unwrapped environment, no time limit) from ``start_s`` with ``policy``."""
     length = env.track.track_length
     if timeout_s is None:
         timeout_s = TIMEOUT_FACTOR * length / env.stage.sizing_speed
     obs, _ = env.reset(options={"initial_s": start_s, "initial_vx": START_SPEED_MPS})
+    if observer is not None:
+        observer(env)
     finish = start_s + length
     yaw = [abs(float(obs[OBS.YAW_RATE]))]
     decisions = 0
@@ -74,6 +82,8 @@ def drive_lap(policy: Policy, env: RacingEnv, start_s: float, timeout_s: float |
         s_before = env.state.s
         obs, _, terminated, _, info = env.step(policy(obs))
         decisions += 1
+        if observer is not None and not terminated:
+            observer(env)
         yaw.append(abs(float(obs[OBS.YAW_RATE])))
         if terminated:
             return LapRecord(start_s, False, None, info["failure"], env.state.s % length, decisions,
@@ -94,17 +104,19 @@ def longitudinal_limits(mu: float = MU_NOM) -> tuple[float, float]:
     return traction, min(D_MAX, front_lock, rear_lock)
 
 
-def point_mass_lap_time(track: RealTrack, stage: SpeedStage, mu: float = MU_NOM) -> float:
-    """Return the point-mass lap time [s] of a flying lap at the top speed of ``stage`` (none for the free stage)."""
+def point_mass_lap_time(track: RealTrack, stage: SpeedStage, mu: float = MU_NOM, lateral_ratio: float = 1.0) -> float:
+    """Return the point-mass lap time [s] of a flying lap at the top speed of ``stage`` (none for the free stage),
+    with the lateral limit mu g scaled by ``lateral_ratio``."""
     n = math.ceil(track.track_length / POINT_MASS_STEP_M)
     step = track.track_length / n
     kappa = np.abs(track.kappa_many(np.arange(n) * step))
     v_top = math.inf if stage.top_speed is None else stage.top_speed
-    v = np.minimum(np.sqrt(mu * G / np.maximum(kappa, 1e-12)), v_top)
+    lateral_limit = mu * G * lateral_ratio
+    v = np.minimum(np.sqrt(lateral_limit / np.maximum(kappa, 1e-12)), v_top)
     traction, braking = longitudinal_limits(mu)
 
     def reachable(v_from: float, k: float, a_max: float) -> float:
-        lateral = min(v_from * v_from * k / (mu * G), 1.0)
+        lateral = min(v_from * v_from * k / lateral_limit, 1.0)
         return math.sqrt(v_from * v_from + 2.0 * a_max * math.sqrt(1.0 - lateral * lateral) * step)
 
     for _ in range(2):  # twice around the lap, so the closing point is consistent
