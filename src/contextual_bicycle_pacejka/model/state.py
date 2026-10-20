@@ -49,7 +49,9 @@ class VehicleState:
 class VehicleMemory:
     """Quantities of the previous step, used only by the load-transfer model.
 
-    Fx_r_prev, Fx_f_prev [N] longitudinal axle forces, delta_prev [rad], vy_prev [m/s], yawrate_prev [rad/s].
+    Fx_r_prev, Fx_f_prev [N] longitudinal axle forces, delta_prev [rad], vy_prev [m/s], yawrate_prev [rad/s] (the
+    original load transfer); F_body_x_prev [N] longitudinal resultant of every force on the body, drag included (the
+    inertial load transfer).
     """
 
     Fx_r_prev: float = 0.0
@@ -57,6 +59,7 @@ class VehicleMemory:
     delta_prev: float = 0.0
     vy_prev: float = 0.0
     yawrate_prev: float = 0.0
+    F_body_x_prev: float = 0.0
 
     @classmethod
     def zeros(cls) -> VehicleMemory:

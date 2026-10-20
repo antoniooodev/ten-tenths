@@ -54,7 +54,7 @@ The car is a **single-track (bicycle) model** written in the **Frenet frame** of
 | `model/actuator.py`      | first-order steering lag                                                                                                                      |
 | `model/tires.py`         | slip angles, lateral capacity scales of the balance index, combined-slip capacity, Pacejka lateral force, peak slip angle `alpha_sat`       |
 | `model/load_transfer.py` | longitudinal load transfer from the previous step                                                                                             |
-| `model/powertrain.py`    | rear-wheel drive, brake bias, friction limit on the longitudinal forces, top-speed bound of a stage                                           |
+| `model/powertrain.py`    | rear-wheel drive, power limit, brake bias, friction limit on the longitudinal forces, top-speed bound of a stage                              |
 | `model/dynamics.py`      | `step_plant`: one 10 ms step in causal order                                                                                                  |
 | `model/handling.py`      | steady state: constant-radius trim, understeer gradient, lateral limit, yaw stability and critical speed                                      |
 | `model/track.py`         | `RealTrack`: periodic-spline centreline with the track widths (see section 2)                                                                 |
@@ -64,6 +64,8 @@ The car is a **single-track (bicycle) model** written in the **Frenet frame** of
 | `spec/constants.py`      | every number of the model, with its unit                                                                                                      |
 
 **Fixed vehicle data** (`spec/constants.py`): `l_f = 1.2 m`, `l_r = 1.4 m`, `I_z = 1800 kg m²`, `A_MAX = 8 m/s²`, `D_MAX = 12 m/s²`, front brake share `BETA_BRAKE = 0.65`, steering limit `DELTA_MAX = 0.5 rad`, integration step `DT = 0.01 s` (100 Hz, explicit Euler).
+
+**Drag and power** of a GT4-class car, the Porsche 718 Cayman GT4 (EU technical data: 309 kW, `cd x A = 0.69 m²`, 304 km/h, 1420 kg): drag area `0.69 m²`, air density `1.2 kg/m³`, and a power at the wheels of 249 kW, the power that holds the published top speed against the drag (the plant has no rolling resistance or driveline losses). `PlantOptions` switches the inertial load transfer, the drag and the power limit; `ORIGINAL_PLANT` switches all three off and reproduces the original plant bit for bit (the original load transfer used `(Fx_r + Fx_f cos delta) / m + vy r`, which unloaded an axle in a slide).
 
 ### One plant step
 
@@ -89,11 +91,12 @@ The equations, as implemented:
 
 ```
 actuator      delta'   = clip(delta + (delta_cmd - delta) / tau_d * dt, ±0.5)
-load transfer ax_LT    = (Fx_r,prev + Fx_f,prev cos delta_prev) / m + vy_prev r_prev
+load transfer ax_LT    = F_x,prev / m        (= dvx/dt - vy r: the longitudinal acceleration of the centre of mass)
               Fz_f     = m / L (g l_r - ax_LT hcg),     Fz_r = m / L (g l_f + ax_LT hcg),     L = l_f + l_r
-powertrain    tau >= 0: Fx_f = 0,                       Fx_r = tau m A_MAX
+powertrain    tau >= 0: Fx_f = 0,                       Fx_r = tau min(m A_MAX, P / max(vx, 1 m/s))
               tau <  0: Fx_f = tau m D_MAX 0.65,        Fx_r = tau m D_MAX 0.35
               |Fx_i| <= mu Fz_i
+drag          D      = 1/2 rho cdA vx^2, against vx, part of F_x
 dynamics      dvx/dt = F_x / m + vy r,    dvy/dt = F_y / m - vx r,    dr/dt = (l_f (F_y - Fy_r) - l_r Fy_r) / I_z
 Frenet        ds/dt  = (vx cos e_psi - vy sin e_psi) / (1 - kappa(s) e_y)
               de_y/dt = vx sin e_psi + vy cos e_psi,      de_psi/dt = r - kappa(s) ds/dt
@@ -231,7 +234,7 @@ The **plant state** `z` (float64) lives in the Frenet frame of the centreline:
 | 5     | `r`     | rad/s | yaw rate                                                             |
 | 6     | `delta` | rad   | actual (post-actuator) steering angle                                |
 
-The plant also keeps a **memory** of the previous step (`Fx_r, Fx_f, delta, vy, r`) for the load transfer. The controllers never see `s` directly or the memory: they see the observation.
+The plant also keeps a **memory** of the previous step (`Fx_r, Fx_f, delta, vy, r`, and the longitudinal resultant `F_x`) for the load transfer. The controllers never see `s` directly or the memory: they see the observation.
 
 ### Observation (100 entries, 101 for the Oracle)
 
@@ -321,4 +324,4 @@ python scripts/check_balance_index.py   # steady-state check of b -> outputs/ana
 python scripts/measure_throughput.py    # decisions/s of the environment -> outputs/analysis/throughput.json
 ```
 
-`tests/golden/plant_catalunya.npz` holds reference rollouts of the dynamics alone on the Catalunya centreline (`tests/test_plant.py`): any change to the plant, such as the balance index at its neutral value, must reproduce them bit for bit; `tests/test_balance.py` pins what `b` changes. The analysis tests use results recorded from the original implementation.
+`tests/golden/plant_catalunya.npz` holds reference rollouts of the original dynamics alone on the Catalunya centreline (`tests/test_plant.py`), which `ORIGINAL_PLANT` must reproduce bit for bit; `tests/golden/plant_catalunya_gt4.npz` holds those of the current plant, which any later change must reproduce. The same file checks the drag and power (top speed, acceleration, coast-down, within 1 %) and that a slide no longer unloads an axle; `tests/test_balance.py` pins what `b` changes. The analysis tests use results recorded from the original implementation.

@@ -1,6 +1,6 @@
 """Powertrain: rear-wheel drive, braking split by a fixed front bias, friction-limited axle forces.
 
-    traction (tau >= 0):  Fx_f = 0,                          Fx_r = tau m A_MAX
+    traction (tau >= 0):  Fx_f = 0,                          Fx_r = tau min(m A_MAX, P / max(vx, v_floor))
     braking  (tau < 0):   Fx_f = tau m D_MAX BETA_BRAKE,     Fx_r = tau m D_MAX (1 - BETA_BRAKE)
     saturation:           |Fx_i| <= mu Fz_i
 
@@ -16,14 +16,17 @@ from __future__ import annotations
 import math
 
 from contextual_bicycle_pacejka.model.state import SetupVector
-from contextual_bicycle_pacejka.spec.constants import A_MAX, BETA_BRAKE, D_MAX, SPEED_LIMIT_BAND
+from contextual_bicycle_pacejka.spec.constants import A_MAX, BETA_BRAKE, D_MAX, POWER_SPEED_FLOOR_MPS, SPEED_LIMIT_BAND
 
 
-def compute_longitudinal_commands(tau_cmd: float, setup: SetupVector) -> tuple[float, float]:
-    """Return the commanded longitudinal forces (Fx_f, Fx_r) [N] for tau_cmd in [-1, 1]."""
+def compute_longitudinal_commands(
+    tau_cmd: float, setup: SetupVector, vx: float = 0.0, wheel_power: float = math.inf,
+) -> tuple[float, float]:
+    """Return the commanded longitudinal forces (Fx_f, Fx_r) [N] for tau_cmd in [-1, 1]; the traction is bounded by
+    the power at the wheels ``wheel_power`` [W] (infinite: no power limit, the original plant)."""
     m = setup.m
     if tau_cmd >= 0.0:
-        return 0.0, tau_cmd * m * A_MAX
+        return 0.0, tau_cmd * min(m * A_MAX, wheel_power / max(vx, POWER_SPEED_FLOOR_MPS))
     return tau_cmd * m * D_MAX * BETA_BRAKE, tau_cmd * m * D_MAX * (1.0 - BETA_BRAKE)
 
 

@@ -30,7 +30,7 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.optimize import fsolve, minimize_scalar
 
-from contextual_bicycle_pacejka.model.dynamics import compute_vehicle_rates
+from contextual_bicycle_pacejka.model.dynamics import PLANT, compute_vehicle_rates
 from contextual_bicycle_pacejka.model.powertrain import compute_longitudinal_commands
 from contextual_bicycle_pacejka.model.state import AdmissibilityError, SetupVector, VehicleMemory, VehicleState
 from contextual_bicycle_pacejka.model.tires import compute_saturation_threshold
@@ -65,8 +65,9 @@ def _trim_rates(
     """Return (dvx/dt, dvy/dt, dr/dt) and the diagnostics at a candidate trim (delta, vy, tau)."""
     delta, vy, tau = (float(u) for u in unknowns)
     r = v / radius
-    fx_f, fx_r = compute_longitudinal_commands(tau, setup)
-    memory = VehicleMemory(Fx_r_prev=fx_r, Fx_f_prev=fx_f, delta_prev=delta, vy_prev=vy, yawrate_prev=r)
+    fx_f, fx_r = compute_longitudinal_commands(tau, setup, v, PLANT.wheel_power)
+    memory = VehicleMemory(Fx_r_prev=fx_r, Fx_f_prev=fx_f, delta_prev=delta, vy_prev=vy, yawrate_prev=r,
+                           F_body_x_prev=-setup.m * vy * r)  # at the trim dvx/dt = 0, so F_body_x = -m vy r
     ax, ay, yaw_acc, diag = compute_vehicle_rates(VehicleState(vx=v, vy=vy, yaw_rate=r, delta=delta), tau, setup,
                                                   memory)
     return np.array([ax, ay, yaw_acc]), diag
@@ -79,7 +80,7 @@ def _accept_trim(
     """Return the trim if the solver converged to unsaturated longitudinal forces on the rising side of both tyres."""
     if np.max(np.abs(rates)) > TRIM_RESIDUAL_TOL:
         return None
-    fx_f, fx_r = compute_longitudinal_commands(float(unknowns[2]), setup)
+    fx_f, fx_r = compute_longitudinal_commands(float(unknowns[2]), setup, v, PLANT.wheel_power)
     if diag["Fx_f"] != fx_f or diag["Fx_r"] != fx_r:  # the memory assumed unsaturated longitudinal forces
         return None
     if (abs(diag["alpha_f"]) > compute_saturation_threshold(setup, "front")
@@ -194,7 +195,7 @@ def yaw_eigenvalues(v: float, setup: SetupVector) -> NDArray[np.complex128]:
     """Return the eigenvalues [1/s] of the lateral-yaw dynamics (vy, r) on the straight line at speed v [m/s]."""
 
     def lateral_rates(vy: float, r: float) -> NDArray[np.float64]:
-        memory = VehicleMemory(vy_prev=vy, yawrate_prev=r)
+        memory = VehicleMemory(vy_prev=vy, yawrate_prev=r, F_body_x_prev=-setup.m * vy * r)
         _, ay, yaw_acc, _ = compute_vehicle_rates(VehicleState(vx=v, vy=vy, yaw_rate=r), 0.0, setup, memory)
         return np.array([ay, yaw_acc])
 

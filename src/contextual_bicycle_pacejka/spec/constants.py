@@ -23,6 +23,16 @@ A_MAX: float = 8.0  # [m/s^2] maximum commanded acceleration
 D_MAX: float = 12.0  # [m/s^2] maximum commanded deceleration magnitude
 BETA_BRAKE: float = 0.65  # [-] front share of the braking force
 
+# Aerodynamic drag and power limit of a GT4-class car: Porsche 718 Cayman GT4, EU technical data (Porsche,
+# 718 Cayman GT4 press kit): 309 kW, cd x A 0.69 m^2, top speed 304 km/h, 1420 kg unladen (DIN). The plant has no
+# rolling resistance and no driveline losses, so the power at the wheels is the one that holds the published top
+# speed against the drag: 1/2 rho cdA v^3 = 249 kW, 81 % of the engine power.
+AIR_DENSITY: float = 1.2  # [kg/m^3]
+DRAG_AREA_M2: float = 0.69  # [m^2] cd x A
+REFERENCE_TOP_SPEED_MPS: float = 304.0 / 3.6  # [m/s] published top speed
+WHEEL_POWER_W: float = 0.5 * AIR_DENSITY * DRAG_AREA_M2 * REFERENCE_TOP_SPEED_MPS ** 3  # [W] power at the wheels
+POWER_SPEED_FLOOR_MPS: float = 1.0  # [m/s] the power limit P / max(vx, floor) stays finite at a standstill
+
 # Steering actuator.
 DELTA_MAX: float = 0.5  # [rad] steering angle limit
 TAU_MIN: float = 0.01  # [s] smallest actuator lag time constant
