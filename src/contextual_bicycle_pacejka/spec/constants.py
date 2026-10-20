@@ -67,10 +67,11 @@ SPEED_LIMIT_BAND: float = 0.05  # [-] traction fades over the last 5 % of the to
 # Speed stages
 # ---------------------------------------------------------------------------
 STAGE_TOP_SPEEDS_MPS: tuple[float | None, ...] = (5.0, 10.0, 20.0, 30.0, 40.0, 60.0, None)  # [m/s] None: no bound
-FREE_STAGE_SIZING_MPS: float = 92.0  # [m/s] sizes the free stage: point-mass top speed on Catalunya, rounded up
+FREE_STAGE_SIZING_MPS: float = 70.0  # [m/s] sizes the free stage: point-mass top speed on Catalunya (68.8), rounded up
 PREVIEW_TIME_S: float = 1.0  # [s] preview horizon beyond the braking distance
 N_PREVIEW: int = 30  # [-] preview points, the same at every stage
-START_SPEED_MIN_MPS: float = 3.0  # [m/s] slowest start; the fastest is the top speed of the previous stage
+START_SPEED_MIN_MPS: float = 3.0  # [m/s] slowest start of a training episode
+START_SPEED_FRACTION: float = 0.8  # [-] fastest start: this fraction of the point-mass speed at the start point
 
 # ---------------------------------------------------------------------------
 # Failures, reward and episodes

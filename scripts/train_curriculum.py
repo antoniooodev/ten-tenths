@@ -7,7 +7,10 @@
 Models go to <models>/<tag>/s<seed>/stage<k>.zip and the training curves to <logs>/<tag>/s<seed>_stage<k>.jsonl.
 ``--b-range`` and ``--oracle`` select the vehicle family and the oracle input (default: the nominal car);
 ``--b-held-out`` keeps a band of half-width ``HELD_OUT_HALF_WIDTH`` around each of its values out of training.
-``--lr-start`` and ``--lr-end`` set the linear learning rate of every stage (default: 1e-3 to 1e-4).
+``--lr-start`` and ``--lr-end`` set the linear learning rate of every stage (default: 1e-3 to 1e-4), ``--gamma`` the
+discount per decision (default 0.99). ``--curriculum`` trains the free stage with the automatic speed curriculum
+(learning/curriculum.py): the top speed starts at 10 m/s and rises while the training failures are rare; the changes
+go to <logs>/<tag>/s<seed>_curriculum.jsonl.
 """
 
 from __future__ import annotations
@@ -17,9 +20,11 @@ import logging
 from pathlib import Path
 
 from contextual_bicycle_pacejka.env import held_out_bands, make_vec_env
+from contextual_bicycle_pacejka.learning.curriculum import SpeedCurriculum
 from contextual_bicycle_pacejka.learning.monitor import TrainingCurves
 from contextual_bicycle_pacejka.learning.ppo import PPOConfig, make_ppo
-from contextual_bicycle_pacejka.spec.constants import TRAINING_EDGE_MARGIN_M
+from contextual_bicycle_pacejka.model.track import RealTrack
+from contextual_bicycle_pacejka.spec.constants import STAGE_TOP_SPEEDS_MPS, TRAINING_EDGE_MARGIN_M
 
 CATALUNYA = "data/tracks/catalunya/reference.npz"
 
@@ -41,6 +46,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                         help="learning rate at the start of every stage")
     parser.add_argument("--lr-end", type=float, default=PPOConfig.learning_rate_end,
                         help="learning rate at the end of every stage")
+    parser.add_argument("--gamma", type=float, default=PPOConfig.gamma, help="discount per decision")
+    parser.add_argument("--curriculum", action="store_true", help="automatic speed curriculum on the free stage")
     parser.add_argument("--workers", type=int, default=10)
     parser.add_argument("--envs-per-worker", type=int, default=32)
     parser.add_argument("--models", type=Path, default=Path("outputs/models"))
@@ -49,12 +56,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     args.budgets = args.budget * len(args.stages) if len(args.budget) == 1 else args.budget
     if len(args.budgets) != len(args.stages):
         parser.error("--budget takes one value or one per stage")
+    if args.curriculum and args.stages != [len(STAGE_TOP_SPEEDS_MPS)]:
+        parser.error(f"--curriculum trains the free stage alone: --stages {len(STAGE_TOP_SPEEDS_MPS)}")
     return args
 
 
 def ppo_config(args: argparse.Namespace) -> PPOConfig:
-    """Return the PPO configuration with the learning rate of the command line."""
-    return PPOConfig(learning_rate_start=args.lr_start, learning_rate_end=args.lr_end)
+    """Return the PPO configuration with the learning rate and the discount of the command line."""
+    return PPOConfig(learning_rate_start=args.lr_start, learning_rate_end=args.lr_end, gamma=args.gamma)
 
 
 def main() -> None:
@@ -71,7 +80,11 @@ def main() -> None:
         curves = args.logs / args.tag / f"s{args.seed}_stage{stage}.jsonl"
         logging.info("seed %d, stage %d: %d decisions from %s, learning rate %g to %g", args.seed, stage, budget,
                      init or "random weights", config.learning_rate_start, config.learning_rate_end)
-        model.learn(total_timesteps=budget, callback=TrainingCurves(curves))
+        callbacks = [TrainingCurves(curves)]
+        if args.curriculum:
+            callbacks.append(SpeedCurriculum(RealTrack(CATALUNYA).track_length,
+                                             args.logs / args.tag / f"s{args.seed}_curriculum.jsonl"))
+        model.learn(total_timesteps=budget, callback=callbacks)
         path = args.models / args.tag / f"s{args.seed}" / f"stage{stage}.zip"
         path.parent.mkdir(parents=True, exist_ok=True)
         model.save(path)

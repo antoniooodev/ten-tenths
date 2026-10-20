@@ -5,17 +5,17 @@ at ``START_SPEED_MPS``, with the nominal car. The policy drives one lap (from s_
 failure; a lap slower than ``TIMEOUT_FACTOR`` L / v_top fails as ``timeout``. The lap time includes the start and is
 interpolated within the last decision.
 
-The point-mass lap time drives the centreline at the largest speed the friction ellipse allows, with the traction
-and braking limits of the plant (rear-wheel drive; front brake share 0.65, so the rear axle locks first) and the top
-speed of the stage. ``lateral_ratio`` scales the lateral limit, for a balance index b with a lower cornering limit
-(a_y,max(b) / a_y,max(0)). No policy uses it; it only scales lap times across stages and values of b.
+The point-mass lap time drives the centreline at the largest speed the friction ellipse and the powertrain allow
+(``model/point_mass.py``: traction and braking limits of the plant with drag and power; front brake share 0.65, so
+the rear axle locks first) and the top speed of the stage. ``lateral_ratio`` scales the lateral limit, for a balance
+index b with a lower cornering limit (a_y,max(b) / a_y,max(0)). No policy uses it; it only scales lap times across
+stages and values of b.
 
 An observer passed to ``drive_lap`` is called with the environment after the reset and after every decision.
 """
 
 from __future__ import annotations
 
-import math
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -24,26 +24,18 @@ from numpy.typing import NDArray
 
 from contextual_bicycle_pacejka.env.environment import RacingEnv
 from contextual_bicycle_pacejka.env.stages import SpeedStage
+from contextual_bicycle_pacejka.model.dynamics import PLANT, PlantOptions
+from contextual_bicycle_pacejka.model.point_mass import longitudinal_limits, profile_lap_time, speed_profile
 from contextual_bicycle_pacejka.model.track import RealTrack
-from contextual_bicycle_pacejka.spec.constants import (
-    A_MAX,
-    BETA_BRAKE,
-    D_MAX,
-    DECISION_DT,
-    G,
-    HCG_NOM,
-    LF,
-    LR,
-    MU_NOM,
-)
+from contextual_bicycle_pacejka.spec.constants import DECISION_DT, MU_NOM
 from contextual_bicycle_pacejka.spec.layout import OBS
 
 LAP_STARTS: int = 10
 START_SPEED_MPS: float = 3.0  # [m/s]
 TIMEOUT_FACTOR: float = 4.0  # [-] a lap longer than TIMEOUT_FACTOR L / v_top fails
-POINT_MASS_STEP_M: float = 1.0  # [m] largest step of the point-mass profile (the lap is split into equal steps)
 
 Policy = Callable[[NDArray[np.float32]], NDArray[np.float32]]
+__all__ = ["LAP_STARTS", "LapRecord", "drive_lap", "longitudinal_limits", "point_mass_lap_time", "protocol_starts"]
 
 
 @dataclass(frozen=True)
@@ -95,33 +87,10 @@ def drive_lap(
     return LapRecord(start_s, False, None, "timeout", env.state.s % length, decisions, float(np.percentile(yaw, 99)))
 
 
-def longitudinal_limits(mu: float = MU_NOM) -> tuple[float, float]:
-    """Return the largest (traction, braking) accelerations [m/s^2] of the nominal car with load transfer."""
-    wheelbase = LF + LR
-    traction = min(A_MAX, mu * G * LF / (wheelbase - mu * HCG_NOM))
-    front_lock = mu * G * LR / (wheelbase * BETA_BRAKE - mu * HCG_NOM)
-    rear_lock = mu * G * LF / (wheelbase * (1.0 - BETA_BRAKE) + mu * HCG_NOM)
-    return traction, min(D_MAX, front_lock, rear_lock)
-
-
-def point_mass_lap_time(track: RealTrack, stage: SpeedStage, mu: float = MU_NOM, lateral_ratio: float = 1.0) -> float:
+def point_mass_lap_time(
+    track: RealTrack, stage: SpeedStage, mu: float = MU_NOM, lateral_ratio: float = 1.0, options: PlantOptions = PLANT,
+) -> float:
     """Return the point-mass lap time [s] of a flying lap at the top speed of ``stage`` (none for the free stage),
-    with the lateral limit mu g scaled by ``lateral_ratio``."""
-    n = math.ceil(track.track_length / POINT_MASS_STEP_M)
-    step = track.track_length / n
-    kappa = np.abs(track.kappa_many(np.arange(n) * step))
-    v_top = math.inf if stage.top_speed is None else stage.top_speed
-    lateral_limit = mu * G * lateral_ratio
-    v = np.minimum(np.sqrt(lateral_limit / np.maximum(kappa, 1e-12)), v_top)
-    traction, braking = longitudinal_limits(mu)
-
-    def reachable(v_from: float, k: float, a_max: float) -> float:
-        lateral = min(v_from * v_from * k / lateral_limit, 1.0)
-        return math.sqrt(v_from * v_from + 2.0 * a_max * math.sqrt(1.0 - lateral * lateral) * step)
-
-    for _ in range(2):  # twice around the lap, so the closing point is consistent
-        for i in range(1, 2 * n + 1):
-            v[i % n] = min(v[i % n], reachable(v[(i - 1) % n], kappa[(i - 1) % n], traction))
-        for i in range(2 * n, 0, -1):
-            v[(i - 1) % n] = min(v[(i - 1) % n], reachable(v[i % n], kappa[i % n], braking))
-    return float(np.sum(step / v))
+    with the lateral limit mu g scaled by ``lateral_ratio`` (``model/point_mass.py``)."""
+    s, v = speed_profile(track, stage.top_speed, mu, lateral_ratio, options)
+    return profile_lap_time(s, v, track.track_length)

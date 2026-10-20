@@ -33,7 +33,7 @@ src/contextual_bicycle_pacejka/
     model/       vehicle plant, tyres, load transfer, powertrain, track, steady-state handling, observation, failures, reward
     env/         Gymnasium environment at 20 Hz, its factory and vectorised form, speed stages, setup sampling
     tracks/      centreline reference of a circuit from the TUM racetrack database
-    learning/    PPO configuration and training curves
+    learning/    PPO configuration, training curves and the automatic speed curriculum
     evaluation/  protocol laps, stage criterion, corners, evaluation over b, result statistics and the check of the balance index
 data/tracks/     the four circuits: TUM centreline CSV and its reference (curvature and track widths)
 docs/figures/    figures of this README
@@ -176,16 +176,16 @@ obs, reward, terminated, truncated, info = env.step(np.array([0.0, 0.5], dtype=n
 
 ### Speed stages — `env/stages.py`
 
-The policy learns at increasing top speeds: 5, 10, 20, 30, 40, 60 m/s, then with no bound (the free stage is sized at 92 m/s: the plant has no drag, and a point-mass profile of Catalunya with its limits peaks at 91 m/s). `make_stage(number, track)` sets every speed-dependent parameter from an explicit rule:
+The policy learns at increasing top speeds: 5, 10, 20, 30, 40, 60 m/s, then with no bound (the free stage is sized at 70 m/s: with the drag and the power of the car, a point-mass profile of Catalunya peaks at 68.8 m/s and laps in 138.7 s; `model/point_mass.py`). `make_stage(number, track)` sets every speed-dependent parameter from an explicit rule:
 
 | Parameter        | Rule                                                                                     |
 | ---------------- | ---------------------------------------------------------------------------------------- |
 | preview horizon  | braking distance `v² / (2 mu g)` plus one second, `v` the top speed                       |
-| preview points   | 30, equally spaced, the first one decision ahead (`0.05 v`)                              |
+| preview points   | 30, spaced quadratically (dense near the car), the first one decision ahead (`0.05 v`)   |
 | scales           | speed `v`; yaw rate `min(v, sqrt(mu g R_min)) / R_min`; widths `w_max`; curvature `1 / R_min` |
-| start speeds     | uniform between 3 m/s and the top speed of the previous stage                            |
+| start speeds     | at a point `s`: uniform between 3 m/s and `0.8 v_pm(s)`, the point-mass profile with the top speed |
 
-`R_min` (22.8 m on Catalunya) is the radius of the tightest corner and `w_max` (9.3 m) the widest half-width.
+`R_min` (22.8 m on Catalunya) is the radius of the tightest corner and `w_max` (9.3 m) the widest half-width. The progress reward is normalised by the top speed (by the sizing speed when there is none). `RacingEnv.set_top_speed(v)` changes the top speed during training (`env_method` on the vectorised environment): the start speeds and the reward normalisation follow, the observation does not, so a curriculum can raise the top speed of the free stage step by step. `info` also holds `slip_ratio`, the `|alpha| / alpha_sat` of each axle at the end of the decision.
 
 ### Setup sampling — `env/setup_sampling.py`
 

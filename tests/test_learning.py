@@ -11,6 +11,7 @@ import torch
 from conftest import REPO
 
 from contextual_bicycle_pacejka.env import make_vec_env
+from contextual_bicycle_pacejka.learning.curriculum import SpeedCurriculum, failures_per_lap, next_top_speed
 from contextual_bicycle_pacejka.learning.monitor import TrainingCurves
 from contextual_bicycle_pacejka.learning.ppo import PPOConfig, make_ppo, widen_inputs
 from contextual_bicycle_pacejka.model.termination import FAILURES
@@ -50,6 +51,7 @@ def test_start_from_another_model_and_write_curves(tmp_path) -> None:
     lines = [json.loads(line) for line in curves.read_text().splitlines()]
     assert len(lines) == 2 and lines[-1]["timesteps"] == 256 and lines[-1]["decisions"] == 128
     assert set(lines[-1]["failures_per_1000"]) == set(FAILURES) and 0.0 < lines[-1]["progress_per_decision"] < 1.5
+    assert 0.0 < lines[-1]["mean_speed"] < 15.0 and set(lines[-1]["slip_beyond_peak"]) == {"front", "rear"}
     assert any(key.startswith("train/") for key in lines[-1]["losses"])
 
     second = make_ppo(make_vec_env(CATALUNYA, 2, seed=1, stage=3), SMALL, seed=1, init_from=tmp_path / "first.zip")
@@ -69,12 +71,13 @@ def load_script(path):
 
 
 def test_learning_rate_of_the_command_line() -> None:
-    """--lr-start and --lr-end of scripts/train_curriculum.py reach the schedule; by default, those of PPOConfig."""
+    """--lr-start, --lr-end and --gamma of scripts/train_curriculum.py reach PPO; by default, those of PPOConfig."""
     script = load_script(TRAIN_SCRIPT)
     required = ["--seed", "0", "--stages", "3", "--budget", "1000"]
     assert script.ppo_config(script.parse_args(required)) == PPOConfig()
-    config = script.ppo_config(script.parse_args([*required, "--lr-start", "3e-4", "--lr-end", "3e-5"]))
-    assert (config.learning_rate_start, config.learning_rate_end) == (3e-4, 3e-5)
+    options = ["--lr-start", "3e-4", "--lr-end", "3e-5", "--gamma", "0.995"]
+    config = script.ppo_config(script.parse_args([*required, *options]))
+    assert (config.learning_rate_start, config.learning_rate_end, config.gamma) == (3e-4, 3e-5, 0.995)
     env = make_vec_env(CATALUNYA, 2, seed=0)
     model = make_ppo(env, config, seed=0)
     assert model.lr_schedule(1.0) == pytest.approx(3e-4) and model.lr_schedule(0.0) == pytest.approx(3e-5)
@@ -119,3 +122,23 @@ def test_held_out_values_and_protocol_balance_of_the_command_line(tmp_path) -> N
     obs, info = protocol.reset(seed=0)
     assert protocol.oracle and info["setup"][-1] == pytest.approx(-0.13) and obs[-1] == pytest.approx(-0.65)
     assert not evaluate.protocol_env(make_ppo(make_vec_env(CATALUNYA, 2, seed=0), SMALL, seed=0), track, 3, 0.0).oracle
+
+
+def test_speed_curriculum_rule() -> None:
+    """Failures per equivalent lap, the rise of 2.5 m/s, and no bound once the rise reaches the sizing speed."""
+    assert failures_per_lap(1, 46_498, 10.0, 4649.8) == pytest.approx(0.2, rel=1e-3)  # 5 laps of 9300 decisions
+    assert next_top_speed(10.0) == 12.5 and next_top_speed(65.0) == 67.5 and next_top_speed(67.5) is None
+
+
+def test_speed_curriculum_raises_the_top_speed(tmp_path) -> None:
+    """With a threshold no rollout can miss, the top speed of every environment rises after each window of rollouts,
+    and every change is logged; the free stage keeps its observation."""
+    env = make_vec_env(CATALUNYA, 2, seed=0, stage=7, workers=0)
+    log = tmp_path / "curriculum.jsonl"
+    curriculum = SpeedCurriculum(4649.8, log, threshold=1e9, window=2)
+    make_ppo(env, SMALL, seed=0).learn(total_timesteps=6 * 128, callback=curriculum)
+    changes = [json.loads(line) for line in log.read_text().splitlines()]
+    assert [c["top_speed"] for c in changes] == [10.0, 12.5, 15.0, 17.5]
+    assert [s.top_speed for s in env.get_attr("stage")] == [17.5, 17.5] and curriculum.top_speed == 17.5
+    assert env.get_attr("stage")[0].sizing_speed == 70.0
+    env.close()

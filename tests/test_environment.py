@@ -13,6 +13,7 @@ from conftest import REPO
 from contextual_bicycle_pacejka import ENV_ID
 
 from contextual_bicycle_pacejka.env import environment, held_out_bands, make_env, make_stage, sample_setup
+from contextual_bicycle_pacejka.model.point_mass import speed_profile
 from contextual_bicycle_pacejka.model.observation import vehicle_world_position
 from contextual_bicycle_pacejka.model.state import AdmissibilityError, VehicleState
 from contextual_bicycle_pacejka.model.termination import check_failure
@@ -25,6 +26,7 @@ from contextual_bicycle_pacejka.spec.constants import (
     G,
     N_PREVIEW,
     OBS_DIM,
+    REFERENCE_TOP_SPEED_MPS,
     SPIN_EPSI_RAD,
     STAGE_TOP_SPEEDS_MPS,
     STALL_SPEED_MPS,
@@ -94,8 +96,13 @@ def test_stage_rules(number: int) -> None:
     assert v == (STAGE_TOP_SPEEDS_MPS[number - 1] or FREE_STAGE_SIZING_MPS)
     assert len(stage.preview) == N_PREVIEW and stage.preview[0] == pytest.approx(v * DECISION_DT)
     assert stage.preview[-1] == pytest.approx(v * v / (2.0 * G) + v)
-    assert np.allclose(np.diff(stage.preview), np.diff(stage.preview)[0])
-    assert stage.start_speed == (START_SPEED_MIN_MPS, STAGE_TOP_SPEEDS_MPS[max(number - 2, 0)])
+    gaps = np.diff(stage.preview)
+    assert np.all(np.diff(gaps) > 0.0) and gaps[0] == pytest.approx(gaps[-1] / 57)  # quadratic: 1 / (29^2 - 28^2)
+    assert stage.preview[N_PREVIEW // 2] == pytest.approx(stage.preview[0] + (stage.preview[-1] - stage.preview[0])
+                                                          * (15 / 29) ** 2)
+    _, profile = speed_profile(TRACK, stage.top_speed)
+    np.testing.assert_allclose(stage.start_speed_max, np.maximum(START_SPEED_MIN_MPS, 0.8 * profile))
+    assert stage.start_speed_max.max() <= 0.8 * v + 1e-9 and stage.reward_speed == v
     assert stage.scales.speed == v and stage.scales.curvature == pytest.approx(1.0 / 22.8, rel=0.01)
 
 
@@ -195,10 +202,46 @@ def test_starts_and_oracle_input() -> None:
         obs, info = env.reset(seed=seed)
         s, ey, epsi, vx = info["state"][:4]
         b = info["setup"][-1]
-        assert 0.0 <= s < TRACK.track_length and ey == 0.0 and epsi == 0.0 and START_SPEED_MIN_MPS <= vx <= 30.0
+        fastest = env.unwrapped.stage.start_speed_bound(s, TRACK.track_length)
+        assert 0.0 <= s < TRACK.track_length and ey == 0.0 and epsi == 0.0 and START_SPEED_MIN_MPS <= vx <= fastest
         assert -0.2 <= b <= 0.1 and obs[OBS.B] == pytest.approx(b / 0.2, rel=1e-6)
     nominal_obs, info = make_env(CATALUNYA, stage=5).reset(seed=0)
     assert nominal_obs.shape == (OBS_DIM,) and info["setup"][-1] == 0.0
+
+
+def test_top_speed_changes_during_training() -> None:
+    """A curriculum changes the top speed of the free stage: the start speeds and the reward normalisation follow it,
+    the observation layout and scales do not; a top speed above the sizing speed is refused."""
+    env = make_env(CATALUNYA, stage=len(STAGE_TOP_SPEEDS_MPS)).unwrapped
+    free = env.stage
+    env.set_top_speed(12.5)
+    assert env.stage.top_speed == 12.5 and env.stage.reward_speed == 12.5
+    assert env.stage.sizing_speed == free.sizing_speed
+    assert env.stage.start_speed_max.max() == pytest.approx(10.0) and env.stage.scales == free.scales
+    np.testing.assert_array_equal(env.stage.preview, free.preview)
+    obs, _ = env.reset(seed=0)
+    assert START_SPEED_MIN_MPS <= env.state.vx <= 10.0
+    env.set_top_speed(None)
+    assert env.stage.top_speed is None and env.stage.reward_speed == FREE_STAGE_SIZING_MPS
+    with pytest.raises(ValueError):
+        env.set_top_speed(FREE_STAGE_SIZING_MPS + 1.0)
+
+
+def test_point_mass_profile_of_the_free_stage() -> None:
+    """With drag and power the point-mass top speed on Catalunya is below the sizing speed of the free stage, and the
+    profile respects the straight-line top speed of the car and the grip limit of the tightest corner."""
+    _, profile = speed_profile(TRACK, None)
+    assert 60.0 < profile.max() <= FREE_STAGE_SIZING_MPS and profile.max() < REFERENCE_TOP_SPEED_MPS
+    assert profile.min() == pytest.approx(np.sqrt(G * 22.8), rel=0.03)
+
+
+def test_slip_ratio_in_the_info() -> None:
+    env = make_env(CATALUNYA, stage=3).unwrapped
+    env.reset(seed=0, options={"initial_s": MAIN_STRAIGHT_S, "initial_vx": 19.0})
+    _, _, _, _, info = env.step(np.array([0.0, 0.0], dtype=np.float32))
+    assert info["slip_ratio"] == pytest.approx((0.0, 0.0), abs=1e-6)
+    _, _, _, _, info = env.step(np.array([0.4, 0.0], dtype=np.float32))
+    assert info["slip_ratio"][0] > 0.1
 
 
 def test_held_out_bands_are_never_drawn() -> None:

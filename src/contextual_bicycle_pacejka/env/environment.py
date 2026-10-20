@@ -21,13 +21,14 @@ import numpy as np
 from numpy.typing import NDArray
 
 from contextual_bicycle_pacejka.env.setup_sampling import sample_setup
-from contextual_bicycle_pacejka.env.stages import SpeedStage
+from contextual_bicycle_pacejka.env.stages import SpeedStage, with_top_speed
 from contextual_bicycle_pacejka.model.dynamics import step_plant
 from contextual_bicycle_pacejka.model.observation import build_observation
 from contextual_bicycle_pacejka.model.powertrain import limit_top_speed
 from contextual_bicycle_pacejka.model.reward import compute_reward
 from contextual_bicycle_pacejka.model.state import AdmissibilityError, SetupVector, VehicleMemory, VehicleState
 from contextual_bicycle_pacejka.model.termination import check_failure
+from contextual_bicycle_pacejka.model.tires import compute_saturation_threshold, compute_slip_angles
 from contextual_bicycle_pacejka.model.track import RealTrack
 from contextual_bicycle_pacejka.spec.constants import (
     B_NOM,
@@ -36,7 +37,9 @@ from contextual_bicycle_pacejka.spec.constants import (
     DELTA_MAX,
     DT,
     OBS_DIM,
+    START_SPEED_MIN_MPS,
     TAU_RATE_MAX,
+    V_MIN,
 )
 from contextual_bicycle_pacejka.spec.layout import ACTION, ACTION_HIGH, ACTION_LOW, validate_setup, validate_state
 
@@ -64,7 +67,8 @@ class RacingEnv(gym.Env):
     -------------
     ``setup``: setup vector in physical units (otherwise the nominal setup with b drawn from ``b_range``);
     ``initial_s`` [m], ``initial_vx`` [m/s], ``initial_ey`` [m], ``initial_epsi`` [rad]: start state (otherwise a
-    uniform point of the lap on the centreline, aligned with it, at a speed drawn from ``stage.start_speed``).
+    uniform point of the lap on the centreline, aligned with it, at a speed drawn up to the start-speed bound of the
+    stage at that point, ``stage.start_speed_bound``).
     """
 
     metadata: dict[str, Any] = {"render_modes": []}
@@ -92,6 +96,7 @@ class RacingEnv(gym.Env):
         self.state = VehicleState()
         self.memory = VehicleMemory.zeros()
         self.setup = SetupVector()
+        self._saturation = (1.0, 1.0)
         self.delta_ref = 0.0
         self.tau = 0.0
         self.tau_rate = 0.0
@@ -110,11 +115,14 @@ class RacingEnv(gym.Env):
         validate_setup(self.setup.to_array())
 
         s0 = float(options.get("initial_s", rng.uniform(0.0, self.track.track_length)))
-        vx0 = float(options.get("initial_vx", rng.uniform(*self.stage.start_speed)))
+        fastest = self.stage.start_speed_bound(s0, self.track.track_length)
+        vx0 = float(options.get("initial_vx", rng.uniform(START_SPEED_MIN_MPS, fastest)))
         self.state = VehicleState(s=s0, ey=float(options.get("initial_ey", 0.0)),
                                   epsi=float(options.get("initial_epsi", 0.0)), vx=vx0)
         validate_state(self.state.to_array(), self.track.kappa(s0))
         self.memory = VehicleMemory.zeros()
+        self._saturation = (compute_saturation_threshold(self.setup, "front"),
+                            compute_saturation_threshold(self.setup, "rear"))
         self.delta_ref = self.tau = self.tau_rate = 0.0
         self._s0 = s0
         return self._observation(), {"setup": self.setup.to_array(), "state": self.state.to_array()}
@@ -143,11 +151,23 @@ class RacingEnv(gym.Env):
                 break
 
         progress = self.state.s - s_before
-        terms = compute_reward(progress, self.stage.sizing_speed, delta_ref_change, tau_rate, failure is not None)
+        terms = compute_reward(progress, self.stage.reward_speed, delta_ref_change, tau_rate, failure is not None)
         info = {"failure": failure, "reward_terms": terms._asdict(), "progress": progress,
                 "state": self.state.to_array(), "setup": self.setup.to_array(),
-                "laps": int((self.state.s - self._s0) // self.track.track_length)}
+                "laps": int((self.state.s - self._s0) // self.track.track_length),
+                "slip_ratio": self._slip_ratio()}
         return self._observation(), terms.total, failure is not None, False, info
+
+    def set_top_speed(self, top_speed: float | None) -> None:
+        """Change the top speed of the stage (a curriculum during training); the observation does not change."""
+        self.stage = with_top_speed(self.stage, top_speed, self.track)
+
+    def _slip_ratio(self) -> tuple[float, float]:
+        """Return |alpha| / alpha_sat of the front and rear axle at the end of the decision (0 below V_MIN)."""
+        if self.state.vx < V_MIN:
+            return 0.0, 0.0
+        alpha_f, alpha_r = compute_slip_angles(self.state)
+        return abs(alpha_f) / self._saturation[0], abs(alpha_r) / self._saturation[1]
 
     def _observation(self) -> NDArray[np.float32]:
         return build_observation(self.state, self.setup, self.delta_ref, self.tau, self.tau_rate, self.track,
