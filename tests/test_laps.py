@@ -15,6 +15,7 @@ from contextual_bicycle_pacejka.evaluation.laps import (
     point_mass_lap_time,
     protocol_starts,
 )
+from contextual_bicycle_pacejka.evaluation.limit import lap_gaps, limit_criterion
 from contextual_bicycle_pacejka.evaluation.stage_gate import stage_gate, two_level_bootstrap
 from contextual_bicycle_pacejka.spec.constants import DELTA_MAX
 
@@ -73,6 +74,7 @@ def test_corner_measurements_of_a_lap() -> None:
         assert 4.8 < corner["min_speed"] <= corner["entry_speed"] <= 5.1 and corner["braking_s"] is None
         assert corner["window"][0] <= corner["min_speed_s"] <= corner["window"][1]
         assert 0.0 < corner["peak_slip_front"] < 0.5 and 0.0 < corner["peak_slip_rear"] < 0.5
+        assert corner["near_peak_front"] == corner["beyond_peak_rear"] == 0.0 and abs(corner["apex_ey"]) < 1.0
 
 
 def test_stage_criterion() -> None:
@@ -90,3 +92,21 @@ def test_stage_criterion() -> None:
     assert not failed["passed"] and failed["seeds_passing"] == 3 and failed["completion"]["rate"] == 0.74
     assert failed["per_seed"]["completed"] == [0, 9, 8, 10, 10] and failed["per_seed"]["mean_lap_time"][0] is None
     assert two_level_bootstrap(np.arange(50.0).reshape(5, 10)) == two_level_bootstrap(np.arange(50.0).reshape(5, 10))
+
+
+def test_distance_from_the_limit_and_its_criterion() -> None:
+    """Distance from the minimum-time lap of each start; a seed is at the limit with 9 of 10 laps and a median distance
+    of at most 5 %; the policy with 4 of 5 seeds."""
+    reference = np.linspace(129.0, 134.0, 10)
+    times = np.tile(reference * 1.04, (5, 1))
+    times[0, :3] = np.nan  # 7 of 10 laps
+    times[1, :] = reference * 1.06  # too far from the limit
+    gaps = lap_gaps(times, reference)
+    assert np.nanmax(np.abs(gaps[2:] - 0.04)) < 1e-12
+    result = limit_criterion(~np.isnan(times), gaps)
+    assert result["seeds_at_limit"] == [False, False, True, True, True] and not result["passed"]
+    times[0, :3] = reference[:3] * 1.03
+    times[0, 3] = np.nan  # 9 of 10 laps
+    result = limit_criterion(~np.isnan(times), lap_gaps(times, reference))
+    assert result["seeds_at_limit"] == [True, False, True, True, True] and result["passed"]
+    assert result["median_gap"][1] == pytest.approx(0.06) and result["completed"] == [9, 10, 10, 10, 10]

@@ -309,7 +309,15 @@ python scripts/evaluate_stage.py --stage 3 --tag oracle_w1 --b -0.13
 **Minimum-time reference** (`reference/min_time.py`, `scripts/min_time_lap.py`; needs `casadi`, the `reference` extra). The fastest lap of the plant car on Catalunya, with a free line inside the edges, solved as an optimal-control problem along the centreline with CasADi and IPOPT: the plant's equations (checked against the plant to 1e-9 in `tests/test_min_time.py`), the slip of each axle bounded by its peak, and the steering lag left out (so the reference is at most slightly optimistic). With the GT4 drag and power it laps in 127.8 s at b = 0, 8 % faster than the point-mass lap on the centreline, with both axles at their peak slip in every grip-limited corner. It only measures policies, as `(T - T_opt) / T_opt` and corner by corner; no policy sees it.
 
 ```bash
-python scripts/min_time_lap.py --b 0 --ds 2
+python scripts/min_time_lap.py --b 0 --ds 2 --standing-starts
+```
+
+**Distance from the limit** (`evaluation/limit.py`, `scripts/compare_with_reference.py`). A protocol lap starts from rest, so it is compared with the minimum-time lap from the same standing start, `T_opt(s_i)` (129.0–134.0 s on Catalunya): its distance from the limit is `(T - T_opt(s_i)) / T_opt(s_i)`. A seed is at the limit when it completes at least 9 of 10 laps with a median distance of at most 5 %, a policy when 4 of 5 seeds are. The comparison also sets the policy's corner measurements (`evaluation/corners.py`: speeds, braking point, lateral offset at the apex, slip peaks and time near and beyond the peak) against the reference corner by corner. `train_curriculum.py --checkpoint N` saves a copy of the model at N decisions, and `evaluate_balance.py --model` evaluates it.
+
+```bash
+python scripts/train_curriculum.py --seed 10 --stages 7 --budget 600000000 --gamma 0.995 --checkpoint 300000000 --tag nominal_limit
+python scripts/evaluate_balance.py --tag nominal_limit --stage 7 --grid 0 --seeds 10 11 12 13 14 --name nominal_limit
+python scripts/compare_with_reference.py --evaluation outputs/evaluation/balance/nominal_limit.json
 ```
 
 **Evaluation over b** (`evaluation/balance_study.py`, `evaluation/corners.py`). `scripts/evaluate_balance.py --tag <tag>` drives the protocol laps of every seed at each of 13 values of b from −0.23 to +0.20, with the mean action and with three seeded repeats of the stochastic policy, and records for each of the 9 grip-limited corners the entry, minimum and exit speed, the braking point, the peak steering and the peak front and rear slip over the peak slip. For each width of the training range a value of b is nominal, interpolation, held-out or extrapolation. `scripts/summarise_balance.py` compares the policies paired by seed and start (the models of one seed start from the same weights): the cost of randomisation (Randomised − Nominal), the completion and lap time per class of b, and the regret R(b) = T_Randomised(b) − T_Oracle(b); lap times are also divided by the point-mass lap with the cornering limit of that b (`point_mass_lap_time(..., lateral_ratio)`). A width shows a clear gap between Oracle and Randomised when, over its interpolation and held-out values, the completion difference is at least 0.10 or the regret at least 0.5 s, with the 95 % interval above 0.

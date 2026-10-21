@@ -22,7 +22,7 @@ from typing import Any
 
 import numpy as np
 
-from contextual_bicycle_pacejka.evaluation.corners import BRAKING_LOOKBACK_M, CORNER_WINDOWS_M
+from contextual_bicycle_pacejka.evaluation.corners import CORNER_WINDOWS_M, measure_window
 from contextual_bicycle_pacejka.evaluation.laps import START_SPEED_MPS, protocol_starts
 from contextual_bicycle_pacejka.model.track import RealTrack
 from contextual_bicycle_pacejka.reference.min_time import STATE_NAMES, MinTimeLap, slip_ratios, solve_min_time_lap
@@ -32,27 +32,9 @@ CATALUNYA = "data/tracks/catalunya/reference.npz"
 
 def corner_measurements(lap: MinTimeLap, track_length: float) -> list[dict[str, Any]]:
     """Measurements of the reference lap in each corner window, as ``CornerRecorder`` measures a policy's lap."""
-    s, vx, tau, delta = lap.s, lap.state("vx"), lap.state("tau"), np.abs(lap.state("delta"))
     slip_f, slip_r = slip_ratios(lap)
-    out = []
-    for start, end in CORNER_WINDOWS_M:
-        inside = (s >= start) & (s <= end)
-        rel = (s - (start - BRAKING_LOOKBACK_M)) % track_length  # positions from the start of the braking search
-        approach = (rel <= end - start + BRAKING_LOOKBACK_M) & (tau < 0.0)
-        low = int(np.flatnonzero(inside)[np.argmin(vx[inside])])
-        first = int(np.flatnonzero(approach)[np.argmin(rel[approach])]) if np.any(approach) else None
-        out.append({
-            "window": [start, end],
-            "entry_speed": float(np.interp(start, s, vx)),
-            "exit_speed": float(np.interp(end, s, vx)),
-            "min_speed": float(vx[low]),
-            "min_speed_s": float(s[low]),
-            "braking_s": None if first is None else float(s[first]),
-            "peak_steer": float(delta[inside].max()),
-            "peak_slip_front": float(slip_f[inside].max()),
-            "peak_slip_rear": float(slip_r[inside].max()),
-        })
-    return out
+    return [measure_window(lap.s, lap.state("vx"), lap.state("tau"), np.abs(lap.state("delta")), lap.state("ey"),
+                           slip_f, slip_r, start, end, track_length) for start, end in CORNER_WINDOWS_M]
 
 
 def main() -> None:
