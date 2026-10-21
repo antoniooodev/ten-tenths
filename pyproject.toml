@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+reference = ["casadi>=3.6"]  # minimum-time lap reference (evaluation only)
 
 [tool.setuptools.packages.find]
 where = ["src"]
