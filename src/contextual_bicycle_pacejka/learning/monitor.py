@@ -23,6 +23,22 @@ from contextual_bicycle_pacejka.model.termination import FAILURES
 SLIP_MIN_SPEED_MPS: float = 5.0  # [m/s] the slip beyond the peak is counted above this speed
 
 
+class Snapshots(BaseCallback):
+    """Save a copy of the model the first time the decisions reach each of ``timesteps``, at ``path_of(timesteps)``."""
+
+    def __init__(self, path_of: Any, timesteps: list[int]) -> None:
+        super().__init__()
+        self.path_of = path_of
+        self.pending = sorted(timesteps)
+
+    def _on_step(self) -> bool:
+        while self.pending and self.num_timesteps >= self.pending[0]:
+            path = Path(self.path_of(self.pending.pop(0)))
+            path.parent.mkdir(parents=True, exist_ok=True)
+            self.model.save(path)
+        return True
+
+
 class TrainingCurves(BaseCallback):
     """Write the curves of a training run to ``path`` (JSON lines), one line per rollout."""
 

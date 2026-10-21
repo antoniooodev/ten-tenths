@@ -12,7 +12,7 @@ from conftest import REPO
 
 from contextual_bicycle_pacejka.env import make_vec_env
 from contextual_bicycle_pacejka.learning.curriculum import SpeedCurriculum, failures_per_lap, next_top_speed
-from contextual_bicycle_pacejka.learning.monitor import TrainingCurves
+from contextual_bicycle_pacejka.learning.monitor import Snapshots, TrainingCurves
 from contextual_bicycle_pacejka.learning.ppo import PPOConfig, make_ppo, widen_inputs
 from contextual_bicycle_pacejka.model.termination import FAILURES
 from contextual_bicycle_pacejka.spec.constants import OBS_DIM
@@ -141,4 +141,18 @@ def test_speed_curriculum_raises_the_top_speed(tmp_path) -> None:
     assert [c["top_speed"] for c in changes] == [10.0, 12.5, 15.0, 17.5]
     assert [s.top_speed for s in env.get_attr("stage")] == [17.5, 17.5] and curriculum.top_speed == 17.5
     assert env.get_attr("stage")[0].sizing_speed == 70.0
+    env.close()
+
+
+def test_snapshots_of_the_model(tmp_path) -> None:
+    """A copy of the model is saved the first time the decisions reach each threshold; the training script names it
+    stage<k>_<N/1e6>M.zip."""
+    env = make_vec_env(CATALUNYA, 2, seed=0, stage=2)
+    snapshots = Snapshots(lambda n: tmp_path / f"stage2_{n / 1e6:g}M.zip", [256, 128])
+    make_ppo(env, SMALL, seed=0).learn(total_timesteps=384, callback=snapshots)
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["stage2_0.000128M.zip", "stage2_0.000256M.zip"]
+    assert snapshots.pending == []
+    args = load_script(TRAIN_SCRIPT).parse_args(["--seed", "10", "--stages", "7", "--budget", "600000000",
+                                                 "--checkpoint", "300000000"])
+    assert args.checkpoint == [300_000_000] and f"{300_000_000 / 1e6:g}" == "300"
     env.close()

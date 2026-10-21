@@ -3,7 +3,8 @@
     python scripts/evaluate_balance.py --tag oracle_w1_b2
     python scripts/evaluate_balance.py --tag nominal_b2 --grid 0 0.1 --stochastic-repeats 0
 
-Reads <models>/<tag>/s<seed>/stage<k>.zip and writes <output>/<tag>.json. For every seed and b: the laps with the mean
+Reads <models>/<tag>/s<seed>/<model>.zip (``--model``, default stage<k>) and writes <output>/<name>.json (``--name``,
+default the tag). For every seed and b: the laps with the mean
 action (``deterministic``) and ``--stochastic-repeats`` sets of laps with the stochastic policy, the action noise
 seeded with 1000 seed + repeat (``stochastic``); every lap carries its corner measurements (evaluation/corners.py).
 Also the mean inference time of the policy per decision.
@@ -74,24 +75,27 @@ def main() -> None:
     parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
     parser.add_argument("--grid", type=float, nargs="+", default=list(GRID))
     parser.add_argument("--stochastic-repeats", type=int, default=3)
+    parser.add_argument("--model", help="model file name without .zip (default: stage<k>)")
+    parser.add_argument("--name", help="name of the output file (default: the tag)")
     parser.add_argument("--workers", type=int, default=10)
     parser.add_argument("--models", type=Path, default=Path("outputs/models"))
     parser.add_argument("--output", type=Path, default=Path("outputs/evaluation/balance"))
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-    jobs = [(str(args.models / args.tag / f"s{seed}" / f"stage{args.stage}.zip"), seed, args.stage, b,
+    model = args.model or f"stage{args.stage}"
+    jobs = [(str(args.models / args.tag / f"s{seed}" / f"{model}.zip"), seed, args.stage, b,
              args.stochastic_repeats) for b in args.grid for seed in args.seeds]
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         results = list(pool.map(evaluate, jobs))
     by_b = {f"{b:+.2f}": [r for r in results if r["b"] == b] for b in args.grid}
     report = {
-        "tag": args.tag, "stage": args.stage, "seeds": args.seeds, "grid": args.grid,
+        "tag": args.tag, "model": model, "stage": args.stage, "seeds": args.seeds, "grid": args.grid,
         "deterministic": {key: [r["deterministic"] for r in rows] for key, rows in by_b.items()},
         "stochastic": {key: [r["stochastic"] for r in rows] for key, rows in by_b.items()},
         "inference_ms_per_decision": 1000.0 * sum(r["inference_s"] for r in results)
         / max(1, sum(r["decisions"] for r in results)),
     }
-    out = args.output / f"{args.tag}.json"
+    out = args.output / f"{args.name or args.tag}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report))
     for key, rows in report["deterministic"].items():

@@ -10,7 +10,8 @@ Models go to <models>/<tag>/s<seed>/stage<k>.zip and the training curves to <log
 ``--lr-start`` and ``--lr-end`` set the linear learning rate of every stage (default: 1e-3 to 1e-4), ``--gamma`` the
 discount per decision (default 0.99). ``--curriculum`` trains the free stage with the automatic speed curriculum
 (learning/curriculum.py): the top speed starts at 10 m/s and rises while the training failures are rare; the changes
-go to <logs>/<tag>/s<seed>_curriculum.jsonl.
+go to <logs>/<tag>/s<seed>_curriculum.jsonl. ``--checkpoint N ...`` also saves the model when the decisions of a
+stage reach N, at <models>/<tag>/s<seed>/stage<k>_<N/1e6>M.zip.
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ from pathlib import Path
 
 from contextual_bicycle_pacejka.env import held_out_bands, make_vec_env
 from contextual_bicycle_pacejka.learning.curriculum import SpeedCurriculum
-from contextual_bicycle_pacejka.learning.monitor import TrainingCurves
+from contextual_bicycle_pacejka.learning.monitor import Snapshots, TrainingCurves
 from contextual_bicycle_pacejka.learning.ppo import PPOConfig, make_ppo
 from contextual_bicycle_pacejka.model.track import RealTrack
 from contextual_bicycle_pacejka.spec.constants import STAGE_TOP_SPEEDS_MPS, TRAINING_EDGE_MARGIN_M
@@ -48,6 +49,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                         help="learning rate at the end of every stage")
     parser.add_argument("--gamma", type=float, default=PPOConfig.gamma, help="discount per decision")
     parser.add_argument("--curriculum", action="store_true", help="automatic speed curriculum on the free stage")
+    parser.add_argument("--checkpoint", type=int, nargs="+", default=[], help="decisions at which to save a copy")
     parser.add_argument("--workers", type=int, default=10)
     parser.add_argument("--envs-per-worker", type=int, default=32)
     parser.add_argument("--models", type=Path, default=Path("outputs/models"))
@@ -80,7 +82,9 @@ def main() -> None:
         curves = args.logs / args.tag / f"s{args.seed}_stage{stage}.jsonl"
         logging.info("seed %d, stage %d: %d decisions from %s, learning rate %g to %g", args.seed, stage, budget,
                      init or "random weights", config.learning_rate_start, config.learning_rate_end)
-        callbacks = [TrainingCurves(curves)]
+        stage_dir = args.models / args.tag / f"s{args.seed}"
+        callbacks = [TrainingCurves(curves),
+                     Snapshots(lambda n, k=stage: stage_dir / f"stage{k}_{n / 1e6:g}M.zip", args.checkpoint)]
         if args.curriculum:
             callbacks.append(SpeedCurriculum(RealTrack(CATALUNYA).track_length,
                                              args.logs / args.tag / f"s{args.seed}_curriculum.jsonl"))
