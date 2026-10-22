@@ -320,6 +320,12 @@ python scripts/evaluate_balance.py --tag nominal_limit --stage 7 --grid 0 --seed
 python scripts/compare_with_reference.py --evaluation outputs/evaluation/balance/nominal_limit.json
 ```
 
+**Mean action and action noise** (`evaluation/action_noise.py`, `scripts/diagnose_mean_action.py`). The protocol laps drive the mean action of the Gaussian policy, training drives samples. The diagnosis drives the protocol laps with clip(mu + k sigma eps) for noise scales k from 0 (the mean action) through 1 (the noise of training) to 2, and records at every decision the mean action, its standard deviation and the bias E[clip(mu + sigma eps)] − clip(mu) that clipping puts between the commands of training and the mean action (closed form, `clipped_gaussian_mean`). Each lap is compared with the minimum-time lap from the same start; the wall and CPU time of every run are saved with the laps.
+
+```bash
+python scripts/diagnose_mean_action.py
+```
+
 **Evaluation over b** (`evaluation/balance_study.py`, `evaluation/corners.py`). `scripts/evaluate_balance.py --tag <tag>` drives the protocol laps of every seed at each of 13 values of b from −0.23 to +0.20, with the mean action and with three seeded repeats of the stochastic policy, and records for each of the 9 grip-limited corners the entry, minimum and exit speed, the braking point, the peak steering and the peak front and rear slip over the peak slip. For each width of the training range a value of b is nominal, interpolation, held-out or extrapolation. `scripts/summarise_balance.py` compares the policies paired by seed and start (the models of one seed start from the same weights): the cost of randomisation (Randomised − Nominal), the completion and lap time per class of b, and the regret R(b) = T_Randomised(b) − T_Oracle(b); lap times are also divided by the point-mass lap with the cornering limit of that b (`point_mass_lap_time(..., lateral_ratio)`). A width shows a clear gap between Oracle and Randomised when, over its interpolation and held-out values, the completion difference is at least 0.10 or the regret at least 0.5 s, with the 95 % interval above 0.
 
 ```bash
