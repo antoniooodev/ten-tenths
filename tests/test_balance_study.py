@@ -6,10 +6,13 @@ import numpy as np
 import pytest
 
 from contextual_bicycle_pacejka.evaluation.balance_study import (
+    DESIGNS,
     GRID,
+    LIMIT,
     classify,
     clear_gap,
     completion_difference,
+    net_difference,
     paired_time_difference,
     pool,
     summarise,
@@ -52,3 +55,29 @@ def test_rule_of_a_clear_gap() -> None:
     assert not clear_gap(s(0.30, 0.0), s(0.4, 0.1))  # the interval must be above 0
     assert clear_gap(s(0.0, -0.1), s(0.5, 0.05))
     assert not clear_gap(s(0.0, -0.1), s(0.8, -0.2))
+
+
+def test_classes_of_the_limit_grid() -> None:
+    """The grid and classes at the limit: interval [-0.21, +0.03], held-out values only on the negative side."""
+    def members(width: str, cls: str) -> list[float]:
+        return [b for b in LIMIT.grid if classify(b, width, LIMIT.widths) == cls]
+    assert members("w13", "interpolation") == [-0.07, -0.02, 0.01] and members("w13", "held_out") == [-0.04]
+    assert members("w23", "interpolation") == [-0.14, -0.11, -0.04, -0.02, 0.01, 0.02]
+    assert members("w23", "held_out") == [-0.07]
+    assert members("w23", "extrapolation") == [-0.24, -0.21, -0.17, 0.03, 0.05]
+    assert members("w1", "held_out") == [-0.11] and members("w1", "extrapolation") == [-0.24, 0.05]
+    assert len(members("w1", "interpolation")) == 9
+    assert LIMIT.tag("oracle", "w13") == "oracle_limit_w13" and LIMIT.nominal == "nominal_limit_cont"
+    assert DESIGNS["stage3"].tag("randomised", "w1") == "randomised_w1_b2" and DESIGNS["limit"] is LIMIT
+
+
+def test_net_difference_removes_the_offset_at_b0() -> None:
+    """A constant offset between two policies at every b, b = 0 included, gives a net difference of 0; a difference
+    that grows with |b| remains; a (seed, start) without a value at b = 0 or at every b is NaN."""
+    nan = np.nan
+    at_zero = np.array([[0.5, 0.5, nan], [0.2, 0.2, 0.2]])
+    offset = [at_zero.copy(), at_zero.copy()]
+    np.testing.assert_allclose(net_difference(offset, at_zero), [[0.0, 0.0, nan], [0.0, 0.0, 0.0]])
+    growing = [at_zero + 1.0, np.array([[nan, 2.5, 0.0], [nan, nan, nan]])]
+    np.testing.assert_allclose(net_difference(growing, at_zero), [[1.0, 1.5, nan], [1.0, 1.0, 1.0]])
+    assert np.isnan(net_difference([np.full((2, 3), nan)], at_zero)).all()

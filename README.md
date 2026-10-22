@@ -327,6 +327,8 @@ python scripts/evaluate_balance.py --tag randomised_w1_b2
 python scripts/summarise_balance.py
 ```
 
+Two studies are defined (`BalanceDesign` in `evaluation/balance_study.py`): `stage3`, at 20 m/s, and `limit`, on the free stage, with the grid b ∈ {−0.24 … +0.05} and the widths W1/3 [−0.07, +0.01], W2/3 [−0.14, +0.02], W1 [−0.21, +0.03] of the drivable interval at 70 m/s. `summarise_balance.py --design limit` also reports the distance from the limit of every policy and b against the minimum-time laps of that b, the slope against b of the entry and minimum speed in the tightest corner (does the policy adapt like the minimum-time lap?), and the gap between Oracle and Randomised net of the gap they already show at b = 0 (`net_difference`).
+
 **Evaluation** (`evaluation/laps.py`, `evaluation/stage_gate.py`): from 10 starts equally spaced along the lap, at 3 m/s, the deterministic policy drives one lap or fails; a lap slower than four times the lap at top speed fails as a timeout. A seed passes when it completes at least 9 of its 10 laps, and a stage passes when at least 4 of 5 seeds pass. The completion rate over seeds × starts is reported with a 95 % interval from a two-level bootstrap that resamples seeds and starts independently. Lap times are compared with a point-mass lap at the top speed of the stage, a yardstick that no policy uses.
 
 ---
