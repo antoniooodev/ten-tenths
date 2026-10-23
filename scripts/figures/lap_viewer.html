@@ -1,0 +1,408 @@
+<title>Catalunya Limit Laps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a timing-screen tool. Track view on the left with the transport bar under it; cars and telemetry on the right. */
+:root {
+  --bg: #f6f6f3;
+  --panel: #ffffff;
+  --ink: #141413;
+  --ink-2: #55544f;
+  --ink-3: #8c8b85;
+  --rule: #e2e1db;
+  --track: #e9e8e2;
+  --edge: #3a3a37;
+  --accent: #2a78d6;
+  --danger: #d8403f;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161615; --panel: #1f1f1d; --ink: #f2f1ec; --ink-2: #c3c2b9; --ink-3: #8e8d86; --rule: #34332f;
+    --track: #2b2b28; --edge: #a9a8a0; --accent: #4a92ea; --danger: #ec6766; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161615; --panel: #1f1f1d; --ink: #f2f1ec; --ink-2: #c3c2b9; --ink-3: #8e8d86; --rule: #34332f;
+  --track: #2b2b28; --edge: #a9a8a0; --accent: #4a92ea; --danger: #ec6766; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  padding-inline: 20px; padding-block: 18px 28px; }
+.wrap { max-width: 1400px; margin: 0 auto; display: grid; gap: 14px; }
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+h1 { font-family: var(--font-display); font-weight: 600; font-size: 2.1rem; line-height: 1; margin: 0;
+  letter-spacing: 0.01em; text-wrap: balance; }
+.sub { color: var(--ink-2); margin: 6px 0 0; max-width: 70ch; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tabs button { font: 500 0.92rem var(--font-body); padding: 7px 12px; border-radius: var(--radius);
+  border: 1px solid var(--rule); background: var(--panel); color: var(--ink-2); cursor: pointer; }
+.tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+button:focus-visible, select:focus-visible, input:focus-visible, label.car:focus-within {
+  outline: 2px solid var(--accent); outline-offset: 2px; }
+.main { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.stage { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
+  min-width: 0; }
+#view { display: block; width: 100%; aspect-ratio: 4 / 3; max-width: 100%; }
+.caption { margin: 0; padding: 10px 14px 0; color: var(--ink-2); font-size: 0.92rem; }
+.transport { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 14px;
+  border-top: 1px solid var(--rule); }
+.transport button { font: 600 0.92rem var(--font-body); min-width: 78px; padding: 7px 12px; border-radius: var(--radius);
+  border: 1px solid var(--ink); background: var(--ink); color: var(--bg); cursor: pointer; }
+.clock { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 0.95rem; min-width: 9.5ch; }
+#scrub { flex: 1 1 220px; min-width: 0; accent-color: var(--accent); }
+.field { display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 0.88rem; }
+select { font: 0.9rem var(--font-body); padding: 5px 6px; border-radius: var(--radius); border: 1px solid var(--rule);
+  background: var(--panel); color: var(--ink); max-width: 100%; }
+.side { display: grid; gap: 14px; min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px;
+  min-width: 0; }
+.panel h2 { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-2); margin: 0 0 8px; }
+.cars { display: grid; gap: 2px; }
+.row-head, label.car { display: grid; grid-template-columns: 18px minmax(0, 1fr) 7.5ch 7.5ch; gap: 8px;
+  align-items: center; }
+.row-head { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3);
+  padding: 0 4px 4px; }
+.row-head span:nth-child(n+3) { text-align: right; }
+label.car { padding: 5px 4px; border-radius: 4px; cursor: pointer; }
+label.car:hover { background: var(--bg); }
+label.car input { position: absolute; opacity: 0; pointer-events: none; }
+.swatch { width: 14px; height: 14px; border-radius: 3px; border: 2px solid transparent; }
+label.car input:not(:checked) ~ .swatch { background: transparent !important; border-color: var(--ink-3); }
+label.car input:not(:checked) ~ .who { color: var(--ink-3); }
+.who { min-width: 0; }
+.who b { display: block; font-weight: 500; font-size: 0.93rem; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; }
+.who small { color: var(--ink-3); font-family: var(--font-data); font-size: 0.74rem; }
+.who small.out { color: var(--danger); }
+.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 0.86rem; text-align: right; }
+canvas.chart { display: block; width: 100%; height: 170px; }
+#gg { height: 230px; }
+.note { color: var(--ink-3); font-size: 0.82rem; margin: 6px 0 0; }
+@media (max-width: 900px) { .main { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 1.7rem; } }
+@media (max-width: 480px) { body { padding-inline: 16px; } #view { aspect-ratio: 1 / 1; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Catalunya Limit Laps</h1>
+      <p class="sub">Pure reinforcement learning (PPO, no demonstrations) on a single-track Pacejka car with the
+        power and drag of a Porsche 718 Cayman GT4, against the minimum-time lap of the same car.</p>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Scenario"></nav>
+  </header>
+  <div class="main">
+    <section class="stage">
+      <canvas id="view" aria-label="Track view with the cars"></canvas>
+      <p class="caption" id="caption"></p>
+      <div class="transport">
+        <button id="play" type="button">Pause</button>
+        <span class="clock" id="clock">0.00 s</span>
+        <input id="scrub" type="range" min="0" max="1000" step="1" value="0" aria-label="Lap time">
+        <label class="field" for="rate">Speed
+          <select id="rate"><option value="1">1×</option><option value="2">2×</option>
+            <option value="4" selected>4×</option><option value="8">8×</option></select></label>
+        <label class="field" for="mode">View
+          <select id="mode"><option value="circuit">Whole circuit</option><option value="follow">Follow car</option>
+          </select></label>
+        <label class="field" for="follow">Car <select id="follow"></select></label>
+      </div>
+    </section>
+    <aside class="side">
+      <div class="panel">
+        <h2>Cars</h2>
+        <div class="row-head"><span></span><span>policy · result</span><span>km/h</span><span id="gap-head">gap s</span></div>
+        <div class="cars" id="cars"></div>
+        <p class="note" id="gap-note">Gap: time behind the minimum-time lap at the same position along the lap.</p>
+      </div>
+      <div class="panel">
+        <h2>Speed along the lap</h2>
+        <canvas class="chart" id="speed"></canvas>
+      </div>
+      <div class="panel">
+        <h2 id="gg-title">g-g diagram</h2>
+        <canvas class="chart" id="gg"></canvas>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const DATA = /*LAP_DATA*/null;
+const CAR_L = 4.45, CAR_W = 1.85, G = 9.81;
+const $ = (id) => document.getElementById(id);
+const state = { scenario: null, t: 0, playing: true, rate: 4, mode: "circuit", follow: 1, visible: [], last: null };
+let palette = {};
+
+function readPalette() {
+  const css = getComputedStyle(document.documentElement);
+  for (const key of ["bg", "panel", "ink", "ink-2", "ink-3", "rule", "track", "edge", "accent", "danger"]) {
+    palette[key] = css.getPropertyValue("--" + key).trim();
+  }
+}
+function colourOf(car) { return car.colour === "optimum" ? palette.ink : car.colour; }
+
+function interp(xs, ys, x) {
+  if (x <= xs[0]) return ys[0];
+  const n = xs.length - 1;
+  if (x >= xs[n]) return ys[n];
+  let lo = 0, hi = n;
+  while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (xs[mid] <= x) lo = mid; else hi = mid; }
+  const f = (x - xs[lo]) / (xs[hi] - xs[lo]);
+  return ys[lo] + f * (ys[hi] - ys[lo]);
+}
+function endTime(car) { return car.data.t[car.data.t.length - 1]; }
+function sampleAt(car, t) {
+  const d = car.data, tt = Math.min(t, endTime(car)), out = {};
+  for (const key of ["s", "x", "y", "psi", "vx", "ax", "ay", "delta", "tau", "slip_f", "slip_r"]) {
+    out[key] = interp(d.t, d[key], tt);
+  }
+  out.done = t >= endTime(car);
+  return out;
+}
+function timeAtS(car, s) { return interp(car.data.s, car.data.t, s); }
+
+function setScenario(index) {
+  const sc = DATA.scenarios[index];
+  state.scenario = sc;
+  state.visible = sc.cars.map(() => true);
+  state.follow = sc.cars.findIndex((c) => c.kind !== "optimum");
+  state.duration = Math.max(...sc.cars.map(endTime)) + 1.5;
+  state.t = Math.min(state.duration * 0.25, 35);
+  for (const [i, button] of [...$("tabs").children].entries()) button.setAttribute("aria-pressed", i === index);
+  $("caption").textContent = sc.caption;
+  $("gap-head").textContent = sc.reference ? "gap s" : "m";
+  $("gap-note").hidden = !sc.reference;
+  const follow = $("follow");
+  follow.innerHTML = "";
+  sc.cars.forEach((car, i) => {
+    const option = document.createElement("option");
+    option.value = i; option.textContent = car.name; follow.append(option);
+  });
+  follow.value = state.follow;
+  const list = $("cars");
+  list.innerHTML = "";
+  sc.cars.forEach((car, i) => {
+    const label = document.createElement("label");
+    label.className = "car";
+    label.innerHTML = `<input type="checkbox" id="car-${sc.id}-${i}" checked>
+      <span class="swatch" style="background:${car.colour === "optimum" ? "var(--ink)" : car.colour}"></span>
+      <span class="who"><b></b><small class="${car.failed ? "out" : ""}"></small></span>
+      <span class="num" data-speed></span><span class="num" data-gap></span>`;
+    label.querySelector("b").textContent = car.name;
+    label.querySelector("small").textContent = car.note;
+    label.querySelector("input").addEventListener("change", (e) => { state.visible[i] = e.target.checked; draw(); });
+    list.append(label);
+  });
+  draw();
+}
+
+function fitCanvas(canvas) {
+  const ratio = window.devicePixelRatio || 1, rect = canvas.getBoundingClientRect();
+  const w = Math.max(1, Math.round(rect.width * ratio)), h = Math.max(1, Math.round(rect.height * ratio));
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+const bounds = (() => {
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const [x, y] of DATA.left.concat(DATA.right)) {
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  return { x0, x1, y0, y1 };
+})();
+
+function drawView(now) {
+  const { ctx, w, h } = fitCanvas($("view"));
+  ctx.fillStyle = palette.panel; ctx.fillRect(0, 0, w, h);
+  const sc = state.scenario, follow = state.mode === "follow";
+  let scale, cx, cy;
+  if (follow) {
+    const p = now[state.follow];
+    scale = Math.min(w, h) / 120; cx = p.x; cy = p.y;
+  } else {
+    scale = 0.94 * Math.min(w / (bounds.x1 - bounds.x0), h / (bounds.y1 - bounds.y0));
+    cx = (bounds.x0 + bounds.x1) / 2; cy = (bounds.y0 + bounds.y1) / 2;
+  }
+  const X = (x) => w / 2 + (x - cx) * scale, Y = (y) => h / 2 - (y - cy) * scale;
+  const path = (pts) => { ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y))); };
+  path(DATA.left.concat(DATA.right.slice().reverse()));
+  ctx.closePath(); ctx.fillStyle = palette.track; ctx.fill("evenodd");
+  ctx.strokeStyle = palette.edge; ctx.lineWidth = follow ? 1.6 : 1;
+  path(DATA.left); ctx.stroke(); path(DATA.right); ctx.stroke();
+  const opt = sc.cars.find((c) => c.kind === "optimum");
+  if (opt && state.visible[sc.cars.indexOf(opt)]) {
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = palette["ink-3"]; ctx.lineWidth = 1;
+    path(opt.data.x.map((x, i) => [x, opt.data.y[i]])); ctx.stroke(); ctx.setLineDash([]);
+  }
+  sc.cars.forEach((car, i) => {
+    if (!state.visible[i] || car.kind === "optimum") return;
+    const d = car.data, upto = d.t.findIndex((t) => t > state.t);
+    const n = upto < 0 ? d.t.length : upto;
+    if (follow || sc.id !== "flying") {
+      ctx.strokeStyle = colourOf(car); ctx.lineWidth = follow ? 2.4 : 1.6; ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      for (let k = Math.max(0, n - (follow ? 400 : 4000)); k < n; k++) {
+        k === Math.max(0, n - (follow ? 400 : 4000)) ? ctx.moveTo(X(d.x[k]), Y(d.y[k])) : ctx.lineTo(X(d.x[k]), Y(d.y[k]));
+      }
+      ctx.stroke(); ctx.globalAlpha = 1;
+    }
+  });
+  const order = sc.cars.map((c, i) => i).sort((a, b) => (a === state.follow) - (b === state.follow));
+  for (const i of order) {
+    if (!state.visible[i]) continue;
+    const car = sc.cars[i], p = now[i], colour = colourOf(car), optimum = car.kind === "optimum";
+    if (follow) {
+      const k = 1.0;
+      const corners = [[CAR_L / 2 + 0.6, 0], [CAR_L / 2, CAR_W / 2], [-CAR_L / 2, CAR_W / 2], [-CAR_L / 2, -CAR_W / 2],
+                       [CAR_L / 2, -CAR_W / 2]].map(([a, b]) => [p.x + k * (a * Math.cos(p.psi) - b * Math.sin(p.psi)),
+                                                               p.y + k * (a * Math.sin(p.psi) + b * Math.cos(p.psi))]);
+      path(corners); ctx.closePath();
+      if (optimum) { ctx.setLineDash([4, 3]); ctx.strokeStyle = colour; ctx.lineWidth = 1.6; ctx.stroke(); ctx.setLineDash([]); }
+      else { ctx.fillStyle = colour; ctx.fill(); ctx.strokeStyle = palette.ink; ctx.lineWidth = 0.8; ctx.stroke(); }
+    } else {
+      ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), optimum ? 7 : 6, 0, 2 * Math.PI);
+      if (optimum) { ctx.strokeStyle = colour; ctx.lineWidth = 2; ctx.stroke(); }
+      else { ctx.fillStyle = colour; ctx.fill(); ctx.strokeStyle = palette.panel; ctx.lineWidth = 1.5; ctx.stroke(); }
+    }
+    if (car.failed && p.done) {
+      const x = X(p.x), y = Y(p.y), r = 8;
+      ctx.strokeStyle = palette.danger; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(x - r, y - r); ctx.lineTo(x + r, y + r); ctx.moveTo(x + r, y - r); ctx.lineTo(x - r, y + r); ctx.stroke();
+    }
+  }
+  if (follow) {
+    ctx.fillStyle = palette["ink-3"]; ctx.font = "12px " + getComputedStyle(document.body).fontFamily;
+    ctx.fillText("20 m", 16, h - 14);
+    ctx.fillRect(16, h - 30, 20 * scale, 3);
+  }
+}
+
+function axes(ctx, w, h, pad, xr, yr, xticks, yticks, xlabel, ylabel) {
+  const X = (x) => pad.l + (x - xr[0]) / (xr[1] - xr[0]) * (w - pad.l - pad.r);
+  const Y = (y) => h - pad.b - (y - yr[0]) / (yr[1] - yr[0]) * (h - pad.t - pad.b);
+  ctx.font = "11px " + getComputedStyle(document.body).fontFamily;
+  ctx.strokeStyle = palette.rule; ctx.fillStyle = palette["ink-3"]; ctx.lineWidth = 1;
+  for (const v of yticks) { ctx.beginPath(); ctx.moveTo(pad.l, Y(v)); ctx.lineTo(w - pad.r, Y(v)); ctx.stroke();
+    ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(v, pad.l - 5, Y(v)); }
+  for (const v of xticks) { ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText(v, X(v), h - pad.b + 4); }
+  ctx.textAlign = "right"; ctx.fillText(xlabel, w - pad.r, h - 13);
+  ctx.save(); ctx.translate(10, pad.t); ctx.textAlign = "left"; ctx.fillText(ylabel, 0, -2); ctx.restore();
+  return { X, Y };
+}
+
+function drawSpeed(now) {
+  const { ctx, w, h } = fitCanvas($("speed"));
+  ctx.clearRect(0, 0, w, h);
+  const sc = state.scenario, L = DATA.length;
+  const { X, Y } = axes(ctx, w, h, { l: 34, r: 8, t: 14, b: 28 }, [0, L], [0, 260], [0, 1000, 2000, 3000, 4000],
+                        [0, 100, 200], "s [m]", "km/h");
+  sc.cars.forEach((car, i) => {
+    if (!state.visible[i]) return;
+    const d = car.data, optimum = car.kind === "optimum";
+    ctx.strokeStyle = colourOf(car); ctx.lineWidth = i === state.follow ? 2 : 1.2;
+    ctx.globalAlpha = optimum ? 0.6 : (i === state.follow ? 1 : 0.65);
+    if (optimum) ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    let started = false, prev = -1;
+    for (let k = 0; k < d.t.length; k++) {
+      if (!optimum && d.t[k] > state.t) break;
+      const s = d.s[k] % L;
+      if (s < prev) started = false;
+      prev = s;
+      started ? ctx.lineTo(X(s), Y(3.6 * d.vx[k])) : ctx.moveTo(X(s), Y(3.6 * d.vx[k]));
+      started = true;
+    }
+    ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    if (!optimum) { ctx.fillStyle = colourOf(car); ctx.beginPath();
+      ctx.arc(X(now[i].s % L), Y(3.6 * now[i].vx), i === state.follow ? 4 : 2.5, 0, 2 * Math.PI); ctx.fill(); }
+  });
+}
+
+function drawGG(now) {
+  const { ctx, w, h } = fitCanvas($("gg"));
+  ctx.clearRect(0, 0, w, h);
+  const car = state.scenario.cars[state.follow], d = car.data;
+  $("gg-title").textContent = "g-g diagram · " + car.name;
+  const size = Math.min(w, h) - 30, cx = w / 2, cy = 8 + size / 2, r = size / 2 / 1.2;
+  ctx.strokeStyle = palette.rule; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx - 1.2 * r, cy); ctx.lineTo(cx + 1.2 * r, cy); ctx.moveTo(cx, cy - 1.2 * r); ctx.lineTo(cx, cy + 1.2 * r); ctx.stroke();
+  ctx.setLineDash([4, 3]); ctx.strokeStyle = palette["ink-3"];
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = palette["ink-3"]; ctx.font = "11px " + getComputedStyle(document.body).fontFamily;
+  ctx.textAlign = "left"; ctx.fillText("μg", cx + r * 0.72, cy - r * 0.76);
+  ctx.textAlign = "center"; ctx.fillText("lateral a_y / g", cx, cy + 1.2 * r + 12);
+  ctx.fillStyle = colourOf(car); ctx.globalAlpha = 0.35;
+  for (let k = 0; k < d.t.length && (car.kind === "optimum" || d.t[k] <= state.t); k++) {
+    ctx.fillRect(cx + d.ay[k] / G * r - 1, cy - d.ax[k] / G * r - 1, 2, 2);
+  }
+  ctx.globalAlpha = 1;
+  const p = now[state.follow];
+  ctx.beginPath(); ctx.arc(cx + p.ay / G * r, cy - p.ax / G * r, 6, 0, 2 * Math.PI);
+  ctx.fill(); ctx.strokeStyle = palette.ink; ctx.lineWidth = 1.2; ctx.stroke();
+}
+
+function updateTable(now) {
+  const sc = state.scenario, opt = sc.cars.find((c) => c.kind === "optimum");
+  [...$("cars").children].forEach((row, i) => {
+    const car = sc.cars[i], p = now[i];
+    row.querySelector("[data-speed]").textContent = p.done && car.failed ? "out" : (3.6 * p.vx).toFixed(0);
+    let gap = "";
+    if (sc.reference && opt && car !== opt) {
+      gap = (timeAtS(car, p.s) - timeAtS(opt, p.s)).toFixed(2);
+      if (!gap.startsWith("-")) gap = "+" + gap;
+    } else if (!sc.reference) gap = p.s.toFixed(0);
+    row.querySelector("[data-gap]").textContent = gap;
+  });
+}
+
+function draw() {
+  const sc = state.scenario, now = sc.cars.map((car) => sampleAt(car, state.t));
+  drawView(now); drawSpeed(now); drawGG(now); updateTable(now);
+  $("clock").textContent = state.t.toFixed(2).padStart(6, " ") + " s";
+  $("scrub").value = Math.round(1000 * state.t / state.duration);
+}
+
+function tick(stamp) {
+  if (state.last !== null && state.playing) {
+    state.t += (stamp - state.last) / 1000 * state.rate;
+    if (state.t > state.duration) state.t = 0;
+    draw();
+  }
+  state.last = stamp;
+  requestAnimationFrame(tick);
+}
+
+DATA.scenarios.forEach((sc, i) => {
+  const button = document.createElement("button");
+  button.type = "button"; button.textContent = sc.title; button.id = "tab-" + sc.id;
+  button.addEventListener("click", () => setScenario(i));
+  $("tabs").append(button);
+});
+$("play").addEventListener("click", () => { state.playing = !state.playing; $("play").textContent = state.playing ? "Pause" : "Play"; });
+$("scrub").addEventListener("input", (e) => { state.t = e.target.value / 1000 * state.duration; draw(); });
+$("rate").addEventListener("change", (e) => { state.rate = Number(e.target.value); });
+$("mode").addEventListener("change", (e) => { state.mode = e.target.value; draw(); });
+$("follow").addEventListener("change", (e) => { state.follow = Number(e.target.value); draw(); });
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && !["INPUT", "SELECT", "BUTTON"].includes(document.activeElement.tagName)) {
+    e.preventDefault(); $("play").click();
+  }
+});
+const scheme = window.matchMedia("(prefers-color-scheme: dark)");
+scheme.addEventListener("change", () => { readPalette(); draw(); });
+new MutationObserver(() => { readPalette(); draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+window.addEventListener("resize", () => draw());
+readPalette();
+if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { state.playing = false; $("play").textContent = "Play"; }
+setScenario(0);
+requestAnimationFrame(tick);
+</script>

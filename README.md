@@ -15,6 +15,7 @@ The previous imitation line (scripted teacher, safety filter, perturbed demonstr
 - [3. Environment](#3-environment--env)
 - [4. The learning problem: state, observation, action, reward](#4-the-learning-problem-state-observation-action-reward)
 - [5. Training and evaluation](#5-training-and-evaluation--learning-evaluation)
+- [Figures](#figures--scriptsfigures)
 - [Tests](#tests)
 
 ## Quick start
@@ -40,6 +41,7 @@ data/tracks/     the four circuits: TUM centreline CSV and its reference (curvat
 docs/figures/    figures of this README
 research/        literature corpus metadata (the papers and third-party code are not tracked)
 scripts/         command-line entry points (training, evaluation, check of the balance index, throughput)
+scripts/figures/ recorded laps, static figures, animations and the interactive lap viewer of the results
 tests/           plant and environment rollouts, balance index, track preparation, analysis, against recorded golden data
 ```
 
@@ -336,6 +338,23 @@ python scripts/summarise_balance.py
 Two studies are defined (`BalanceDesign` in `evaluation/balance_study.py`): `stage3`, at 20 m/s, and `limit`, on the free stage, with the grid b ∈ {−0.24 … +0.05} and the widths W1/3 [−0.07, +0.01], W2/3 [−0.14, +0.02], W1 [−0.21, +0.03] of the drivable interval at 70 m/s. `summarise_balance.py --design limit` also reports the distance from the limit of every policy and b against the minimum-time laps of that b, the slope against b of the entry and minimum speed in the tightest corner (does the policy adapt like the minimum-time lap?), and the gap between Oracle and Randomised net of the gap they already show at b = 0 (`net_difference`).
 
 **Evaluation** (`evaluation/laps.py`, `evaluation/stage_gate.py`): from 10 starts equally spaced along the lap, at 3 m/s, the deterministic policy drives one lap or fails; a lap slower than four times the lap at top speed fails as a timeout. A seed passes when it completes at least 9 of its 10 laps, and a stage passes when at least 4 of 5 seeds pass. The completion rate over seeds × starts is reported with a 95 % interval from a two-level bootstrap that resamples seeds and starts independently. Lap times are compared with a point-mass lap at the top speed of the stage, a yardstick that no policy uses.
+
+---
+
+## Figures — `scripts/figures/`
+
+The figures and animations of the results at the limit are built from recorded laps, in two steps. `record_laps.py` drives the trained policies and records one sample per decision (state, commands, accelerations, tyre slips and loads, world pose) to `outputs/trajectories/`: a flying lap of every configuration at b = 0, three policies over five values of b, the mean action and five stochastic runs of the case of the mean action that leaves the track, and the flying minimum-time lap of every b resampled in time. `thesis_plots.py` holds what the others share (style, colours, track geometry, loading of the recorded laps).
+
+- `make_thesis_figures.py`: static figures as PNG and PDF (track and minimum-time line, speed and lap-time profiles against the minimum-time lap, g-g diagram, tyre usage, training curves, distance from the limit, results over b, mean action against the stochastic policy);
+- `animate_laps.py`: GIF and MP4 animations (a chase view with the ghost of the minimum-time lap, the policies on the whole circuit, cars with different b, mean action against stochastic runs), rendered with matplotlib and assembled with ffmpeg;
+- `build_lap_viewer.py`: fills the template `lap_viewer.html` with the track and the recorded laps and writes one self-contained HTML page for browsing them.
+
+```bash
+python scripts/figures/record_laps.py
+python scripts/figures/make_thesis_figures.py
+python scripts/figures/animate_laps.py --only chase
+python scripts/figures/build_lap_viewer.py
+```
 
 ---
 
