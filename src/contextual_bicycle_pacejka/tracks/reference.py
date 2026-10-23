@@ -16,7 +16,7 @@ from numpy.typing import NDArray
 from scipy.ndimage import uniform_filter1d
 
 TUM_URL = "https://raw.githubusercontent.com/TUMFTM/racetrack-database/master/tracks/{name}.csv"
-TUM_NAMES = {"monza": "Monza", "spa": "Spa", "catalunya": "Catalunya", "budapest": "Budapest"}
+TUM_NAMES = {"catalunya": "Catalunya"}
 KAPPA_SMOOTH_WINDOW = 10  # [samples]
 CLOSURE_TOL_M = 1.0  # a last point closer than this to the first one is a duplicate
 

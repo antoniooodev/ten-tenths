@@ -34,15 +34,3 @@ def sample_setup(
         if not any(lo < b < hi for lo, hi in b_exclude):
             return SetupVector(m=MASS_NOM, mu=MU_NOM, hcg=HCG_NOM, tau_d=TAU_D_NOM, b=b)
     raise ValueError(f"no b of {b_range} outside {b_exclude}")
-
-
-def randomized_setup(
-    mu: float, rng: np.random.Generator, b_range: tuple[float, float] = (B_NOM, B_NOM),
-) -> np.ndarray:
-    """Draw a setup with ``sample_setup`` and replace its friction by ``mu``.
-
-    An episode's setup is ``randomized_setup(mu, np.random.default_rng(seed), b_range)``.
-    """
-    setup = sample_setup(rng, b_range)
-    setup.mu = float(mu)
-    return setup.to_array()

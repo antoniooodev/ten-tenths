@@ -1,10 +1,8 @@
 # Contextual Bicycle Pacejka
 
-A simulated race car on real circuits (Monza, Spa, Catalunya and Budapest): a single-track Pacejka plant with combined slip and longitudinal load transfer, the circuits' centreline geometry, and a Gymnasium environment.
+A simulated race car on the Catalunya circuit: a single-track Pacejka plant with combined slip and longitudinal load transfer, the circuit's centreline geometry, and a Gymnasium environment.
 
 The project studies **pure model-free reinforcement learning**: policies that learn to race only from interaction with the simulator, with no shield, no behaviour cloning and no demonstrations from model-based controllers, and that are tested across vehicle handling balances. The vehicle family varies in one scalar, the balance index `b`, which moves lateral grip between the axles; the policies learn through stages of increasing top speed.
-
-The previous imitation line (scripted teacher, safety filter, perturbed demonstrations, behaviour cloning, offline RL, friction estimator, plan coach) is kept at the git tag `legacy-imitation`.
 
 ## Contents
 
@@ -23,7 +21,7 @@ The previous imitation line (scripted teacher, safety filter, perturbed demonstr
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
-pytest                   # plant, balance index, environment, tracks and analysis (seconds)
+pytest                   # plant, balance index, environment, tracks, learning and evaluation (seconds)
 ```
 
 ## Repository layout
@@ -37,12 +35,12 @@ src/contextual_bicycle_pacejka/
     learning/    PPO configuration, training curves and the automatic speed curriculum
     reference/   minimum-time lap reference (evaluation only)
     evaluation/  protocol laps, stage criterion, corners, evaluation over b, result statistics and the check of the balance index
-data/tracks/     the four circuits: TUM centreline CSV and its reference (curvature and track widths)
+data/tracks/     the Catalunya circuit: TUM centreline CSV and its reference (curvature and track widths)
 docs/figures/    figures of this README
 research/        literature corpus metadata (the papers and third-party code are not tracked)
 scripts/         command-line entry points (training, evaluation, check of the balance index, throughput)
 scripts/figures/ recorded laps, static figures, animations and the interactive lap viewer of the results
-tests/           plant and environment rollouts, balance index, track preparation, analysis, against recorded golden data
+tests/           plant and environment rollouts, balance index, track preparation, learning and evaluation, against recorded golden data
 ```
 
 ## 1. Vehicle plant — `model/`
@@ -150,10 +148,7 @@ The edge distances are the circuit's own: the car leaves the track when its late
 
 | Circuit   | Centreline length (km) | Track width (m) |
 | --------- | ---------------------- | --------------- |
-| Monza     | 5.79                   | 7.5 – 12.4      |
-| Spa       | 7.00                   | 7.9 – 16.4      |
 | Catalunya | 4.65                   | 8.6 – 17.8      |
-| Budapest  | 4.38                   | 7.6 – 16.1      |
 
 ---
 
@@ -202,7 +197,7 @@ Every episode has its own setup `xi = [m, mu, hcg, tau_d, b]`. Only the balance 
 | `tau_d` | steering lag             | 0.03 s                                  |
 | `b`     | balance index            | uniform in `b_range` (default: `b = 0`) |
 
-`sample_setup(rng, b_range, b_exclude)` draws a setup, drawing `b` again while it falls in one of the open bands `b_exclude` (`held_out_bands(centres)` gives bands of half-width 0.01 around held-out values of `b`); `randomized_setup(mu, default_rng(seed), b_range)` also **overwrites** its friction by `mu`, so that every episode is reproducible from `(mu, seed)`.
+`sample_setup(rng, b_range, b_exclude)` draws a setup, drawing `b` again while it falls in one of the open bands `b_exclude` (`held_out_bands(centres)` gives bands of half-width 0.01 around held-out values of `b`).
 
 ---
 
@@ -361,9 +356,9 @@ python scripts/figures/build_lap_viewer.py
 ## Tests
 
 ```bash
-pytest                   # plant, balance index, environment, tracks and analysis (seconds)
+pytest                   # plant, balance index, environment, tracks, learning and evaluation (seconds)
 python scripts/check_balance_index.py   # steady-state check of b -> outputs/analysis/balance_index.json
 python scripts/measure_throughput.py    # decisions/s of the environment -> outputs/analysis/throughput.json
 ```
 
-`tests/golden/plant_catalunya.npz` holds reference rollouts of the original dynamics alone on the Catalunya centreline (`tests/test_plant.py`), which `ORIGINAL_PLANT` must reproduce bit for bit; `tests/golden/plant_catalunya_gt4.npz` holds those of the current plant, which any later change must reproduce. The same file checks the drag and power (top speed, acceleration, coast-down, within 1 %) and that a slide no longer unloads an axle; `tests/test_balance.py` pins what `b` changes. The analysis tests use results recorded from the original implementation.
+`tests/golden/plant_catalunya.npz` holds reference rollouts of the original dynamics alone on the Catalunya centreline (`tests/test_plant.py`), which `ORIGINAL_PLANT` must reproduce bit for bit; `tests/golden/plant_catalunya_gt4.npz` holds those of the current plant, which any later change must reproduce. The same file checks the drag and power (top speed, acceleration, coast-down, within 1 %) and that a slide no longer unloads an axle; `tests/test_balance.py` pins what `b` changes.
