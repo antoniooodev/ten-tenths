@@ -12,7 +12,7 @@ from contextual_bicycle_pacejka.env import sample_setup  # noqa: E402
 from contextual_bicycle_pacejka.model.dynamics import compute_frenet_rates, compute_vehicle_rates  # noqa: E402
 from contextual_bicycle_pacejka.model.state import VehicleMemory, VehicleState  # noqa: E402
 from contextual_bicycle_pacejka.model.track import RealTrack  # noqa: E402
-from contextual_bicycle_pacejka.reference.min_time import vehicle_rates  # noqa: E402
+from contextual_bicycle_pacejka.reference.min_time import corridor, vehicle_rates  # noqa: E402
 from contextual_bicycle_pacejka.spec.constants import MASS_NOM, TAU_D_NOM  # noqa: E402
 
 TRACK = RealTrack(str(REPO / "data/tracks/catalunya/reference.npz"))
@@ -50,3 +50,16 @@ def test_smoothing_is_small() -> None:
     smooth = vehicle_rates(x, 0.03, 0.0, 1.0, 0.01, smooth=True)
     assert float(smooth["fx_r"]) == pytest.approx(float(exact["fx_r"]), rel=1e-3)
     assert float(smooth["rates"][2]) == pytest.approx(float(exact["rates"][2]), rel=1e-3)
+
+
+def test_corridor_moves_both_edges_inwards() -> None:
+    """The edge margin narrows the track on both sides, and a margin that closes it somewhere is refused."""
+    left, right = TRACK.boundaries_many(np.linspace(0.0, TRACK.track_length, 500, endpoint=False))
+    narrow_left, narrow_right = corridor(left, right, 1.5)
+    np.testing.assert_allclose(narrow_left, left - 1.5)
+    np.testing.assert_allclose(narrow_right, right - 1.5)
+    np.testing.assert_array_equal(corridor(left, right, 0.0)[0], left)
+    with pytest.raises(ValueError):
+        corridor(left, right, float(min(left.min(), right.min())))
+    with pytest.raises(ValueError):
+        corridor(left, right, -0.1)

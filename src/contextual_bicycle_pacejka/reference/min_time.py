@@ -6,7 +6,8 @@ An optimal-control problem over one lap, in the arc length s of the centreline (
     controls   delta in [-DELTA_MAX, DELTA_MAX],  tau rate in [-TAU_RATE_MAX, TAU_RATE_MAX]
     algebraic  ax_LT = F_body_x / m                    (the inertial load transfer, without the one-step delay)
     dynamics   d(state)/ds = d(state)/dt / s_dot       (the equations of ``model/dynamics.py``; trapezoidal rule)
-    bounds     -w_right(s) <= ey <= w_left(s)           (the centre of the car on the track, as the off-track rule)
+    bounds     -w_right(s) <= ey <= w_left(s)           (the centre of the car on the track, as the off-track rule;
+                                                         ``edge_margin`` moves both edges inwards)
                |alpha_i| <= alpha_sat,i                 (each axle at most at its peak slip: the limit, not beyond)
                commanded longitudinal forces within mu Fz (the plant clips them; at the optimum it makes no difference)
     objective  the lap time, the integral of ds / s_dot, plus a small weight on the steering changes
@@ -71,6 +72,19 @@ def _max0(x: Any, eps: float) -> Any:
 
 def _min(a: Any, b: Any, eps: float) -> Any:
     return 0.5 * (a + b - ca.sqrt((a - b) * (a - b) + eps * eps))
+
+
+def corridor(
+    left: NDArray[np.float64], right: NDArray[np.float64], margin: float,
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    """Return the edge distances ``left`` and ``right`` [m] moved inwards by ``margin`` [m].
+
+    Raises ValueError if the margin closes the track somewhere.
+    """
+    left, right = left - margin, right - margin
+    if margin < 0.0 or min(left.min(), right.min()) <= 0.0:
+        raise ValueError(f"an edge margin of {margin} m leaves no track")
+    return left, right
 
 
 def vehicle_rates(
@@ -141,9 +155,10 @@ class MinTimeLap:
 
 def solve_min_time_lap(
     track: RealTrack, b: float = 0.0, ds: float = 2.0, max_iter: int = 3000, print_level: int = 0,
-    start_s: float | None = None, start_vx: float = 3.0,
+    start_s: float | None = None, start_vx: float = 3.0, edge_margin: float = 0.0,
 ) -> MinTimeLap:
-    """Solve the minimum-time lap with steps of about ``ds`` [m].
+    """Solve the minimum-time lap with steps of about ``ds`` [m], with the edges ``edge_margin`` [m] inside the
+    track's own.
 
     Without ``start_s`` the lap is flying (periodic). With it, the lap starts at ``start_s`` on the centreline,
     aligned with it, at ``start_vx`` with no yaw, steering or longitudinal command, as the protocol laps of
@@ -155,7 +170,7 @@ def solve_min_time_lap(
     s = (np.arange(n) if flying else np.arange(n + 1)) * step + (0.0 if flying else start_s)
     nodes_count = len(s)
     kappa = track.kappa_many(s % track.track_length)
-    left, right = track.boundaries_many(s % track.track_length)
+    left, right = corridor(*track.boundaries_many(s % track.track_length), edge_margin)
     setup = sample_setup(np.random.default_rng(0), (b, b))
     peak = {"f": compute_saturation_threshold(setup, "front"), "r": compute_saturation_threshold(setup, "rear")}
 
