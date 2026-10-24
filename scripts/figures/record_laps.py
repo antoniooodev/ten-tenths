@@ -9,7 +9,8 @@ flying minimum-time lap. A run is stored as <output>/<name>.npz with the arrays 
 ``tag``, ``seed``, ``b``, ``deterministic``, ``failure``, ``lap_times`` (one per completed lap).
 
 Runs (``--only`` picks one group):
-- flying:     every limit configuration at b = 0, seeds 10-14, mean action;
+- flying:     every limit configuration at b = 0, seeds 10-14, mean action; with ``--tag`` only that tag, with
+              ``--seeds`` and ``--model`` (a copy, stored as flying_<tag>_<model>_s<seed>);
 - balance:    Nominal continued, Randomised W1 and Oracle W1, seed 12, over five values of b, mean action;
 - stochastic: Nominal continued, seed 14, b = 0, the mean action and five stochastic runs (the case where the mean
               action leaves the track at s = 2167 m);
@@ -161,13 +162,17 @@ def record_reference(b: float, output: Path, track: RealTrack) -> str:
     return f"reference b {b:+.2f}: {ref['lap_time']:.2f} s"
 
 
-def jobs(group: str, models: Path, output: Path) -> list[dict[str, Any]]:
+def jobs(group: str, models: Path, output: Path, args: argparse.Namespace) -> list[dict[str, Any]]:
     def job(tag: str, seed: int, b: float, name: str, deterministic: bool = True,
-            noise_seed: int | None = None) -> dict[str, Any]:
-        return {"model": str(models / tag / f"s{seed}" / "stage7.zip"), "tag": tag, "seed": seed, "b": b,
+            noise_seed: int | None = None, model: str = "stage7") -> dict[str, Any]:
+        return {"model": str(models / tag / f"s{seed}" / f"{model}.zip"), "tag": tag, "seed": seed, "b": b,
                 "start_s": 0.0, "deterministic": deterministic, "noise_seed": noise_seed, "name": name,
                 "output": str(output)}
 
+    if group == "flying" and args.tag:
+        infix = "" if args.model == "stage7" else f"_{args.model}"
+        return [job(args.tag, seed, 0.0, f"flying_{args.tag}{infix}_s{seed}", model=args.model)
+                for seed in args.seeds]
     if group == "flying":
         return [job(tag, seed, 0.0, f"flying_{tag}_s{seed}") for tag in LIMIT_TAGS for seed in SEEDS]
     if group == "balance":
@@ -182,6 +187,9 @@ def jobs(group: str, models: Path, output: Path) -> list[dict[str, Any]]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--only", choices=("flying", "balance", "stochastic", "reference"))
+    parser.add_argument("--tag", help="flying laps of this tag only")
+    parser.add_argument("--seeds", type=int, nargs="+", default=list(SEEDS))
+    parser.add_argument("--model", default="stage7", help="model file name without .zip")
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--models", type=Path, default=Path("outputs/models"))
     parser.add_argument("--output", type=Path, default=Path("outputs/trajectories"))
@@ -193,7 +201,7 @@ def main() -> None:
         track = RealTrack(CATALUNYA)
         for b in LIMIT_GRID:
             logging.info(record_reference(b, args.output, track))
-    runs = [j for group in groups for j in jobs(group, args.models, args.output)]
+    runs = [j for group in groups for j in jobs(group, args.models, args.output, args)]
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         for line in pool.map(drive, runs):
             logging.info(line)
