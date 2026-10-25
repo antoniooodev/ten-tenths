@@ -1,4 +1,4 @@
-# Contextual Bicycle Pacejka
+# Ten-Tenths — model-free RL at the limit of grip
 
 **Pure model-free reinforcement learning at the limit of grip.** A simulated GT4-class race car on the Circuit de Barcelona-Catalunya — a single-track Pacejka plant with combined slip, inertial load transfer, aerodynamic drag and a power limit — and PPO policies that learn to lap it as fast as the car allows, only from interaction with the simulator.
 
