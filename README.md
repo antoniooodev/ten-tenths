@@ -529,3 +529,7 @@ python scripts/measure_throughput.py    # decisions/s of the environment -> outp
 `tests/golden/plant_catalunya.npz` holds reference rollouts of the original dynamics alone on the Catalunya centreline (`tests/test_plant.py`), which `ORIGINAL_PLANT` must reproduce bit for bit; `tests/golden/plant_catalunya_gt4.npz` holds those of the current plant, which any later change must reproduce. The same file checks the drag and power (top speed, acceleration, coast-down, within 1 %) and that a slide no longer unloads an axle; `tests/test_balance.py` pins what `b` changes; `tests/test_min_time.py` checks the equations of the minimum-time problem against the plant and the edges moved inwards by `--edge-margin` (it runs when CasADi is installed).
 
 The earlier line of this project, which trained policies by imitation of a model-based teacher on four circuits, is kept at the tag `legacy-imitation`.
+
+## License
+
+The code is released under the [MIT License](LICENSE). The Catalunya centreline in `data/tracks/catalunya/tum_centerline.csv` comes from the [TUM racetrack database](https://github.com/TUMFTM/racetrack-database) and keeps its own licence, the [LGPL-3.0](data/tracks/LICENSE-TUM-racetrack-database).
