@@ -59,11 +59,14 @@ from thesis_plots import (
     G,
     Track,
     apply_style,
+    dense,
     flying,
     load,
     load_track,
     reference,
     reference_time_at,
+    resample,
+    sample_at,
     time_at,
     window_bbox,
 )
@@ -175,8 +178,12 @@ class Trail:
         ax.add_collection(self.lines, autolim=False)
 
     def update(self, run: dict[str, np.ndarray], t: float, view) -> None:
-        keep = (run["t"] <= t) & (run["t"] >= t - self.seconds)
-        x, y, age = run["x"][keep], run["y"][keep], t - run["t"][keep]
+        start = max(float(run["t"][0]), t - self.seconds)
+        if t - start < 0.02:
+            self.lines.set_segments([])
+            return
+        path = resample(run, np.append(np.arange(start, t, 0.02), t))  # the Frenet path, not 20 Hz chords
+        x, y, age = path["x"], path["y"], t - path["t"]
         if len(x) < 2:
             self.lines.set_segments([])
             return
@@ -195,16 +202,6 @@ def follow_view(ax, track: Track, x: float, y: float, s: float) -> Any:
     index = np.mod(np.round(s + ahead).astype(int), len(track.s) - 1)
     heading = np.arctan2(np.sin(track.psi[index]).mean(), np.cos(track.psi[index]).mean())
     return Affine2D().translate(-x, -y).rotate(np.pi / 2 - heading) + ax.transData
-
-
-def sample_at(run: dict[str, np.ndarray], t: float) -> dict[str, float]:
-    """Channels of a run interpolated at time t (psi unwrapped)."""
-    out = {}
-    for key, values in run.items():
-        if isinstance(values, np.ndarray) and values.shape == run["t"].shape and key != "t":
-            series = np.unwrap(values) if key == "psi" else values
-            out[key] = float(np.interp(t, run["t"], series))
-    return out
 
 
 def bare(ax) -> None:
@@ -253,7 +250,7 @@ class Chase:
         self.track = load_track(1.0)
         self.lap = flying(load(f"flying_{tag}_s{seed}"), self.track.length)
         self.ref = reference(0.0)
-        self.ghost_run = {key: self.ref[key] for key in ("t", "x", "y", "psi", "s", "delta")}
+        self.ghost_run = self.ref
         self.colour = POLICY_COLOURS[tag]
         self.preview = make_stage(7, self.track.real).preview
         self.frames = int(np.ceil(float(self.lap["lap_time"]) / frame_dt)) + 1
@@ -262,6 +259,7 @@ class Chase:
 
     def setup(self) -> None:
         apply_style()
+        plt.rcParams["axes.titlelocation"] = "center"  # the live read-out sits above the left of the panels
         plt.rcParams["savefig.bbox"] = "standard"  # every frame the same size
         fig = self.fig = plt.figure(figsize=FIGSIZE, dpi=DPI)
         lap_time = float(self.lap["lap_time"])
@@ -397,7 +395,7 @@ class Race:
         self.frame_dt, self.titles, self.seed = frame_dt, titles, seed
         self.track = load_track(1.0)
         self.ref = reference(0.0)
-        self.ghost_run = {key: self.ref[key] for key in ("t", "x", "y", "psi", "s", "delta")}
+        self.ghost_run = self.ref
         self.laps = {tag: flying(load(f"flying_{tag}_s{seed}"), self.track.length) for tag in self.TAGS}
         end = max(float(lap["lap_time"]) for lap in self.laps.values()) + 2.0
         self.frames = int(np.ceil(end / frame_dt)) + 1
@@ -407,6 +405,7 @@ class Race:
 
     def setup(self) -> None:
         apply_style()
+        plt.rcParams["axes.titlelocation"] = "center"  # the live read-out sits above the left of the panels
         plt.rcParams["savefig.bbox"] = "standard"
         fig = self.fig = plt.figure(figsize=FIGSIZE, dpi=DPI)
         self.clock, top = header(fig, self.titles, "Flying lap at b = 0: three PPO policies against the minimum-time "
@@ -501,6 +500,7 @@ class Balance:
 
     def setup(self) -> None:
         apply_style()
+        plt.rcParams["axes.titlelocation"] = "center"  # the live read-out sits above the left of the panels
         plt.rcParams["savefig.bbox"] = "standard"
         fig = self.fig = plt.figure(figsize=FIGSIZE, dpi=DPI)
         kind = "oversteering" if self.b > 0 else "understeering"
@@ -589,6 +589,7 @@ class Stochastic:
 
     def setup(self) -> None:
         apply_style()
+        plt.rcParams["axes.titlelocation"] = "center"  # the live read-out sits above the left of the panels
         plt.rcParams["savefig.bbox"] = "standard"
         fig = self.fig = plt.figure(figsize=FIGSIZE, dpi=DPI)
         sigma = self.noisy[0]["std_delta"][1]
@@ -647,7 +648,8 @@ class Stochastic:
         past = (self.mean["t"] <= t) & (self.mean["s"] >= 1990)
         now = sample_at(self.mean, min(t, self.t_fail))
         self.mean_trail.update(self.mean, min(t, self.t_fail), self.zoom.transData)
-        self.mean_path.set_data(self.mean["x"][past], self.mean["y"][past])
+        path = dense(self.mean, past)
+        self.mean_path.set_data(path["x"], path["y"])
         self.mean_car.place(now["x"], now["y"], now["psi"], now["delta"], self.zoom.transData)
         if t >= self.t_fail:
             self.crash.set_data([now["x"]], [now["y"]])

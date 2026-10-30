@@ -17,7 +17,9 @@ Runs (``--only`` picks one group):
 - reference:  the flying minimum-time lap of every b of the grid, resampled in time, as reference_b<b>.npz.
 
 The accelerations are the body-frame resultants over the mass (F_body_x / m, F_body_y / m) of the next plant step,
-and the slips |alpha| / alpha_sat of each axle; x, y and psi are world coordinates of the centre of mass.
+and the slips |alpha| / alpha_sat of each axle; x, y and psi are world coordinates of the centre of mass
+(``thesis_plots.load`` recomputes them from s, ey and epsi, so runs recorded before the drawn geometry changed stay
+usable).
 """
 
 from __future__ import annotations
@@ -32,7 +34,7 @@ from typing import Any
 import numpy as np
 import torch
 from stable_baselines3 import PPO
-from thesis_plots import CATALUNYA
+from thesis_plots import CATALUNYA, frenet_to_world
 
 from contextual_bicycle_pacejka.env.environment import RacingEnv
 from contextual_bicycle_pacejka.env.setup_sampling import sample_setup
@@ -67,12 +69,9 @@ CHANNELS = ("t", "s", "ey", "epsi", "vx", "vy", "r", "delta", "tau", "delta_ref"
 
 
 def world_pose(track: RealTrack, s: np.ndarray, ey: np.ndarray, epsi: np.ndarray) -> tuple[np.ndarray, ...]:
-    """World coordinates (x, y) [m] and heading psi [rad] of Frenet points (ey positive to the left)."""
-    centre = np.array([track.centerline_point(v) for v in s])
-    heading = np.array([track.psi_ref(v) for v in s])
-    x = centre[:, 0] - ey * np.sin(heading)
-    y = centre[:, 1] + ey * np.cos(heading)
-    return x, y, heading + epsi
+    """World coordinates (x, y) [m] and heading psi [rad] of Frenet points (ey positive to the left), on the normals
+    of the drawn centreline (``thesis_plots.frenet_to_world``)."""
+    return frenet_to_world(s, ey, epsi, real=track)
 
 
 def sample(env: RacingEnv, t: float, std: np.ndarray) -> dict[str, float]:
