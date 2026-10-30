@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ten-Tenths · RL at the limit of grip</title>
+<meta name="description" content="PPO policies lapping the Circuit de Barcelona-Catalunya at the limit of grip: replays of the recorded laps and a live simulation of the car and the policies in the browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="demo/css/app.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0b0b'/%3E%3Cpath d='M7 20c4-9 14-9 18 0' stroke='%23eb6834' stroke-width='3.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Ten-Tenths</h1>
+      <p class="tagline">Model-free RL at the limit of grip: PPO policies lapping Barcelona-Catalunya in a GT4-class car,
+        learned only from interaction with the simulator.</p>
+    </div>
+    <div class="top-actions">
+      <a class="link" href="https://github.com/antoniooodev/ten-tenths">Code and results</a>
+      <button type="button" id="theme" class="ghost-button" aria-label="Switch between light and dark theme">
+        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="7.2" fill="none"
+          stroke="currentColor" stroke-width="1.6"/><path d="M10 2.8a7.2 7.2 0 0 1 0 14.4z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="toolbar" aria-label="Demo controls">
+    <div class="segmented" role="group" aria-label="Mode">
+      <button type="button" data-mode="replay">Replay</button>
+      <button type="button" data-mode="live">Live simulation</button>
+    </div>
+    <div id="replay-controls" class="controls">
+      <div class="segmented" role="group" aria-label="Scenario">
+        <button type="button" data-scenario="flying">Flying lap</button>
+        <button type="button" data-scenario="balance">Handling balance</button>
+        <button type="button" data-scenario="noise">Mean action vs noise</button>
+      </div>
+      <div id="balance-values" class="segmented compact" role="group" aria-label="Balance index b"></div>
+    </div>
+    <div id="live-controls" class="controls" hidden>
+      <label class="field slider">
+        <span>balance index <b>b</b></span>
+        <input id="live-b" type="range" min="-0.30" max="0.10" step="0.01" value="0.05">
+        <output id="live-b-value" class="mono">+0.05</output>
+      </label>
+      <div class="segmented compact" role="group" aria-label="Policies">
+        <button type="button" data-policy="nominal_limit_cont">Nominal</button>
+        <button type="button" data-policy="randomised_limit_w1">Randomised</button>
+        <button type="button" data-policy="oracle_limit_w1">Oracle</button>
+      </div>
+      <label class="field">
+        <span>start</span>
+        <select id="live-start"></select>
+      </label>
+      <button type="button" id="restart" class="primary">Restart</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <section class="stage" aria-label="Track view">
+      <canvas id="view" aria-label="The cars on the circuit"></canvas>
+      <div class="hud" aria-live="off">
+        <div class="hud-name"><span id="hud-name" class="chip-label">–</span></div>
+        <div class="hud-row">
+          <div><span id="hud-speed" class="big mono">0</span><span class="unit">km/h</span></div>
+          <div><span id="hud-time" class="mid mono">0:00.00</span><span class="unit">time</span></div>
+          <div><span id="hud-gap" class="mid mono">–</span><span id="hud-gap-label" class="unit">gap</span></div>
+          <div><span id="hud-slip" class="mid mono">–</span><span class="unit">slip front / rear (1 = peak)</span></div>
+        </div>
+      </div>
+      <canvas id="mini" class="mini" aria-label="Position on the circuit"></canvas>
+      <div class="camera segmented compact" role="group" aria-label="Camera">
+        <button type="button" data-camera="chase">Chase</button>
+        <button type="button" data-camera="circuit">Circuit</button>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <section>
+        <h2>Cars</h2>
+        <ol id="standings" class="standings"></ol>
+      </section>
+      <section>
+        <h2>Speed along the lap <span class="hint">km/h · dashed: minimum-time lap · shaded: corners C1–C9</span></h2>
+        <canvas id="speed" class="chart speed"></canvas>
+      </section>
+      <section class="split">
+        <div>
+          <h2>g-g diagram</h2>
+          <canvas id="gg" class="chart gg"></canvas>
+        </div>
+        <div>
+          <h2>Commands and tyres</h2>
+          <canvas id="inputs" class="chart inputs"></canvas>
+          <p class="hint">Slip is |α| / α<sub>peak</sub> of each axle: red beyond the peak of the tyre.</p>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="transport">
+    <button type="button" id="play" class="primary">Play</button>
+    <span id="clock" class="mono clock">0:00.00</span>
+    <input id="scrub" type="range" min="0" max="1" step="0.01" value="0" aria-label="Time">
+    <label class="field">
+      <span>speed</span>
+      <select id="speed-select">
+        <option value="0.5">0.5×</option>
+        <option value="1">1×</option>
+        <option value="2">2×</option>
+        <option value="4">4×</option>
+        <option value="8">8×</option>
+      </select>
+    </label>
+  </footer>
+  <p id="note" class="note"></p>
+  <p class="foot">Space plays and pauses, C switches the camera. Cars drawn to scale (4.45 m). Every policy drives its
+    mean action and sees only the car's state and a preview of the track: no racing line, no demonstration.</p>
+</div>
+<script type="module" src="demo/js/app.js"></script>
+</body>
+</html>
