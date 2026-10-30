@@ -1,10 +1,25 @@
-# Ten-Tenths — model-free RL at the limit of grip
+<h1 align="center">Ten-Tenths</h1>
 
-**Pure model-free reinforcement learning at the limit of grip.** A simulated GT4-class race car on the Circuit de Barcelona-Catalunya — a single-track Pacejka plant with combined slip, inertial load transfer, aerodynamic drag and a power limit — and PPO policies that learn to lap it as fast as the car allows, only from interaction with the simulator.
+<p align="center"><b>Model-free reinforcement learning at the limit of grip.</b><br>
+A simulated GT4-class race car on the Circuit de Barcelona-Catalunya, and PPO policies that learn to lap it as fast as
+the car allows, only from interaction with the simulator.</p>
 
-![PPO policy driving a flying lap of Catalunya at the limit](docs/figures/demo_chase_lap.gif)
+<p align="center">
+  <a href="https://antoniooodev.github.io/ten-tenths/"><b>Live demo</b></a> ·
+  <a href="#results">Results</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#reproduce">Reproduce</a>
+</p>
 
-*The Nominal policy at the limit (seed 12) on a flying lap at b = 0, in a chase view drawn to scale: the dashed box is the ghost of the minimum-time lap, the grey dots are the track preview the policy observes. On the right, speed and time gap against the minimum-time lap, the g-g diagram, the commands and the slip of each axle over its peak. The flying lap takes 132.64 s, +3.8 % from the 127.83 s minimum-time lap (shown at 3× real time).*
+<p align="center"><img src="docs/figures/demo_chase_lap.gif" alt="Three PPO policies on a flying lap of Catalunya at the limit, with the ghost of the minimum-time lap" width="900"></p>
+
+<p align="center"><sub>Seed 12 of the three policies on a flying lap at b = 0, the camera on the Oracle; the dashed outline is the ghost of the
+minimum-time lap, the grey dots the track preview the policy observes. Cars to scale, 2.5× real time. Recorded from
+the <a href="https://antoniooodev.github.io/ten-tenths/">web demo</a>.</sub></p>
+
+|                  **+3.8 %**                  |                 **49 / 50**                  |                    **50 / 50**                    |                **+0.24 s**                 |
+| :------------------------------------------: | :------------------------------------------: | :-----------------------------------------------: | :----------------------------------------: |
+| flying lap of the Nominal (seed 12) from the minimum-time lap: 132.64 s vs 127.83 s | protocol laps completed by five seeds trained from random weights | laps of every car of the training range, held-out values included, for Randomised and Oracle | at most, the lap time that knowing `b` gains inside the range |
 
 There is no shield, no behaviour cloning, no reference line and no demonstration from a model-based controller: the policy sees the car's state and a preview of the track, and is rewarded for progress. Tyre saturation is measured, never imposed. A minimum-time lap of the same plant, solved as an optimal-control problem, is used **only to measure** how far the policies are from the limit; no policy ever sees it.
 
@@ -17,31 +32,169 @@ The project then asks how such a policy copes with **cars that handle differentl
 - **Randomisation costs lap time, not reliability:** +0.3 %, +0.6 % and +1.3 % at `b = 0` for the three widths of the range.
 - **Knowing `b` changes how the car is driven, but gains little time inside the range.** The Oracle adapts its corner entry and apex speed to `b` like the minimum-time lap does; the net regret of the Randomised policy is at most +0.24 s, below the 0.5 s fixed in advance, so **a policy with memory is not needed** here. The Oracle's real advantage is outside the range, on more oversteering cars.
 
+### Try it in the browser
+
+The [web demo](https://antoniooodev.github.io/ten-tenths/) has two modes.
+
+- **Replay** of the recorded laps: the flying lap of the three policies against the minimum-time lap; the three
+  policies on five cars of `b` from a standing start; the mean action against the stochastic policy in corner C3.
+- **Live simulation**: the plant, the environment and the three policies of seed 12 run in the browser, ported to
+  JavaScript and checked against Python (`tests/test_demo_sim.py`: the same lap times to the hundredth of a second).
+  Move `b` and watch which policy still laps the car.
+
+<p align="center"><img src="docs/figures/demo_oversteer_car.gif" alt="An oversteering car: only the Oracle completes the lap" width="900"></p>
+
+<p align="center"><sub>An oversteering car, b = +0.05, outside every training range, from the same standing start: the Nominal continued
+and the Randomised W1 leave the track at the exit of the same corner (1756 m and 1758 m), the Oracle W1 completes the
+lap. Real time, camera on the Randomised.</sub></p>
+
 ## Contents
 
-- [Quick start](#quick-start)
-- [Repository layout](#repository-layout)
-- [1. Vehicle plant](#1-vehicle-plant--model)
-- [2. Tracks](#2-tracks--modeltrackpy-tracks)
-- [3. Environment](#3-environment--env)
-- [4. The learning problem: state, observation, action, reward](#4-the-learning-problem-state-observation-action-reward)
-- [5. Training](#5-training--learning)
-- [6. Evaluation](#6-evaluation--evaluation-reference)
-- [7. Results](#7-results)
-- [Figures, animations and lap viewer](#figures-animations-and-lap-viewer--scriptsfigures)
+- [Results](#results)
+- [How it works](#how-it-works): vehicle plant, tracks, environment, learning problem, training, evaluation
+- [Reproduce](#reproduce): quick start, results data, figures, animations and demo
 - [Tests](#tests)
 
-## Quick start
+## Results
 
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"            # add the "reference" extra (CasADi) for the minimum-time lap
-pytest                             # plant, balance index, environment, tracks, learning and evaluation (seconds)
-```
+All numbers below use the protocol of the evaluation (How it works, section 6): 5 seeds × 10 standing starts, the mean action, intervals at 95 %. The criteria were fixed before each run and not changed after it.
 
-Models, training logs, evaluations, recorded laps and figures are written to `outputs/`, which is not tracked.
+### Through the speed stages, nominal car
 
-## Repository layout
+PPO from interaction only drives the nominal car (`b = 0`, original plant) on Catalunya up to 20 m/s:
+
+| Stage      | Seeds passing       | Laps  | Mean lap time (s) | Point-mass lap (s) |
+| ---------- | ------------------- | ----- | ----------------- | ------------------ |
+| 1 (5 m/s)  | 5 of 5              | 50/50 | 922.3             | 930.0              |
+| 2 (10 m/s) | 4 of 5              | 40/50 | 460.0             | 465.0              |
+| 3 (20 m/s) | 3 of 5 (not passed) | 30/50 | 230.5             | 233.8              |
+
+Stage 3 is the first with grip-limited corners; it stopped at 3 of 5 seeds with two learning rates, each after two budgets of 60 M decisions. The seeds that drive beat the point-mass lap by cutting the corners, since progress is measured along the centreline. At 20 m/s, Randomised and Oracle policies widen the range of `b` that is driven at a small cost, but only about 4 % of the lap is grip-limited, so `b` changes little. This is why the study moved to the limit, with a plant that has drag and a power limit, and to training directly on the free stage.
+
+### The Nominal policy at the limit
+
+Five seeds trained from random weights for 600 M decisions on the free stage:
+
+| Seed  | Laps  | Median distance from the minimum-time lap |
+| ----- | ----- | ----------------------------------------- |
+| 10    | 10/10 | +5.18 %                                   |
+| 11    | 10/10 | +3.83 %                                   |
+| 12    | 10/10 | +3.62 %                                   |
+| 13    | 9/10  | +4.11 %                                   |
+| 14    | 10/10 | +5.56 %                                   |
+| Total | 49/50 | mean +4.51 % [3.84, 5.21]                 |
+
+Three of five seeds are within 5 %, so the criterion (four) is narrowly missed: the threshold falls inside the seed-to-seed spread of about 2 points. The policies learn the limit gradually: the mean training speed keeps rising for the whole budget, failures fall by two orders of magnitude, and the share of decisions with the front axle beyond its peak slip falls from 75 % to about 10 %, while the rear is used more and more.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/training_nominal.png">
+  <img src="docs/figures/light/training_nominal.png" alt="training curves of the Nominal at the limit">
+</picture>
+
+Against the minimum-time lap, the policy brakes at nearly the same points (within 7 m) and follows the same speed profile, but loses time steadily in the corners: it uses 67–80 % of the optimal apex offset from the centreline and passes the corners 1.1–1.8 m/s slower. The time gap grows by small steps at every corner rather than in one place.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/lap_profiles.png">
+  <img src="docs/figures/light/lap_profiles.png" alt="flying lap profiles against the minimum-time lap">
+</picture>
+
+<table>
+<tr>
+<td width="50%">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/corner_zooms.png">
+  <img src="docs/figures/light/corner_zooms.png" alt="racing lines in six corners">
+</picture>
+</td>
+<td width="50%">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/gg_diagram.png">
+  <img src="docs/figures/light/gg_diagram.png" alt="g-g diagram">
+</picture>
+</td>
+</tr>
+<tr>
+<td><em>Racing lines in six grip-limited corners: the policies take nearly the optimal line, slightly narrower; minimum speeds in the titles.</em></td>
+<td><em>g-g diagram: the minimum-time lap rides the edge of the friction circle; the policy reaches it too, but less consistently, with more of the lap inside it.</em></td>
+</tr>
+</table>
+
+The tyres show how the policy drives. The minimum-time lap holds **both** axles at their peak slip through every grip-limited corner. The policy spreads its slip below and beyond the peak. In the windows of the nine corners of the protocol laps, it keeps the front axle beyond its peak in 19–43 % of the samples, and the rear near its peak (at least 0.9 of it) in only 6–23 %. It drives with understeer, a margin bought with a slower corner.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/tyre_usage.png">
+  <img src="docs/figures/light/tyre_usage.png" alt="tyre usage in corners">
+</picture>
+
+*Slip of each axle over its peak slip on the flying laps of the five seeds, in every sample with a lateral acceleration above 0.5 g. This set is wider than the corner windows above, so the shares beyond the peak in the titles are not the same numbers. The rear sits mostly at 0.7–0.9 of its peak.*
+
+**Most of the gap is the line, not the grip.** The policy never comes closer than 0.55 m to an edge, so the 0.3 m margin of training is never active. Where the minimum-time lap touches an edge, the policy stays 1.1–1.6 m from it at the apex, and 2.5–4.1 m from it at corner entry and exit: it does not open the corner on the outside. Solving the minimum-time lap again with both edges moved inwards by d (`min_time_lap.py --edge-margin`) gives the cost of a narrower line:
+
+| d (m)    | 0      | 0.3    | 0.6    | 1.0    | 1.5    | 2.0    | 2.5    | 3.0    | 3.5    |
+| -------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| T(d) (s) | 127.83 | 128.29 | 128.76 | 129.41 | 130.25 | 131.11 | 132.00 | 132.92 | 133.93 |
+
+- **The cost of the line.** Each metre taken away on each side costs about 1.7 s. A minimum-time lap confined to the width the policy actually uses accounts for a median **88 %** of the policy's gap, over the nine flying laps of the Nominal and the continued Nominal (`edge_usage.py`).
+- **The corner speeds already fit that line.** On that narrower track (d = 2.5 m) the policy is as fast as the minimum-time lap in every corner, or up to 1.4 m/s faster: given its line, it already uses the grip there is.
+- **Two plausible causes.** With discounting, progress along the centreline favours the inside of a corner. Running wide at entry lowers `ds/dt` at once through `1 − kappa e_y`, while the time it gains arrives later, at the exit. The policy also keeps from the edges the margin it needs to drive with the noise of training ([Mean action and stochastic policy](#mean-action-and-stochastic-policy)).
+- **A reward on time did not help.** A reward that pays the progress made in a corner only when the car leaves it was tried on two seeds, as a 150 M continuation and from random weights for 600 M decisions. Both runs learned to drive (20 of 20 laps from random weights), but they were 0.4–1.5 points slower than their paired controls and did not widen their line consistently. The gap is reported as it is, and that reward is not kept in the code.
+
+Continuing the training for 150 M decisions at a lower learning rate brings the seeds to about +3.0–3.6 %. All configurations at `b = 0`, lap by lap:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/protocol_gaps.png">
+  <img src="docs/figures/light/protocol_gaps.png" alt="distance from the limit of every protocol lap at b = 0">
+</picture>
+
+### Handling balance at the limit: Nominal, Randomised and Oracle
+
+Seven configurations of five seeds continue from the Nominal at the limit for 150 M decisions: the continued Nominal at `b = 0`, and Randomised (R) and Oracle (O) over three widths of the drivable range, W1/3 [−0.07, +0.01], W2/3 [−0.14, +0.02] and W1 [−0.21, +0.03], with the held-out values −0.04, −0.07 and −0.11. Every car of a 13-value grid is compared with **its own** minimum-time lap.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/balance_heatmaps.png">
+  <img src="docs/figures/light/balance_heatmaps.png" alt="laps completed and distance from the limit over the grid of b">
+</picture>
+
+*Left: laps completed out of 50; right: mean distance from the minimum-time lap of that `b`. Boxes mark the training range of each width, diamonds the held-out value.*
+
+- **At the limit `b` matters on every corner.** The Nominal drives only cars within about ±0.03 of its own (all 50 laps only at `b = −0.02`, none at `b = +0.02`).
+- **Randomised and Oracle drive every car of their range, held-out values included (50/50), at 3.5–5 %** from each car's minimum-time lap. They reach 5–6 % only at the ends of the range. Held-out values are no worse than interpolated ones.
+- **Randomisation costs lap time, not reliability.** At `b = 0` the Randomised policies are slower than the continued Nominal by +0.36 s [−0.28, 0.98], +0.81 s [0.40, 1.21] and +1.72 s [1.15, 2.42] (about 0.3, 0.6 and 1.3 %) for W1/3, W2/3 and W1: the wider the range, the more a single behaviour has to be a compromise.
+
+**Knowing `b` changes the driving.** In the slowest corner, C5, the minimum-time lap of an understeering car carries much less speed through the apex. As the car gets more oversteering, the Oracle, like the minimum-time lap, enters slightly slower and carries more speed through the apex, on a different line; the Randomised policy drives nearly the same way for every car.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/balance_corner.png">
+  <img src="docs/figures/light/balance_corner.png" alt="slowest corner for three cars">
+</picture>
+
+**But it gains little time inside the range.** Net of the gap the two policies already show at `b = 0`, the regret (Randomised − Oracle) over interpolated and held-out values is +0.18 s [0.07, 0.28] for W1/3, +0.24 s [−0.04, 0.45] for W2/3 and −0.07 s [−0.32, 0.18] for W1, and the net completion difference is at most +0.05 [0.01, 0.09]. The rule fixed before the evaluation (net regret ≥ 0.5 s or net completion ≥ 0.10, with the lower bound above zero) is met for no width, so **a policy with memory, which would infer `b` from its history, is not needed here**.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/cost_and_regret.png">
+  <img src="docs/figures/light/cost_and_regret.png" alt="cost of randomising b and value of knowing it">
+</picture>
+
+The Oracle's clear advantage is **outside** the range, on more oversteering cars: at `b = +0.05` the Oracle W1 completes 40 of 50 laps, the Randomised W1 none.
+
+The [second animation above](#try-it-in-the-browser) shows such a car from a standing start.
+
+### Mean action and stochastic policy
+
+With the mean action, one continued-Nominal seed (seed 14) completes only 1 of 10 laps at `b = 0`, but 9–10 of 10 with the stochastic policy; this alone makes the 41/50 of the continued Nominal. Driving the protocol with scaled noise shows that:
+
+- **clipping is not the cause**: the mean action stays inside the action box, and the clipping bias is below 0.02 everywhere and practically zero before every exit;
+- **the failure is a deterministic trajectory without margin**: from every start, the mean action reaches corner C3 on the same trajectory and, at its exit, keeps steering into the corner while the throttle rises; the rear axle goes further and further beyond its peak until the car leaves the track at 2167.8 m. The noisy runs countersteer there and stay on track. A tenth of the training noise is enough to complete 24 of 30 laps;
+- **the mean action is the fastest way to drive**: the gap from the limit grows monotonically with the noise for every model, and the policy keeps from the edge about the margin it needs for the noise of training, not more (28–30 of 30 laps at k = 1, 12–28 of 30 at k = 2).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/mean_vs_stochastic.png">
+  <img src="docs/figures/light/mean_vs_stochastic.png" alt="mean action against the stochastic policy in corner C3">
+</picture>
+
+## How it works
+
+### Repository layout
 
 ```
 src/contextual_bicycle_pacejka/
@@ -55,21 +208,26 @@ src/contextual_bicycle_pacejka/
     evaluation/  protocol laps, stage criterion, corners, distance from the limit, evaluation over b, action noise,
                  result statistics and the check of the balance index
 data/tracks/     the Catalunya circuit: TUM centreline CSV and its reference (curvature and track widths)
-docs/figures/    figures and animations of this README
+docs/            the web demo (index.html, demo/: the browser simulator and its data) and the figures and animations
+                 of this README (figures/light, figures/dark)
 research/        literature corpus metadata (the papers and third-party code are not tracked)
 scripts/         command-line entry points (training, evaluation, minimum-time lap, analysis, throughput)
-scripts/figures/ recorded laps, static figures, animations and the interactive lap viewer of the results
+scripts/figures/ recorded laps, static figures and animations of the results
+scripts/demo/    data of the web demo, the check of its simulator and the recording of the README animations
 tests/           plant and environment rollouts, balance index, track preparation, minimum-time lap, learning and
                  evaluation, against recorded golden data
 ```
 
----
 
-## 1. Vehicle plant — `model/`
+<details>
+<summary><b>1. Vehicle plant — <code>model/</code></b> · single-track Pacejka plant in the Frenet frame, tyres, balance index, failures</summary>
 
 The car is a **single-track (bicycle) model** written in the **Frenet frame** of the circuit's centreline: the car is described by how far along the centreline it is (`s`), how far to its side (`e_y`) and how its heading differs from the centreline's (`e_psi`). The plant is pure NumPy/SciPy with no Gymnasium dependency, and every quantity is float64.
 
-![vehicle model](docs/figures/vehicle_model.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/vehicle_model.png">
+  <img src="docs/figures/light/vehicle_model.png" alt="single-track model in the Frenet frame of the centreline">
+</picture>
 
 | File                     | Content                                                                                                                                       |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -91,7 +249,7 @@ The car is a **single-track (bicycle) model** written in the **Frenet frame** of
 
 **Drag and power** of a GT4-class car, the Porsche 718 Cayman GT4 (EU technical data: 309 kW, `cd x A = 0.69 m²`, 304 km/h, 1420 kg): drag area `0.69 m²`, air density `1.2 kg/m³`, and a power at the wheels of 249 kW, the power that holds the published top speed against the drag (the plant has no rolling resistance or driveline losses). `PlantOptions` switches the inertial load transfer, the drag and the power limit; `ORIGINAL_PLANT` switches all three off and reproduces the original plant bit for bit (the original load transfer used `(Fx_r + Fx_f cos delta) / m + vy r`, which unloaded an axle in a slide).
 
-### One plant step
+#### One plant step
 
 `step_plant(state, action, setup, memory, track, dt)` advances the car by one step. The order is causal: the load transfer uses the forces of the **previous** step, so there is no algebraic loop.
 
@@ -128,21 +286,27 @@ Frenet        ds/dt  = (vx cos e_psi - vy sin e_psi) / (1 - kappa(s) e_y)
 
 The plant raises `AdmissibilityError` if an axle load becomes non-positive or if `1 − kappa e_y ≤ 0` (the Frenet frame becomes singular). The environment turns this into a clean termination.
 
-### Tyres and the balance index
+#### Tyres and the balance index
 
 Each axle has a Pacejka "magic formula" lateral force. `C` and `E` are the identified AV-24 shape and curvature factors (Jardali et al.); `B` is calibrated so that the force peaks at about 0.12 rad (front) and 0.13 rad (rear). The peak `D` is the **combined-slip capacity**: the longitudinal force has priority, and the lateral force gets what is left of the friction circle `mu Fz`.
 
 The **balance index** `b` moves lateral capacity between the axles at a constant static total: the lateral capacity of each axle is multiplied by `lambda_f = 1 + b` and `lambda_r = 1 − b LR / LF` (`compute_lateral_scales`), so that `lambda_f Fz_f0 + lambda_r Fz_r0 = Fz_f0 + Fz_r0`. A positive `b` moves grip to the front (oversteer), a negative one to the rear (understeer); `b = 0` is the original plant, bit for bit. The longitudinal limit stays `mu Fz` and `B, C, E` stay fixed, so the cornering stiffness scales with `lambda_i` and `alpha_sat` does not depend on `b`.
 
-![tyre model](docs/figures/tyre_model.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/tyre_model.png">
+  <img src="docs/figures/light/tyre_model.png" alt="Pacejka lateral force, combined slip and friction circle">
+</picture>
 
 The peak slip angle `alpha_sat` (`compute_saturation_threshold`) depends only on `B, C, E`. The steady-state handling of the family (`model/handling.py`, checked by `scripts/check_balance_index.py`) shows what one scalar does to the car:
 
-![the family of cars over b](docs/figures/balance_handling.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/balance_handling.png">
+  <img src="docs/figures/light/balance_handling.png" alt="the family of cars over b">
+</picture>
 
 *From left to right: the capacity scales of the two axles; the understeer gradient, which crosses zero just above `b = 0`; the steady lateral limit, highest where the two axles saturate together; and the lap time of the minimum-time lap and of the point-mass lap for each `b`. The shaded band is the range drivable at the limit, [−0.21, +0.03]: above about +0.03 the car becomes unstable on the straights below its top speed, so the range is asymmetric. The fastest car is at `b ≈ −0.02`; at `b = −0.24` the minimum-time lap is 4.8 % slower.*
 
-### Failures — `model/termination.py`
+#### Failures — `model/termination.py`
 
 After every plant step the environment ends the episode on the first of:
 
@@ -155,9 +319,10 @@ After every plant step the environment ends the episode on the first of:
 
 In training the edge is moved 0.3 m inwards (`TRAINING_EDGE_MARGIN_M`, `--edge-margin`), so that the policy keeps a small margin; evaluation uses the true edges. A completed lap does **not** end the episode.
 
----
+</details>
 
-## 2. Tracks — `model/track.py`, `tracks/`
+<details>
+<summary><b>2. Tracks — <code>model/track.py</code>, <code>tracks/</code></b> · the Catalunya centreline and its edges</summary>
 
 `RealTrack(npz_path)` loads the centreline reference of a circuit and builds periodic cubic splines of every quantity, so every query wraps around the lap:
 
@@ -177,13 +342,19 @@ The edge distances are the circuit's own: the car leaves the track when its late
 | --------- | ---------------------- | --------------- | -------------------------- |
 | Catalunya | 4.65                   | 8.6 – 17.8      | 22.8                       |
 
-<p align="center"><img src="docs/figures/track_layout.png" width="560" alt="Catalunya: corner windows and protocol starts"></p>
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/track_layout.png">
+  <img src="docs/figures/light/track_layout.png" alt="Catalunya: corner windows and protocol starts" width="560">
+</picture>
+</p>
 
 *The circuit with the nine grip-limited corners C1–C9 on which the corner measurements are taken, and the 10 equally spaced starts of the evaluation protocol.*
 
----
+</details>
 
-## 3. Environment — `env/`
+<details>
+<summary><b>3. Environment — <code>env/</code></b> · Gymnasium environment at 20 Hz, speed stages, setup sampling</summary>
 
 `RacingEnv` (`env/environment.py`) is a Gymnasium environment on one circuit and one **speed stage**; decisions are taken at **20 Hz** (every 5 plant steps). `make_env(reference, stage, b_range, oracle, edge_margin)` (`env/factory.py`) builds it and adds a `TimeLimit` of 1024 decisions (51.2 s); `make_vec_env(reference, n_envs, seed, ..., workers)` builds `n_envs` copies for PPO: with `workers > 0` they run in that many subprocesses, several per process (`BatchedSubprocVecEnv`, `env/vec_env.py`), with one message per process and decision; with `workers = 0` in this process. On a 10-core machine, 10 processes × 32 environments give about 43,000 decisions/s.
 
@@ -203,7 +374,7 @@ obs, reward, terminated, truncated, info = env.step(np.array([0.0, 0.5], dtype=n
 
 **Step.** The action `[a_1, a_2] ∈ [−1, 1]²` gives the steering reference `delta_ref = 0.5 a_1` rad and the rate `5 a_2` 1/s of the longitudinal command `tau`, integrated once per decision. The top-speed bound of the stage caps the integrated command, so that it does not wind up to full throttle while the speed is bounded. Then, for 5 plant steps: the traction fades out within 5 % of the top speed of the stage (`limit_top_speed`), `step_plant` advances the car, and the failures are checked; the decision stops at the first failure. A failure ends the episode with its penalty; the vectorised environment starts the next one at once, at a random point of the centreline, as in Czechmanowski et al. (IROS 2025). `info` holds the `failure` (or None), the `reward_terms`, the `progress` [m], the raw `state` and `setup`, the `laps` completed and the `slip_ratio`, the `|alpha| / alpha_sat` of each axle at the end of the decision.
 
-### Speed stages — `env/stages.py`
+#### Speed stages — `env/stages.py`
 
 The policy can learn at increasing top speeds: 5, 10, 20, 30, 40, 60 m/s (stages 1–6), then with no bound (stage 7, the **free stage**). The free stage is sized at 70 m/s: with the drag and the power of the car, a point-mass profile of Catalunya peaks at 68.8 m/s and laps in 138.7 s (`model/point_mass.py`). `make_stage(number, track)` sets every speed-dependent parameter from an explicit rule:
 
@@ -216,7 +387,7 @@ The policy can learn at increasing top speeds: 5, 10, 20, 30, 40, 60 m/s (stages
 
 `R_min` (22.8 m on Catalunya) is the radius of the tightest corner and `w_max` (9.3 m) the widest half-width. The progress reward is normalised by the top speed (by the sizing speed when there is none). `RacingEnv.set_top_speed(v)` changes the top speed during training (`env_method` on the vectorised environment): the start speeds and the reward normalisation follow, the observation does not, so a curriculum can raise the top speed of the free stage step by step (section 5).
 
-### Setup sampling — `env/setup_sampling.py`
+#### Setup sampling — `env/setup_sampling.py`
 
 Every episode has its own setup `xi = [m, mu, hcg, tau_d, b]`. Only the balance index varies; the other entries stay at their nominal values:
 
@@ -230,9 +401,10 @@ Every episode has its own setup `xi = [m, mu, hcg, tau_d, b]`. Only the balance 
 
 `sample_setup(rng, b_range, b_exclude)` draws a setup, drawing `b` again while it falls in one of the open bands `b_exclude` (`held_out_bands(centres)` gives bands of half-width 0.01 around held-out values of `b`).
 
----
+</details>
 
-## 4. The learning problem: state, observation, action, reward
+<details>
+<summary><b>4. The learning problem: state, observation, action, reward</b> · a contextual MDP on the balance index</summary>
 
 Seen as a reinforcement-learning problem, the task is a **contextual MDP**: the context is the balance index `b` of the setup `xi`, sampled at reset and constant within the episode.
 
@@ -249,7 +421,7 @@ Seen as a reinforcement-learning problem, the task is a **contextual MDP**: the 
 
 The dynamics are deterministic: all the randomness is in the setup and the start.
 
-### State
+#### State
 
 The **plant state** `z` (float64) lives in the Frenet frame of the centreline:
 
@@ -265,7 +437,7 @@ The **plant state** `z` (float64) lives in the Frenet frame of the centreline:
 
 The plant also keeps a **memory** of the previous step (`Fx_r, Fx_f, delta, vy, r`, and the longitudinal resultant `F_x`) for the load transfer. The controllers never see `s` directly or the memory: they see the observation.
 
-### Observation (100 entries, 101 for the Oracle)
+#### Observation (100 entries, 101 for the Oracle)
 
 The observation is assembled by `build_observation` after every decision. Its layout is fixed in `spec/layout.py` (`OBS.*` indices); every entry is divided by a scale of the speed stage:
 
@@ -284,14 +456,14 @@ The observation is assembled by `build_observation` after every decision. Its la
 
 Nominal and Randomised policies read no hidden parameter of the car; the Oracle reads `b`. No entry carries a racing line or a target speed: where to drive and how fast is left entirely to the policy.
 
-### Action
+#### Action
 
 | Index | Symbol      | Range   | Meaning                                                                                                                |
 | ----- | ----------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
 | 0     | `delta_ref` | [−1, 1] | steering reference `0.5 a_1` rad; the actual angle follows with lag `tau_d`                                            |
 | 1     | `tau rate`  | [−1, 1] | rate `5 a_2` 1/s of `tau`; `tau ≥ 0`: throttle, rear force `tau m A_MAX`; `tau < 0`: brake, `tau m D_MAX` split 65/35 |
 
-### Reward — `model/reward.py`
+#### Reward — `model/reward.py`
 
 ```
 r_k = ds_k / (v · 0.05 s)                                        progress along the centreline, at most about 1
@@ -301,9 +473,10 @@ r_k = ds_k / (v · 0.05 s)                                        progress along
 
 `v` is the top speed of the stage, so the failure penalty keeps the same weight at every stage. The learner receives `0.1 r_k`: discounted returns of about 10, close to those of progress in metres in Czechmanowski et al., which keeps the value loss small without changing the optimum. The progress reward follows Czechmanowski et al. (IROS 2025, equation 3). Progress is measured along the centreline, so the reward itself pays for a shorter line through the corners: nothing tells the policy where the tyres peak.
 
----
+</details>
 
-## 5. Training — `learning/`
+<details>
+<summary><b>5. Training — <code>learning/</code></b> · PPO, at the limit, Randomised and Oracle</summary>
 
 PPO of Stable-Baselines3 is configured as in Czechmanowski et al. (IROS 2025) (`learning/ppo.py`):
 
@@ -344,15 +517,21 @@ python scripts/train_curriculum.py --seed 10 --stages 7 --budget 150000000 --gam
 
 `learning/monitor.py` writes one line per rollout to `outputs/logs/<tag>/s<seed>_stage<k>.jsonl`: progress per decision, failures per type every 1000 decisions, laps, the share of decisions with each axle beyond its peak slip, decisions/s and the PPO losses.
 
----
+</details>
 
-## 6. Evaluation — `evaluation/`, `reference/`
+<details>
+<summary><b>6. Evaluation — <code>evaluation/</code>, <code>reference/</code></b> · protocol laps, minimum-time reference, distance from the limit, evaluation over b</summary>
 
 **Protocol laps** (`evaluation/laps.py`, `evaluation/stage_gate.py`): from 10 starts equally spaced along the lap, at 3 m/s, the deterministic policy (the mean action) drives one lap or fails; a lap slower than four times the lap at top speed fails as a timeout. A seed passes when it completes at least 9 of its 10 laps, and a stage passes when at least 4 of 5 seeds pass. The completion rate over seeds × starts is reported with a 95 % interval from a two-level bootstrap that resamples seeds and starts independently. On the bounded stages, lap times are compared with a point-mass lap at the top speed of the stage, a yardstick that no policy uses. `evaluate_stage.py --b` drives the protocol laps with a car of balance index `b`, and recognises an Oracle model from the size of its observation.
 
 **Minimum-time reference** (`reference/min_time.py`, `scripts/min_time_lap.py`; needs `casadi`, the `reference` extra). The fastest lap of the plant car on Catalunya, with a free line inside the edges, solved as an optimal-control problem along the centreline with CasADi and IPOPT: the plant's equations (checked against the plant to 1e-9 in `tests/test_min_time.py`), the slip of each axle bounded by its peak, and the steering lag left out (so the reference is at most slightly optimistic). With the GT4 drag and power it laps in **127.83 s** at `b = 0`, 8 % faster than the point-mass lap on the centreline, with both axles at their peak slip in every grip-limited corner. It only measures policies, as `(T - T_opt) / T_opt` and corner by corner; no policy sees it.
 
-<p align="center"><img src="docs/figures/optimal_line.png" width="560" alt="minimum-time lap coloured by speed"></p>
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/dark/optimal_line.png">
+  <img src="docs/figures/light/optimal_line.png" alt="minimum-time lap coloured by speed" width="560">
+</picture>
+</p>
 
 ```bash
 python scripts/min_time_lap.py --b 0 --ds 2 --standing-starts
@@ -390,133 +569,45 @@ python scripts/figures/record_laps.py --only flying --workers 8
 python scripts/edge_usage.py
 ```
 
----
+</details>
 
-## 7. Results
+## Reproduce
 
-All numbers below use the protocol of section 6: 5 seeds × 10 standing starts, the mean action, intervals at 95 %. The criteria were fixed before each run and not changed after it.
-
-### 7.1 Through the speed stages, nominal car
-
-PPO from interaction only drives the nominal car (`b = 0`, original plant) on Catalunya up to 20 m/s:
-
-| Stage      | Seeds passing       | Laps  | Mean lap time (s) | Point-mass lap (s) |
-| ---------- | ------------------- | ----- | ----------------- | ------------------ |
-| 1 (5 m/s)  | 5 of 5              | 50/50 | 922.3             | 930.0              |
-| 2 (10 m/s) | 4 of 5              | 40/50 | 460.0             | 465.0              |
-| 3 (20 m/s) | 3 of 5 (not passed) | 30/50 | 230.5             | 233.8              |
-
-Stage 3 is the first with grip-limited corners; it stopped at 3 of 5 seeds with two learning rates, each after two budgets of 60 M decisions. The seeds that drive beat the point-mass lap by cutting the corners, since progress is measured along the centreline. At 20 m/s, Randomised and Oracle policies widen the range of `b` that is driven at a small cost, but only about 4 % of the lap is grip-limited, so `b` changes little. This is why the study moved to the limit, with a plant that has drag and a power limit, and to training directly on the free stage.
-
-### 7.2 The Nominal policy at the limit
-
-Five seeds trained from random weights for 600 M decisions on the free stage:
-
-| Seed  | Laps  | Median distance from the minimum-time lap |
-| ----- | ----- | ----------------------------------------- |
-| 10    | 10/10 | +5.18 %                                   |
-| 11    | 10/10 | +3.83 %                                   |
-| 12    | 10/10 | +3.62 %                                   |
-| 13    | 9/10  | +4.11 %                                   |
-| 14    | 10/10 | +5.56 %                                   |
-| Total | 49/50 | mean +4.51 % [3.84, 5.21]                 |
-
-Three of five seeds are within 5 %, so the criterion (four) is narrowly missed: the threshold falls inside the seed-to-seed spread of about 2 points. The policies learn the limit gradually: the mean training speed keeps rising for the whole budget, failures fall by two orders of magnitude, and the share of decisions with the front axle beyond its peak slip falls from 75 % to about 10 %, while the rear is used more and more.
-
-![training curves of the Nominal at the limit](docs/figures/training_nominal.png)
-
-Against the minimum-time lap, the policy brakes at nearly the same points (within 7 m) and follows the same speed profile, but loses time steadily in the corners: it uses 67–80 % of the optimal apex offset from the centreline and passes the corners 1.1–1.8 m/s slower. The time gap grows by small steps at every corner rather than in one place.
-
-![flying lap profiles against the minimum-time lap](docs/figures/lap_profiles.png)
-
-<table>
-<tr>
-<td width="50%"><img src="docs/figures/corner_zooms.png" alt="racing lines in six corners"></td>
-<td width="50%"><img src="docs/figures/gg_diagram.png" alt="g-g diagram"></td>
-</tr>
-<tr>
-<td><em>Racing lines in six grip-limited corners: the policies take nearly the optimal line, slightly narrower; minimum speeds in the titles.</em></td>
-<td><em>g-g diagram: the minimum-time lap rides the edge of the friction circle; the policy reaches it too, but less consistently, with more of the lap inside it.</em></td>
-</tr>
-</table>
-
-The tyres show how the policy drives. The minimum-time lap holds **both** axles at their peak slip through every grip-limited corner. The policy spreads its slip below and beyond the peak. In the windows of the nine corners of the protocol laps, it keeps the front axle beyond its peak in 19–43 % of the samples, and the rear near its peak (at least 0.9 of it) in only 6–23 %. It drives with understeer, a margin bought with a slower corner.
-
-![tyre usage in corners](docs/figures/tyre_usage.png)
-
-*Slip of each axle over its peak slip on the flying laps of the five seeds, in every sample with a lateral acceleration above 0.5 g. This set is wider than the corner windows above, so the shares beyond the peak in the titles are not the same numbers. The rear sits mostly at 0.7–0.9 of its peak.*
-
-**Most of the gap is the line, not the grip.** The policy never comes closer than 0.55 m to an edge, so the 0.3 m margin of training is never active. Where the minimum-time lap touches an edge, the policy stays 1.1–1.6 m from it at the apex, and 2.5–4.1 m from it at corner entry and exit: it does not open the corner on the outside. Solving the minimum-time lap again with both edges moved inwards by d (`min_time_lap.py --edge-margin`) gives the cost of a narrower line:
-
-| d (m)    | 0      | 0.3    | 0.6    | 1.0    | 1.5    | 2.0    | 2.5    | 3.0    | 3.5    |
-| -------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
-| T(d) (s) | 127.83 | 128.29 | 128.76 | 129.41 | 130.25 | 131.11 | 132.00 | 132.92 | 133.93 |
-
-- **The cost of the line.** Each metre taken away on each side costs about 1.7 s. A minimum-time lap confined to the width the policy actually uses accounts for a median **88 %** of the policy's gap, over the nine flying laps of the Nominal and the continued Nominal (`edge_usage.py`).
-- **The corner speeds already fit that line.** On that narrower track (d = 2.5 m) the policy is as fast as the minimum-time lap in every corner, or up to 1.4 m/s faster: given its line, it already uses the grip there is.
-- **Two plausible causes.** With discounting, progress along the centreline favours the inside of a corner. Running wide at entry lowers `ds/dt` at once through `1 − kappa e_y`, while the time it gains arrives later, at the exit. The policy also keeps from the edges the margin it needs to drive with the noise of training (section 7.4).
-- **A reward on time did not help.** A reward that pays the progress made in a corner only when the car leaves it was tried on two seeds, as a 150 M continuation and from random weights for 600 M decisions. Both runs learned to drive (20 of 20 laps from random weights), but they were 0.4–1.5 points slower than their paired controls and did not widen their line consistently. The gap is reported as it is, and that reward is not kept in the code.
-
-Continuing the training for 150 M decisions at a lower learning rate brings the seeds to about +3.0–3.6 %. All configurations at `b = 0`, lap by lap:
-
-![distance from the limit of every protocol lap at b = 0](docs/figures/protocol_gaps.png)
-
-### 7.3 Handling balance at the limit: Nominal, Randomised and Oracle
-
-Seven configurations of five seeds continue from the Nominal at the limit for 150 M decisions: the continued Nominal at `b = 0`, and Randomised (R) and Oracle (O) over three widths of the drivable range, W1/3 [−0.07, +0.01], W2/3 [−0.14, +0.02] and W1 [−0.21, +0.03], with the held-out values −0.04, −0.07 and −0.11. Every car of a 13-value grid is compared with **its own** minimum-time lap.
-
-![laps completed and distance from the limit over the grid of b](docs/figures/balance_heatmaps.png)
-
-*Left: laps completed out of 50; right: mean distance from the minimum-time lap of that `b`. Boxes mark the training range of each width, diamonds the held-out value.*
-
-- **At the limit `b` matters on every corner.** The Nominal drives only cars within about ±0.03 of its own (all 50 laps only at `b = −0.02`, none at `b = +0.02`).
-- **Randomised and Oracle drive every car of their range, held-out values included (50/50), at 3.5–5 %** from each car's minimum-time lap. They reach 5–6 % only at the ends of the range. Held-out values are no worse than interpolated ones.
-- **Randomisation costs lap time, not reliability.** At `b = 0` the Randomised policies are slower than the continued Nominal by +0.36 s [−0.28, 0.98], +0.81 s [0.40, 1.21] and +1.72 s [1.15, 2.42] (about 0.3, 0.6 and 1.3 %) for W1/3, W2/3 and W1: the wider the range, the more a single behaviour has to be a compromise.
-
-**Knowing `b` changes the driving.** In the slowest corner, C5, the minimum-time lap of an understeering car carries much less speed through the apex. As the car gets more oversteering, the Oracle, like the minimum-time lap, enters slightly slower and carries more speed through the apex, on a different line; the Randomised policy drives nearly the same way for every car.
-
-![slowest corner for three cars](docs/figures/balance_corner.png)
-
-**But it gains little time inside the range.** Net of the gap the two policies already show at `b = 0`, the regret (Randomised − Oracle) over interpolated and held-out values is +0.18 s [0.07, 0.28] for W1/3, +0.24 s [−0.04, 0.45] for W2/3 and −0.07 s [−0.32, 0.18] for W1, and the net completion difference is at most +0.05 [0.01, 0.09]. The rule fixed before the evaluation (net regret ≥ 0.5 s or net completion ≥ 0.10, with the lower bound above zero) is met for no width, so **a policy with memory, which would infer `b` from its history, is not needed here**.
-
-![cost of randomising b and value of knowing it](docs/figures/cost_and_regret.png)
-
-The Oracle's clear advantage is **outside** the range, on more oversteering cars: at `b = +0.05` the Oracle W1 completes 40 of 50 laps, the Randomised W1 none.
-
-<p align="center"><img src="docs/figures/demo_oversteer_car.gif" width="760" alt="an oversteering car: only the Oracle completes the lap"></p>
-
-*An oversteering car, `b = +0.05`, outside every training range: from the same standing start, the continued Nominal and the Randomised W1 leave the track at the exit of the same corner, the Oracle W1 completes the lap.*
-
-### 7.4 Mean action and stochastic policy
-
-With the mean action, one continued-Nominal seed (seed 14) completes only 1 of 10 laps at `b = 0`, but 9–10 of 10 with the stochastic policy; this alone makes the 41/50 of the continued Nominal. Driving the protocol with scaled noise shows that:
-
-- **clipping is not the cause**: the mean action stays inside the action box, and the clipping bias is below 0.02 everywhere and practically zero before every exit;
-- **the failure is a deterministic trajectory without margin**: from every start, the mean action reaches corner C3 on the same trajectory and, at its exit, keeps steering into the corner while the throttle rises; the rear axle goes further and further beyond its peak until the car leaves the track at 2167.8 m. The noisy runs countersteer there and stay on track. A tenth of the training noise is enough to complete 24 of 30 laps;
-- **the mean action is the fastest way to drive**: the gap from the limit grows monotonically with the noise for every model, and the policy keeps from the edge about the margin it needs for the noise of training, not more (28–30 of 30 laps at k = 1, 12–28 of 30 at k = 2).
-
-![mean action against the stochastic policy in corner C3](docs/figures/mean_vs_stochastic.png)
-
----
-
-## Figures, animations and lap viewer — `scripts/figures/`
-
-The figures and animations of the results at the limit are built from recorded laps, in two steps. `record_laps.py` drives the trained policies and records one sample per decision (state, commands, accelerations, tyre slips and loads, world pose) to `outputs/trajectories/`: a flying lap of every configuration at `b = 0`, three policies over five values of `b`, the mean action and five stochastic runs of the case of the mean action that leaves the track, and the flying minimum-time lap of every `b` resampled in time. `thesis_plots.py` holds what the others share (style, colours, track geometry, loading of the recorded laps).
-
-- `make_thesis_figures.py`: 19 static figures as PNG and PDF (track and minimum-time line, speed and lap-time profiles against the minimum-time lap, corner lines, g-g diagram, tyre usage, training curves, distance from the limit, results over `b`, failure map, mean action against the stochastic policy, cost and regret); `--no-titles` leaves out the titles, for a caption;
-- `animate_laps.py`: GIF and MP4 animations — a chase view of each policy with the ghost of the minimum-time lap, the three policies racing on the whole circuit, cars with different `b`, and the mean action against stochastic runs — rendered with matplotlib and assembled with ffmpeg;
-- `build_lap_viewer.py`: fills the template `lap_viewer.html` with the track and the recorded laps and writes one self-contained HTML page for browsing them, with play, scrub, playback speed, a view that follows the car and live gaps.
+### Quick start
 
 ```bash
-python scripts/figures/record_laps.py
-python scripts/figures/make_thesis_figures.py
-python scripts/figures/animate_laps.py --only chase
-python scripts/figures/build_lap_viewer.py
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"            # add the "reference" extra (CasADi) for the minimum-time lap
+pytest                             # plant, balance index, environment, tracks, learning and evaluation (seconds)
 ```
 
-The figures of this README are a selection of these, in `docs/figures/`; the two GIFs are shortened, smaller versions of the chase and balance animations.
+### Results data
 
----
+Models, training logs, evaluations, recorded laps and figures are written to `outputs/`, which is not tracked. The part of it that the figures, the animations and the demo are made from (90 MB: recorded laps, minimum-time laps, evaluations at the limit, training curves and the three policies of the demo) is published as the release [`results-v1`](https://github.com/antoniooodev/ten-tenths/releases/tag/results-v1):
+
+```bash
+python scripts/fetch_results.py
+```
+
+### Figures, animations and demo — `scripts/figures/`, `scripts/demo/`
+
+The figures and animations of the results at the limit are built from recorded laps. `record_laps.py` drives the trained policies and records one sample per decision (state, commands, accelerations, tyre slips and loads) to `outputs/trajectories/`: a flying lap of every configuration at `b = 0`, three policies over five values of `b`, the mean action and five stochastic runs of the case of the mean action that leaves the track, and the flying minimum-time lap of every `b` resampled in time. `thesis_plots.py` holds what the others share: the light and dark theme, the colours, the track geometry and the loading of the recorded laps.
+
+A recorded lap is drawn from its Frenet state: a point `(s, e_y, e_psi)` lies on the normal of the centreline spline at `s`, with the heading of its tangent plus `e_psi`, and between the samples at 20 Hz `s`, `e_y` and `e_psi` are interpolated with cubic Hermite polynomials whose slopes are the Frenet rates of the state. The plant's own `psi_ref` is the heading of each 5 m segment of the TUM polyline, up to 14° from the tangent of the drawn centreline in the tight corners, so it is not used for drawing. The plant itself integrates a curvature smoothed over about 50 m (section 2): it is consistent with itself and with the minimum-time lap, but not exactly with the drawn geometry, so a drawn car can be off its drawn path by a few degrees at the apex of the tightest corners.
+
+- `make_thesis_figures.py`: 21 static figures as PNG and PDF (vehicle and tyre model, track and minimum-time line, speed and lap-time profiles against the minimum-time lap, corner lines, g-g diagram, tyre usage, training curves, distance from the limit, results over `b`, failure map, mean action against the stochastic policy, cost and regret); `--no-titles` leaves out the titles, for a caption; `TEN_TENTHS_THEME=dark` draws them on a dark surface;
+- `make_readme_figures.py`: the figures of this README in both themes, in `docs/figures/light` and `docs/figures/dark`;
+- `animate_laps.py`: GIF and MP4 animations rendered with matplotlib, for slides;
+- `scripts/demo/export_demo_data.py`: the track splines, the actors of three policies and the recorded laps for the web demo (`docs/demo/data`); `docs/index.html` is the demo, served by GitHub Pages from `docs/`;
+- `scripts/demo/capture_gif.cjs`: the two animations of this README, rendered frame by frame by the demo in a headless Chromium (Playwright) and assembled with ffmpeg.
+
+```bash
+python scripts/figures/record_laps.py                 # needs the models in outputs/models
+python scripts/figures/make_readme_figures.py
+python scripts/demo/export_demo_data.py
+node scripts/demo/capture_gif.cjs                     # needs Playwright and ffmpeg
+python -m http.server --directory docs 8000           # the demo at http://localhost:8000
+```
 
 ## Tests
 
@@ -526,7 +617,7 @@ python scripts/check_balance_index.py   # steady-state check of b -> outputs/ana
 python scripts/measure_throughput.py    # decisions/s of the environment -> outputs/analysis/throughput.json
 ```
 
-`tests/golden/plant_catalunya.npz` holds reference rollouts of the original dynamics alone on the Catalunya centreline (`tests/test_plant.py`), which `ORIGINAL_PLANT` must reproduce bit for bit; `tests/golden/plant_catalunya_gt4.npz` holds those of the current plant, which any later change must reproduce. The same file checks the drag and power (top speed, acceleration, coast-down, within 1 %) and that a slide no longer unloads an axle; `tests/test_balance.py` pins what `b` changes; `tests/test_min_time.py` checks the equations of the minimum-time problem against the plant and the edges moved inwards by `--edge-margin` (it runs when CasADi is installed).
+`tests/golden/plant_catalunya.npz` holds reference rollouts of the original dynamics alone on the Catalunya centreline (`tests/test_plant.py`), which `ORIGINAL_PLANT` must reproduce bit for bit; `tests/golden/plant_catalunya_gt4.npz` holds those of the current plant, which any later change must reproduce. The same file checks the drag and power (top speed, acceleration, coast-down, within 1 %) and that a slide no longer unloads an axle; `tests/test_balance.py` pins what `b` changes; `tests/test_min_time.py` checks the equations of the minimum-time problem against the plant and the edges moved inwards by `--edge-margin` (it runs when CasADi is installed); `tests/test_demo_sim.py` runs the browser simulator of the web demo in Node against the Python plant, environment and policies (it runs when Node is installed).
 
 The earlier line of this project, which trained policies by imitation of a model-based teacher on four circuits, is kept at the tag `legacy-imitation`.
 
