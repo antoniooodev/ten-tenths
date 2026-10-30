@@ -6,7 +6,7 @@
 
 import { drawGG, drawInputs, drawSpeedTrace } from "./charts.js";
 import { Run } from "./run.js";
-import { cssColour, TrackView } from "./render.js";
+import { cssColour, forgetColours, TrackView } from "./render.js";
 import { loadDemo, RacingEnv } from "./sim.js";
 
 const DATA = "demo/data";
@@ -54,7 +54,8 @@ let demo;
 let lapsBuffer;
 let view;
 let mini;
-let lastFrame = null;
+let chartAge = Infinity; // [s] since the charts of the panel were last drawn
+const CHART_PERIOD = 0.1; // [s] the charts are redrawn at 10 Hz while playing, at once otherwise
 
 function colourOf(role) {
   return cssColour(`--${role}`);
@@ -161,13 +162,16 @@ function setupLive() {
   view.camera = null;
 }
 
-/** Advance the live simulation of every car up to the scenario time. */
+/** Advance the live simulation of every car to one decision past the scenario time.
+ *
+ * The cars are drawn by interpolating their samples (Run.at), so the simulation keeps one decision ahead of the
+ * clock: a car drawn from samples up to the clock only would move once per decision (20 Hz) and stutter at 60 Hz. */
 function simulate(time) {
   const dt = demo.manifest.constants.DECISION_DT;
   for (const c of state.cars) {
     if (!c.env) continue;
     let budget = 400; // decisions per frame at most, so a fast-forward never blocks the page
-    while (c.simTime + dt <= time + 1e-9 && !c.done && budget-- > 0) {
+    while (c.simTime <= time + 1e-9 && !c.done && budget-- > 0) {
       const action = c.policy.mean(c.obs);
       const result = c.env.step(action);
       c.obs = result.obs;
@@ -195,11 +199,6 @@ function carTime(c, time) {
   return time - c.offset;
 }
 
-function lapOf(c, s) {
-  const L = demo.track.length;
-  return c.lapStart !== undefined ? s - c.lapStart : s - L * Math.floor((s - c.run.ch.s[0]) / L) - c.run.ch.s[0];
-}
-
 function render(dtReal = 0) {
   if (state.mode === "live") simulate(state.time);
   const L = demo.track.length;
@@ -216,7 +215,6 @@ function render(dtReal = 0) {
       colour: c.faint ? colour : colour,
       focus: c === focusCar,
       failed: c.run.failure && carTime(c, time) >= c.run.end,
-      trail: c.run.path(Math.max(c.run.start, t - 6), t, 0.05),
     };
   });
   let ghostState = null;
@@ -231,15 +229,13 @@ function render(dtReal = 0) {
     const p = demo.track.pose(focus.state.s + d, 0);
     return [p.x, p.y];
   }) : null;
-  const frame = { cars: frameCars.map((c) => ({ ...c, trail: c.trail.map(([x, y, tt]) => [x, y, tt + c.offset]) })),
-    ghost: state.ghost ? { line: state.ghost.line, state: ghostState } : null, preview, time };
+  const frame = { cars: frameCars, ghost: state.ghost ? { line: state.ghost.line, state: ghostState } : null, preview,
+    time };
   view.resize();
   view.draw(frame);
   mini.resize();
-  mini.draw({ cars: frame.cars.map((c) => ({ ...c, trail: c.trail })), ghost: ghostState ? { state: ghostState } : null,
-    time });
-  lastFrame = { frameCars, focus, ghostState };
-  updatePanels(frameCars, focus, ghostState);
+  mini.draw({ cars: frameCars, ghost: ghostState ? { state: ghostState } : null, time });
+  updatePanels(frameCars, focus, dtReal);
   updateTransport();
 }
 
@@ -250,7 +246,7 @@ function gapTo(c, other) {
   return Number.isFinite(t) ? c.t + c.offset - (t + other.offset) : NaN;
 }
 
-function updatePanels(cars, focus, ghostState) {
+function updatePanels(cars, focus, dtReal = 0) {
   const L = demo.track.length;
   // HUD of the focused car
   if (focus) {
@@ -304,6 +300,10 @@ function updatePanels(cars, focus, ghostState) {
     standings.innerHTML = html;
     standings.dataset.html = html;
   }
+  if ($("#note").textContent !== state.note) $("#note").textContent = state.note;
+  chartAge += dtReal;
+  if (state.playing && chartAge < CHART_PERIOD) return;
+  chartAge = 0;
   // speed trace
   const traceCars = cars.filter((c) => !c.faint || c.focus).map((c) => {
     const points = [];
@@ -336,7 +336,6 @@ function updatePanels(cars, focus, ghostState) {
   drawInputs($("#inputs"), cars.filter((c) => !c.faint || c.focus).map((c) => ({
     colour: c.colour, steer: c.state.delta / 0.5, tau: c.state.tau, slipF: c.state.slip_f, slipR: c.state.slip_r,
   })));
-  $("#note").textContent = state.note;
 }
 
 function updateTransport() {
@@ -445,6 +444,7 @@ function bindControls() {
     const root = document.documentElement;
     const dark = cssColour("--scheme") === "dark";
     root.dataset.theme = dark ? "light" : "dark";
+    forgetColours();
     try {
       localStorage.setItem("ten-tenths-theme", root.dataset.theme);
     } catch {
@@ -463,6 +463,10 @@ function bindControls() {
     }
   });
   window.addEventListener("resize", () => render());
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    forgetColours();
+    render();
+  });
 }
 
 function loop(previous) {
@@ -481,6 +485,7 @@ async function main() {
   try {
     const stored = localStorage.getItem("ten-tenths-theme");
     if (params.get("theme") || stored) document.documentElement.dataset.theme = params.get("theme") || stored;
+    forgetColours();
   } catch {
     // no stored theme
   }

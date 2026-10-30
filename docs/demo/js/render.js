@@ -1,5 +1,7 @@
 // Canvas view of the circuit: the asphalt and its edges drawn from the same geometry as the figures, kerbs at the
-// grip-limited corners, the cars to scale from above, their trails and the ghost of the minimum-time lap.
+// grip-limited corners, the cars to scale from above and the ghost of the minimum-time lap. The cars carry no trail:
+// a path drawn from the Frenet state would follow the drawn centreline, while the plant integrates a curvature
+// smoothed over about 50 m, so in the tight corners such a path is not where the car went.
 
 // Corner windows C1-C9 [m] (scripts/figures/thesis_plots.py WINDOWS)
 export const WINDOWS = [[821, 863], [1702, 1723], [2097, 2171], [2538, 2577], [3465, 3527], [3741, 3754],
@@ -13,8 +15,18 @@ const WHEEL = { length: 0.66, width: 0.26 };
 const LF = 1.2;
 const LR = 1.4;
 
-export function cssColour(name, element = document.documentElement) {
-  return getComputedStyle(element).getPropertyValue(name).trim();
+const colourCache = new Map();
+
+/** Value of a CSS custom property of the page, read once per theme (``forgetColours`` after a theme change). */
+export function cssColour(name) {
+  if (!colourCache.has(name)) {
+    colourCache.set(name, getComputedStyle(document.documentElement).getPropertyValue(name).trim());
+  }
+  return colourCache.get(name);
+}
+
+export function forgetColours() {
+  colourCache.clear();
 }
 
 function polygon(ctx, points) {
@@ -136,7 +148,7 @@ export class TrackView {
 
   /**
    * Draw a frame.
-   * @param {object} frame {cars: [{state, colour, label, trail, failed}], ghost: {state, line}, preview: [[x, y]]}
+   * @param {object} frame {cars: [{state, colour, label, focus, failed}], ghost: {state, line}, preview: [[x, y]]}
    */
   draw(frame) {
     const { ctx, canvas } = this;
@@ -193,7 +205,6 @@ export class TrackView {
       }
       ctx.globalAlpha = 1;
     }
-    for (const car of frame.cars) this.drawTrail(ctx, car, chase ? 0.55 : px(2.6), frame.time);
     if (frame.ghost?.state) this.drawCar(ctx, frame.ghost.state, null, chase, px);
     const ordered = [...frame.cars].sort((a, b) => (a.focus ? 1 : 0) - (b.focus ? 1 : 0));
     for (const car of ordered) this.drawCar(ctx, car.state, car, chase, px);
@@ -221,24 +232,6 @@ export class TrackView {
         ctx.fill();
       }
     }
-  }
-
-  drawTrail(ctx, car, width, time) {
-    const points = car.trail;
-    if (!points || points.length < 2) return;
-    ctx.lineCap = "round";
-    ctx.lineWidth = width;
-    ctx.strokeStyle = car.colour;
-    const span = car.trailSeconds ?? 6;
-    for (let i = 1; i < points.length; i++) {
-      const age = time - points[i][2];
-      ctx.globalAlpha = 0.85 * Math.max(0, 1 - age / span) ** 1.5;
-      ctx.beginPath();
-      ctx.moveTo(points[i - 1][0], points[i - 1][1]);
-      ctx.lineTo(points[i][0], points[i][1]);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
   }
 
   drawCar(ctx, state, car, chase, px) {
